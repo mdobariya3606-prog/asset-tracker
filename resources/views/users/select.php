@@ -454,15 +454,15 @@ function getSortIndicator(string $column, string $currentSort, string $currentOr
         </div>
 
         <div class="nav-user">
-            <?php if (!empty($_SESSION['user_name'])): ?>
+            <?php if (!empty($dashboardUser)): ?>
                 <div class="avatar-badge">
-                    <?= strtoupper(substr($_SESSION['user_name'], 0, 1)) ?>
+                    <?= strtoupper(substr($dashboardUser['name'], 0, 1)) ?>
                 </div>
                 <div style="text-align: left; line-height: 1.2;">
-                    <div style="font-weight: 600; font-size: 13px; color: var(--slate-800);"><?= htmlspecialchars($_SESSION['user_name']) ?></div>
-                    <div style="font-size: 11px; color: var(--slate-500);"><?= htmlspecialchars($_SESSION['user_email'] ?? '') ?></div>
+                    <div style="font-weight: 600; font-size: 13px; color: var(--slate-800);"><?= htmlspecialchars($dashboardUser['name']) ?></div>
+                    <div style="font-size: 11px; color: var(--slate-500);"><?= htmlspecialchars($dashboardUser['email']) ?></div>
                 </div>
-                <a href="index.php?route=users/edit&id=<?= (int) $_SESSION['user_id'] ?>" class="btn btn-secondary" style="padding: 6px 12px; font-size: 12px;">
+                <a href="index.php?route=users/edit&id=<?= (int) $dashboardUser['id'] ?>" class="btn btn-secondary" style="padding: 6px 12px; font-size: 12px;">
                     <svg viewBox="0 0 24 24" style="width:14px;height:14px;"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>
                     Profile
                 </a>
@@ -475,7 +475,7 @@ function getSortIndicator(string $column, string $currentSort, string $currentOr
     </header>
 
     <!-- Admin Navigation Tabs -->
-    <?php if (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'ADMIN'): ?>
+    <?php if ($dashboardUserRole === 'ADMIN'): ?>
         <nav class="admin-tabs">
             <a href="index.php?route=users" class="tab-link active">Users</a>
             <a href="index.php?route=departments" class="tab-link">Departments</a>
@@ -497,7 +497,7 @@ function getSortIndicator(string $column, string $currentSort, string $currentOr
             <h2>Users Directory</h2>
             <p>Manage, inspect, and register team members inside the company</p>
         </div>
-        <?php if (isset($_SESSION['user_role']) && $_SESSION['user_role'] !== 'EMPLOYEE'): ?>
+        <?php if ($dashboardUserRole !== 'EMPLOYEE'): ?>
         <div class="header-actions">
             <a href="index.php?route=users/create" class="btn btn-primary">
                 <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
@@ -585,7 +585,7 @@ function getSortIndicator(string $column, string $currentSort, string $currentOr
                                     Role<?= getSortIndicator('role', $sort, $order) ?>
                                 </a>
                             </th>
-                            <?php if (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'ADMIN'): ?>
+                            <?php if ($dashboardUserRole === 'ADMIN'): ?>
                                 <th style="text-align: right; width: 140px;">Actions</th>
                             <?php endif; ?>
                         </tr>
@@ -623,7 +623,7 @@ function getSortIndicator(string $column, string $currentSort, string $currentOr
                                     <?= htmlspecialchars($user['role'] ?? 'EMPLOYEE') ?>
                                 </span>
                             </td>
-                            <?php if (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'ADMIN'): ?>
+                            <?php if ($dashboardUserRole === 'ADMIN'): ?>
                                 <td style="text-align: right;">
                                     <div style="display: flex; gap: 8px; justify-content: flex-end;">
                                         <a href="index.php?route=users/edit&id=<?= $user['id'] ?>" class="btn btn-secondary" style="padding: 6px 12px; font-size: 12px; min-height: auto;">

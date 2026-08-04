@@ -1,0 +1,39 @@
+# Work Log - 04-08-2026
+
+## Completed changes
+
+- Added a **Profile** button to the signed-in user area of the user dashboard.
+- Linked the Profile button to the currently signed-in user's edit page.
+- Allowed non-admin users to open and update their own profile while preventing them from changing their role, department, or designation.
+- Removed password and confirm-password inputs from the edit-user page.
+- Added server-side protection so password values submitted to the edit-user page are ignored.
+- Increased the admin edit-user form width to keep its additional fields aligned, while retaining a single-column mobile layout.
+- Fixed the edit-page CSS issue caused by the dashboard AJAX handler intercepting `users/edit` links. Edit links now use a full page navigation.
+- Added authenticated-request session synchronization for user name, email, and role.
+- Changed the user dashboard to query the signed-in user's current database record and render the navbar identity and role-based controls from that fresh record rather than session values.
+
+## Git activity
+
+- Updated `origin` to `https://github.com/mdobariya3606-prog/asset-tracker.git`.
+- Pushed commit `968efb7` to the `main` branch.
+- Commit message: `Add dashboard profile access and refresh user data`.
+
+## Pending local changes before cleanup commit
+
+- `app/Controllers/User/SelectUserController.php` - fetches fresh dashboard user data.
+- `resources/views/users/select.php` - renders dashboard identity and permissions from the database record.
+- `public/index.php` - unrelated pre-existing routing change remains uncommitted.
+- `resources/views/users/register.php` - unrelated pre-existing change remains uncommitted.
+
+- The dashboard refresh and cleanup changes are ready for an important-operation commit.
+
+## Logging rule
+
+Record future implementation work, verification results, and Git actions in this file.
+
+## Cleanup review
+
+- Began a non-destructive inventory of potentially unused or generated project files. No files have been removed.
+- Identified two unused helper stubs, ignored IDE metadata, and three empty scaffold folders as safe cleanup targets.
+- Removed only the two verified unused helper stubs: `app/Controllers/helper.php` and `app/Helpers/helper.php`.
+- Folder cleanup was cancelled on request. `.idea`, `bootstrap`, `routes`, and `storage` remain in place.

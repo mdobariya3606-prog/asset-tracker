@@ -26,6 +26,17 @@ class SelectUserController
 			exit;
 		}
 
+		// Render dashboard identity and access controls from the latest database
+		// record instead of relying on values saved at sign-in.
+		$dashboardUser = $this->userModel->find((int) $_SESSION['user_id'])[0] ?? null;
+		if ($dashboardUser === null) {
+			session_unset();
+			$_SESSION['login_error'] = 'Your account is no longer available.';
+			header('Location: index.php?route=login');
+			exit;
+		}
+		$dashboardUserRole = strtoupper($dashboardUser['role'] ?? 'EMPLOYEE');
+
 		$search = trim($getParams['search'] ?? '');
 		$page = (int)($getParams['page'] ?? 1);
 		if ($page < 1) {
