@@ -48,6 +48,12 @@
             max-width: 580px;
         }
 
+        /* Admins edit additional role and organisation fields, so give the
+           two-column form enough room to keep labels and controls aligned. */
+        .edit-container.admin-edit {
+            max-width: 760px;
+        }
+
         .card {
             background: #ffffff;
             border: 1px solid #e2e8f0;
@@ -247,40 +253,6 @@
             stroke: #f87171; fill: none; stroke-width: 2;
         }
 
-        /* Password toggle */
-        .pass-toggle {
-            position: absolute;
-            right: 14px;
-            top: 50%;
-            transform: translateY(-50%);
-            background: none;
-            border: none;
-            cursor: pointer;
-            padding: 4px;
-            display: flex;
-            z-index: 10;
-        }
-
-        .pass-toggle svg {
-            width: 18px; height: 18px;
-            stroke: #94a3b8;
-            fill: none; stroke-width: 2;
-            transition: stroke 0.2s;
-        }
-
-        .pass-toggle:hover svg {
-            stroke: #475569;
-        }
-
-        /* Help text */
-        .help-text {
-            display: block;
-            font-size: 11px;
-            color: #94a3b8;
-            margin-top: 6px;
-            line-height: 1.4;
-        }
-
         /* Actions row */
         .actions-row {
             grid-column: 1 / -1;
@@ -369,13 +341,14 @@
         @media (max-width: 600px) {
             .card { padding: 32px 24px; }
             .form-grid { grid-template-columns: 1fr; }
+            .form-grid .full-width { grid-column: auto; }
             .card-header h1 { font-size: 22px; }
             .actions-row { flex-direction: column-reverse; }
         }
     </style>
 </head>
 <body>
-<div class="edit-container">
+<div class="edit-container<?= !empty($isAdmin) ? ' admin-edit' : '' ?>">
     <div class="card">
 
         <div class="card-header">
@@ -451,6 +424,7 @@
                     <?php endif; ?>
                 </div>
 
+                <?php if (empty($isOwnProfile) || ($_SESSION['user_role'] ?? '') === 'ADMIN'): ?>
                 <!-- Role -->
                 <div class="form-group <?php echo isset($errors['role']) ? 'has-error' : ''; ?>">
                     <label for="role">Role <span class="required">*</span></label>
@@ -525,47 +499,7 @@
                         </div>
                     <?php endif; ?>
                 </div>
-
-                <!-- Password -->
-                <div class="form-group <?php echo isset($errors['password']) ? 'has-error' : ''; ?>">
-                    <label for="password">Password</label>
-                    <div class="input-wrapper">
-                        <input type="password" name="password" id="password"
-                               placeholder="Leave empty to keep existing">
-                        <svg class="input-icon" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-                        <button type="button" class="pass-toggle" onclick="togglePassword('password', this)">
-                            <svg viewBox="0 0 24 24" class="eye-open"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                            <svg viewBox="0 0 24 24" class="eye-closed" style="display:none"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
-                        </button>
-                    </div>
-                    <span class="help-text">Only enter a value if you wish to change their password.</span>
-                    <?php if (isset($errors['password'])): ?>
-                        <div class="error-text">
-                            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-                            <?php echo htmlspecialchars($errors['password']); ?>
-                        </div>
-                    <?php endif; ?>
-                </div>
-
-                <!-- Confirm Password -->
-                <div class="form-group <?php echo isset($errors['confirm_password']) ? 'has-error' : ''; ?>">
-                    <label for="confirm_password">Confirm Password</label>
-                    <div class="input-wrapper">
-                        <input type="password" name="confirm_password" id="confirm_password"
-                               placeholder="Re-enter new password">
-                        <svg class="input-icon" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-                        <button type="button" class="pass-toggle" onclick="togglePassword('confirm_password', this)">
-                            <svg viewBox="0 0 24 24" class="eye-open"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                            <svg viewBox="0 0 24 24" class="eye-closed" style="display:none"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
-                        </button>
-                    </div>
-                    <?php if (isset($errors['confirm_password'])): ?>
-                        <div class="error-text">
-                            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-                            <?php echo htmlspecialchars($errors['confirm_password']); ?>
-                        </div>
-                    <?php endif; ?>
-                </div>
+                <?php endif; ?>
 
                 <!-- Submit & Cancel -->
                 <div class="actions-row">
@@ -587,21 +521,6 @@
 </div>
 
 <script>
-    function togglePassword(fieldId, btn) {
-        const input = document.getElementById(fieldId);
-        const eyeOpen = btn.querySelector('.eye-open');
-        const eyeClosed = btn.querySelector('.eye-closed');
-        if (input.type === 'password') {
-            input.type = 'text';
-            eyeOpen.style.display = 'none';
-            eyeClosed.style.display = 'block';
-        } else {
-            input.type = 'password';
-            eyeOpen.style.display = 'block';
-            eyeClosed.style.display = 'none';
-        }
-    }
-
     // Prevent double-submit
     document.getElementById('editForm')?.addEventListener('submit', function() {
         const btn = this.querySelector('.btn-submit');

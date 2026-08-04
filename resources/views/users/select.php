@@ -462,6 +462,10 @@ function getSortIndicator(string $column, string $currentSort, string $currentOr
                     <div style="font-weight: 600; font-size: 13px; color: var(--slate-800);"><?= htmlspecialchars($_SESSION['user_name']) ?></div>
                     <div style="font-size: 11px; color: var(--slate-500);"><?= htmlspecialchars($_SESSION['user_email'] ?? '') ?></div>
                 </div>
+                <a href="index.php?route=users/edit&id=<?= (int) $_SESSION['user_id'] ?>" class="btn btn-secondary" style="padding: 6px 12px; font-size: 12px;">
+                    <svg viewBox="0 0 24 24" style="width:14px;height:14px;"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>
+                    Profile
+                </a>
                 <a href="index.php?route=logout" class="btn btn-logout" style="padding: 6px 12px; font-size: 12px;">
                     <svg viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
                     Sign out
@@ -700,8 +704,10 @@ document.addEventListener('DOMContentLoaded', function() {
     if (cardElement) {
         cardElement.addEventListener('click', function(e) {
             const link = e.target.closest('a');
-            // If it is a generic get link for users dashboard (and not delete which has an onclick handler)
-            if (link && link.href && link.href.includes('route=users') && !link.getAttribute('onclick')) {
+            // Dynamically load only the users list links. Edit links must perform
+            // a full page navigation so their page-specific stylesheet is applied.
+            const route = link?.href ? new URL(link.href).searchParams.get('route') : null;
+            if (link && route === 'users' && !link.getAttribute('onclick')) {
                 e.preventDefault();
                 fetchData(link.href);
             }

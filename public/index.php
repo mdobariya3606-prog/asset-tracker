@@ -41,6 +41,20 @@ $dotenv->load();
 
 $conn = (new Database())->getConnection();
 
+// Keep dashboard identity data in sync with admin updates made in another session.
+// The session retains authentication state; name, email, and role are refreshed
+// from the database for every authenticated request.
+if (!empty($_SESSION['user_id'])) {
+	$currentUser = (new \App\Models\User($conn))->find((int) $_SESSION['user_id'])[0] ?? null;
+	if ($currentUser === null) {
+		session_unset();
+	} else {
+		$_SESSION['user_name'] = $currentUser['name'];
+		$_SESSION['user_email'] = $currentUser['email'];
+		$_SESSION['user_role'] = $currentUser['role'];
+	}
+}
+
 /**
  * ============================================================================
  * SECTION 4: ROUTE RESOLUTION

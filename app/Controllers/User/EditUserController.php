@@ -80,12 +80,14 @@ class EditUserController
             header('Location: index.php?route=login');
             exit;
         }
-        if (empty($_SESSION['user_role']) || $_SESSION['user_role'] !== 'ADMIN') {
+        $id = (int)($getParams['id'] ?? 0);
+        $isOwnProfile = $id === (int) $_SESSION['user_id'];
+        $isAdmin = ($_SESSION['user_role'] ?? '') === 'ADMIN';
+        if (!$isAdmin && !$isOwnProfile) {
             require '../resources/views/errors/403.php';
             exit;
         }
 
-        $id = (int)($getParams['id'] ?? 0);
         $formData = $this->showForm($id);
         if (!$formData) {
             $_SESSION['login_error'] = 'User not found.';
@@ -108,15 +110,35 @@ class EditUserController
             header('Location: index.php?route=login');
             exit;
         }
-        if (empty($_SESSION['user_role']) || $_SESSION['user_role'] !== 'ADMIN') {
+        $id = (int)($getParams['id'] ?? 0);
+        $isOwnProfile = $id === (int) $_SESSION['user_id'];
+        $isAdmin = ($_SESSION['user_role'] ?? '') === 'ADMIN';
+        if (!$isAdmin && !$isOwnProfile) {
             require '../resources/views/errors/403.php';
             exit;
         }
 
-        $id = (int)($getParams['id'] ?? 0);
+        // Password changes are handled outside the profile edit form.
+        unset($postParams['password'], $postParams['confirm_password']);
+
+        if (!$isAdmin) {
+            $currentUser = $this->user->find($id)[0] ?? null;
+            if (!$currentUser) {
+                $_SESSION['login_error'] = 'User not found.';
+                header('Location: index.php?route=users');
+                exit;
+            }
+            $postParams['department_id'] = $currentUser['department_id'];
+            $postParams['designation_id'] = $currentUser['designation_id'];
+            $postParams['role'] = $currentUser['role'];
+        }
         $result = $this->update($id, $postParams);
 
         if ($result['success']) {
+            if ($isOwnProfile) {
+                $_SESSION['user_name'] = trim($postParams['name']);
+                $_SESSION['user_email'] = strtolower(trim($postParams['email']));
+            }
             $_SESSION['success'] = 'User details updated successfully!';
             header('Location: index.php?route=users');
             exit;
