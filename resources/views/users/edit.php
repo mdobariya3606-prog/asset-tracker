@@ -264,7 +264,7 @@
         .btn-submit {
             flex: 1;
             padding: 14px;
-            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            background: linear-gradient(135deg, #8b5cf6, #7c3aed);
             color: #fff;
             border: none;
             border-radius: 12px;
@@ -290,7 +290,7 @@
 
         .btn-submit:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 24px rgba(59, 130, 246, 0.35);
+            box-shadow: 0 8px 24px rgba(124, 58, 237, 0.35);
         }
 
         .btn-submit:hover::before {

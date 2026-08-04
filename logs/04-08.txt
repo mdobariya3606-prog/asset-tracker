@@ -27,6 +27,26 @@
 
 - The dashboard refresh and cleanup changes are ready for an important-operation commit.
 
+## Password reset module
+
+- Added an admin-only `users/reset-password` GET/POST flow.
+- Added a dedicated reset-password form requiring a new password and confirmation, without requiring the old password.
+- Added a model method that stores the new password with `password_hash`.
+- Added a Reset Password action to the admin users table.
+- Verified syntax for all affected PHP files.
+- Local commit will be created; no remote push is authorized until explicitly requested.
+
+## User-list button layout
+
+- Fixed admin user-list action buttons by adding a wrapping action container, preventing button-label wrapping, and improving mobile alignment.
+- Updated the action layout to keep Edit, Reset Password, and Delete on one line; added table width/overflow support and centered non-wrapping department/designation badges for long names.
+
+## Button color refresh
+
+- Replaced primary blue button gradients across login, registration, edit, reset-password, users, departments, and designations views with a modern violet gradient (`#8b5cf6` to `#7c3aed`).
+- Preserved blue for informational links, focus states, and non-button branding accents.
+- Created a local commit (`Add admin password reset and refresh button styling`). It has not been pushed.
+
 ## Logging rule
 
 Record future implementation work, verification results, and Git actions in this file.

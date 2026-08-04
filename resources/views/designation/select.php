@@ -55,7 +55,7 @@
         }
         .logo-icon {
             width: 36px; height: 36px;
-            background: linear-gradient(135deg, var(--blue), var(--blue-dark));
+            background: linear-gradient(135deg, #8b5cf6, #7c3aed);
             border-radius: var(--radius-md);
             display: flex; align-items: center; justify-content: center;
             color: var(--white);
@@ -83,13 +83,13 @@
             border: none;
         }
         .btn-primary {
-            background: linear-gradient(135deg, var(--blue), var(--blue-dark));
+            background: linear-gradient(135deg, #8b5cf6, #7c3aed);
             color: #fff;
-            box-shadow: 0 2px 10px rgba(59,130,246,.3);
+            box-shadow: 0 2px 10px rgba(124,58,237,.3);
         }
         .btn-primary:hover {
             transform: translateY(-1px);
-            box-shadow: 0 6px 20px rgba(59,130,246,.4);
+            box-shadow: 0 6px 20px rgba(124,58,237,.4);
         }
         .btn-logout {
             background: #fef2f2;

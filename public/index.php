@@ -17,6 +17,7 @@ use App\Controllers\Designation\SelectDesignationController;
 use App\Controllers\User\CreateUserController;
 use App\Controllers\User\EditUserController;
 use App\Controllers\User\LoginController;
+use App\Controllers\User\ResetPasswordController;
 use App\Controllers\User\SelectUserController;
 
 /**
@@ -148,6 +149,19 @@ try {
 	// POST:users/edit - Process requested user changes
 	case 'POST:users/edit':
 		(new EditUserController($conn))->updateUser($_GET, $_POST);
+		break;
+
+	/* ------------------------------------------------------------------------
+	 * ROUTE GROUP: ADMIN PASSWORD RESET
+	 * ------------------------------------------------------------------------ */
+
+	// GET/POST:users/reset-password - Admin resets a user's password
+	case 'GET:users/reset-password':
+		(new ResetPasswordController($conn))->edit($_GET);
+		break;
+
+	case 'POST:users/reset-password':
+		(new ResetPasswordController($conn))->store($_GET, $_POST);
 		break;
 
 	/* ------------------------------------------------------------------------

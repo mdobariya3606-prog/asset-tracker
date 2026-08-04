@@ -33,6 +33,8 @@ function getSortIndicator(string $column, string $currentSort, string $currentOr
         :root {
             --blue:      #3b82f6;
             --blue-dark: #2563eb;
+            --accent:    #F2C7C7;
+            --accent-dark: #7c3aed;
             --cyan:      #06b6d4;
             --green:     #10b981;
             --red:       #ef4444;
@@ -201,6 +203,7 @@ function getSortIndicator(string $column, string $currentSort, string $currentOr
 
         table {
             width: 100%;
+            min-width: 1180px;
             border-collapse: collapse;
             text-align: left;
         }
@@ -208,6 +211,7 @@ function getSortIndicator(string $column, string $currentSort, string $currentOr
         th, td {
             padding: 16px 20px;
             border-bottom: 1px solid var(--slate-200);
+            vertical-align: middle;
         }
 
         th {
@@ -264,6 +268,11 @@ function getSortIndicator(string $column, string $currentSort, string $currentOr
         .badge-desig {
             background: #faf5ff; color: #6b21a8; border: 1px solid #e9d5ff;
         }
+        .user-department, .user-designation {
+            text-align: center;
+            white-space: nowrap;
+        }
+        .user-department .badge, .user-designation .badge { white-space: nowrap; }
         .badge-role-admin {
             background: #fef2f2; color: #991b1b; border: 1px solid #fecaca;
         }
@@ -286,6 +295,7 @@ function getSortIndicator(string $column, string $currentSort, string $currentOr
             text-decoration: none; cursor: pointer;
             transition: all .25s ease;
             border: none;
+            white-space: nowrap;
         }
         .btn svg {
             width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 2;
@@ -293,22 +303,31 @@ function getSortIndicator(string $column, string $currentSort, string $currentOr
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, var(--blue), var(--blue-dark));
+            background: linear-gradient(135deg, var(--accent), var(--accent-dark));
             color: #white; color: #fff;
-            box-shadow: 0 2px 10px rgba(59,130,246,.3);
+            box-shadow: 0 2px 10px rgba(124,58,237,.3);
         }
         .btn-primary:hover {
             transform: translateY(-1px);
-            box-shadow: 0 6px 20px rgba(59,130,246,.4);
+            box-shadow: 0 6px 20px rgba(124,58,237,.4);
         }
 
         .btn-secondary {
             background: var(--white);
-            color: var(--blue);
-            border: 1.5px solid #bfdbfe;
+            color: var(--accent-dark);
+            border: 1.5px solid #ddd6fe;
         }
         .btn-secondary:hover {
             background: #eff6ff;
+        }
+
+        .btn-warning {
+            background: #fffbeb;
+            color: #b45309;
+            border: 1.5px solid #fde68a;
+        }
+        .btn-warning:hover {
+            background: #fef3c7;
         }
 
         .btn-logout {
@@ -319,6 +338,15 @@ function getSortIndicator(string $column, string $currentSort, string $currentOr
         .btn-logout:hover {
             background: #fee2e2;
         }
+
+        .user-actions {
+            display: flex;
+            flex-wrap: nowrap;
+            gap: 8px;
+            justify-content: flex-end;
+        }
+
+        .user-actions .btn { flex: 0 0 auto; }
 
         /* ── Pagination Styling ── */
         .pagination-container {
@@ -433,6 +461,7 @@ function getSortIndicator(string $column, string $currentSort, string $currentOr
             .nav-user { width: 100%; justify-content: center; }
             .page-header { flex-direction: column; align-items: flex-start; }
             .header-actions { width: 100%; justify-content: flex-start; }
+            .user-actions { justify-content: flex-start; }
             th, td { padding: 12px 14px; }
         }
     </style>
@@ -608,12 +637,12 @@ function getSortIndicator(string $column, string $currentSort, string $currentOr
                             <td style="font-size: 13px; color: var(--slate-700); font-weight: 500;">
                                 <?= htmlspecialchars($user['mobile']) ?>
                             </td>
-                            <td>
+                            <td class="user-department">
                                 <span class="badge badge-dept">
                                     <?= htmlspecialchars($user['department_name'] ?? 'N/A') ?>
                                 </span>
                             </td>
-                            <td>
+                            <td class="user-designation">
                                 <span class="badge badge-desig">
                                     <?= htmlspecialchars($user['designation_name'] ?? 'N/A') ?>
                                 </span>
@@ -624,10 +653,13 @@ function getSortIndicator(string $column, string $currentSort, string $currentOr
                                 </span>
                             </td>
                             <?php if ($dashboardUserRole === 'ADMIN'): ?>
-                                <td style="text-align: right;">
-                                    <div style="display: flex; gap: 8px; justify-content: flex-end;">
+                                <td style="text-align: right; white-space: nowrap; min-width: 320px;">
+                                    <div class="user-actions">
                                         <a href="index.php?route=users/edit&id=<?= $user['id'] ?>" class="btn btn-secondary" style="padding: 6px 12px; font-size: 12px; min-height: auto;">
                                             Edit
+                                        </a>
+                                        <a href="index.php?route=users/reset-password&id=<?= $user['id'] ?>" class="btn btn-warning" style="padding: 6px 12px; font-size: 12px; min-height: auto;">
+                                            Reset Password
                                         </a>
                                         <a href="index.php?route=users/delete&id=<?= $user['id'] ?>" class="btn btn-logout" style="padding: 6px 12px; font-size: 12px; min-height: auto;" onclick="return confirm('Are you sure you want to delete this user?');">
                                             Delete

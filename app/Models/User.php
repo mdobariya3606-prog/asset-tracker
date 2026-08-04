@@ -62,6 +62,16 @@ class User
 		return $stmt->execute([$id]);
 	}
 
+	/** Reset a user's password without requiring the previous password. */
+	public function resetPassword(int $id, string $password): bool
+	{
+		$stmt = $this->conn->prepare('UPDATE users SET password = :password WHERE id = :id');
+		return $stmt->execute([
+			'password' => password_hash($password, PASSWORD_DEFAULT),
+			'id' => $id,
+		]);
+	}
+
 	public function validate(array $user, bool $isEdit = false, ?int $excludeId = null): array
 	{
 		$this->errors = [];
