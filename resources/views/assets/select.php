@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assets — AssetTracker</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!--    <style>-->
+    <!--        *, *::before, *::after {-->
+    <!--            box-sizing: border-box;-->
+    <!--            margin: 0;-->
+    <!--            padding: 0;-->
+    <!--        }-->
+    <!---->
+    <!--        :root {-->
+    <!--            --blue: #3b82f6;-->
+    <!--            --blue-dark: #2563eb;-->
+    <!--            --accent: #133458;-->
+    <!--            --accent-dark: #133458;-->
+    <!--            --cyan: #06b6d4;-->
+    <!--            --green: #10b981;-->
+    <!--            --red: #ef4444;-->
+    <!--            --slate-900: #0f172a;-->
+    <!--            --slate-800: #1e293b;-->
+    <!--            --slate-700: #334155;-->
+    <!--            --slate-600: #475569;-->
+    <!--            --slate-500: #64748b;-->
+    <!--            --slate-400: #94a3b8;-->
+    <!--            --slate-200: #e2e8f0;-->
+    <!--            --slate-100: #f1f5f9;-->
+    <!--            --slate-50: #f8fafc;-->
+    <!--            --white: #ffffff;-->
+    <!--            --shadow-sm: 0 1px 3px rgba(0, 0, 0, .08);-->
+    <!--            --shadow-md: 0 4px 16px rgba(0, 0, 0, .08);-->
+    <!--            --radius-sm: 10px;-->
+    <!--            --radius-md: 14px;-->
+    <!--            --radius-lg: 20px;-->
+    <!--        }-->
+    <!---->
+    <!--        body {-->
+    <!--            font-family: 'Inter', sans-serif;-->
+    <!--            min-height: 100vh;-->
+    <!--            background: var(--slate-100);-->
+    <!--            padding: 40px 20px 80px;-->
+    <!--            color: var(--slate-800);-->
+    <!--        }-->
+    <!---->
+    <!--        .page {-->
+    <!--            max-width: 1200px;-->
+    <!--            margin: 0 auto;-->
+    <!--        }-->
+    <!---->
+    <!--        .logo-icon svg {-->
+    <!--            width: 20px;-->
+    <!--            height: 20px;-->
+    <!--            stroke: #fff;-->
+    <!--            fill: none;-->
+    <!--            stroke-width: 2;-->
+    <!--        }-->
+    <!---->
+    <!--        .logo-text h1 {-->
+    <!--            font-size: 18px;-->
+    <!--            font-weight: 700;-->
+    <!--            color: var(--slate-900);-->
+    <!--            letter-spacing: -.3px;-->
+    <!--        }-->
+    <!---->
+    <!--        .logo-text span {-->
+    <!--            font-size: 11px;-->
+    <!--            color: var(--slate-400);-->
+    <!--            font-weight: 500;-->
+    <!--            text-transform: uppercase;-->
+    <!--            letter-spacing: .5px;-->
+    <!--        }-->
+    <!---->
+    <!--        .nav-links {-->
+    <!--            display: flex;-->
+    <!--            align-items: center;-->
+    <!--            gap: 16px;-->
+    <!--        }-->
+    <!---->
+    <!--        .nav-user {-->
+    <!--            display: flex;-->
+    <!--            align-items: center;-->
+    <!--            gap: 12px;-->
+    <!--        }-->
+    <!---->
+    <!--        .avatar-badge {-->
+    <!--            width: 36px;-->
+    <!--            height: 36px;-->
+    <!--            background: var(--slate-100);-->
+    <!--            border: 1.5px solid var(--slate-200);-->
+    <!--            color: var(--slate-700);-->
+    <!--            font-weight: 600;-->
+    <!--            font-size: 13px;-->
+    <!--            border-radius: 50%;-->
+    <!--            display: flex;-->
+    <!--            align-items: center;-->
+    <!--            justify-content: center;-->
+    <!--        }-->
+    <!---->
+    <!--        .nav-user-info {-->
+    <!--            display: flex;-->
+    <!--            flex-direction: column;-->
+    <!--            gap: 2px;-->
+    <!--            min-width: 0;-->
+    <!--        }-->
+    <!---->
+    <!--        .nav-user-name {-->
+    <!--            font-size: 13px;-->
+    <!--            font-weight: 600;-->
+    <!--            color: var(--slate-800);-->
+    <!--        }-->
+    <!---->
+    <!--        .nav-user-role {-->
+    <!--            font-size: 11px;-->
+    <!--            color: var(--slate-500);-->
+    <!--            font-weight: 600;-->
+    <!--            text-transform: uppercase;-->
+    <!--            letter-spacing: .5px;-->
+    <!--        }-->
+    <!---->
+    <!--        /* ── Alert Banner ── */-->
+    <!--        .alert-success {-->
+    <!--            background: #ecfdf5;-->
+    <!--            border: 1px solid #a7f3d0;-->
+    <!--            color: #065f46;-->
+    <!--            border-radius: var(--radius-md);-->
+    <!--            padding: 14px 18px;-->
+    <!--            font-size: 14px;-->
+    <!--            font-weight: 500;-->
+    <!--            margin-bottom: 24px;-->
+    <!--            display: flex;-->
+    <!--            align-items: center;-->
+    <!--            gap: 10px;-->
+    <!--            animation: slideDown 0.6s ease;-->
+    <!--        }-->
+    <!---->
+    <!--        .alert-success svg {-->
+    <!--            width: 20px;-->
+    <!--            height: 20px;-->
+    <!--            stroke: #34d399;-->
+    <!--            fill: none;-->
+    <!--            stroke-width: 2;-->
+    <!--        }-->
+    <!---->
+    <!--        .badge {-->
+    <!--            display: inline-flex;-->
+    <!--            align-items: center;-->
+    <!--            padding: 4px 10px;-->
+    <!--            border-radius: 99px;-->
+    <!--            font-size: 12px;-->
+    <!--            font-weight: 600;-->
+    <!--            background: var(--slate-100);-->
+    <!--            color: var(--slate-700);-->
+    <!--        }-->
+    <!---->
+    <!--        .btn {-->
+    <!--            display: inline-flex;-->
+    <!--            align-items: center;-->
+    <!--            gap: 6px;-->
+    <!--            padding: 9px 18px;-->
+    <!--            border-radius: var(--radius-sm);-->
+    <!--            font-family: inherit;-->
+    <!--            font-size: 13px;-->
+    <!--            font-weight: 600;-->
+    <!--            text-decoration: none;-->
+    <!--            cursor: pointer;-->
+    <!--            transition: all .25s ease;-->
+    <!--            border: none;-->
+    <!--        }-->
+    <!---->
+    <!--        .btn-primary {-->
+    <!--            background: linear-gradient(135deg, var(--accent), var(--accent-dark));-->
+    <!--            color: #fff;-->
+    <!--            box-shadow: 0 2px 10px rgba(19, 52, 88, .3);-->
+    <!--        }-->
+    <!---->
+    <!--        .btn-primary:hover {-->
+    <!--            transform: translateY(-1px);-->
+    <!--            box-shadow: 0 6px 20px rgba(19, 52, 88, .4);-->
+    <!--        }-->
+    <!---->
+    <!--        .btn-secondary {-->
+    <!--            background: var(--slate-100);-->
+    <!--            color: var(--slate-700);-->
+    <!--        }-->
+    <!---->
+    <!--        .btn-secondary:hover {-->
+    <!--            background: var(--slate-200);-->
+    <!--        }-->
+    <!---->
+    <!--        .btn-logout {-->
+    <!--            background: #fef2f2;-->
+    <!--            color: var(--red);-->
+    <!--            border: 1.5px solid #fecaca;-->
+    <!--        }-->
+    <!---->
+    <!--        .btn-logout:hover {-->
+    <!--            background: #fee2e2;-->
+    <!--        }-->
+    <!---->
+    <!--        .page-header {-->
+    <!--            display: flex;-->
+    <!--            align-items: center;-->
+    <!--            justify-content: space-between;-->
+    <!--            flex-wrap: wrap;-->
+    <!--            gap: 20px;-->
+    <!--            margin-bottom: 24px;-->
+    <!--        }-->
+    <!---->
+    <!--        .page-header h2 {-->
+    <!--            font-size: 24px;-->
+    <!--            font-weight: 700;-->
+    <!--            color: var(--slate-900);-->
+    <!--            letter-spacing: -.5px;-->
+    <!--        }-->
+    <!---->
+    <!--        .page-header p {-->
+    <!--            font-size: 14px;-->
+    <!--            color: var(--slate-500);-->
+    <!--            margin-top: 2px;-->
+    <!--        }-->
+    <!---->
+    <!--        .admin-tabs {-->
+    <!--            display: flex;-->
+    <!--            gap: 24px;-->
+    <!--            margin: 0 0 28px 0;-->
+    <!--            border-bottom: 1.5px solid var(--slate-200);-->
+    <!--            padding-bottom: 0;-->
+    <!--        }-->
+    <!---->
+    <!--        .tab-link {-->
+    <!--            padding: 10px 4px;-->
+    <!--            font-size: 14px;-->
+    <!--            font-weight: 600;-->
+    <!--            text-decoration: none;-->
+    <!--            color: var(--slate-500);-->
+    <!--            border-bottom: 3.5px solid transparent;-->
+    <!--            margin-bottom: -1.5px;-->
+    <!--            transition: all 0.2s ease;-->
+    <!--        }-->
+    <!---->
+    <!--        .tab-link:hover {-->
+    <!--            color: var(--slate-800);-->
+    <!--        }-->
+    <!---->
+    <!--        .tab-link.active {-->
+    <!--            color: var(--blue);-->
+    <!--            border-color: var(--blue);-->
+    <!--        }-->
+    <!---->
+    <!--        .card {-->
+    <!--            background: var(--white);-->
+    <!--            border: 1px solid var(--slate-200);-->
+    <!--            border-radius: var(--radius-lg);-->
+    <!--            box-shadow: var(--shadow-md);-->
+    <!--            overflow: hidden;-->
+    <!--        }-->
+    <!---->
+    <!--        table {-->
+    <!--            width: 100%;-->
+    <!--            border-collapse: collapse;-->
+    <!--            text-align: left;-->
+    <!--        }-->
+    <!---->
+    <!--        th, td {-->
+    <!--            padding: 16px 20px;-->
+    <!--            border-bottom: 1px solid var(--slate-200);-->
+    <!--            font-size: 14px;-->
+    <!--            vertical-align: middle;-->
+    <!--        }-->
+    <!---->
+    <!--        th {-->
+    <!--            background: var(--slate-50);-->
+    <!--            color: var(--slate-600);-->
+    <!--            font-weight: 600;-->
+    <!--            text-transform: uppercase;-->
+    <!--            font-size: 12px;-->
+    <!--            letter-spacing: .5px;-->
+    <!--        }-->
+    <!---->
+    <!--        td {-->
+    <!--            color: var(--slate-800);-->
+    <!--            font-weight: 500;-->
+    <!--        }-->
+    <!---->
+    <!--        tr:last-child td {-->
+    <!--            border-bottom: none;-->
+    <!--        }-->
+    <!---->
+    <!--        .pill {-->
+    <!--            display: inline-flex;-->
+    <!--            align-items: center;-->
+    <!--            justify-content: center;-->
+    <!--            padding: 5px 10px;-->
+    <!--            border-radius: 999px;-->
+    <!--            font-size: 12px;-->
+    <!--            font-weight: 700;-->
+    <!--            text-transform: uppercase;-->
+    <!--            letter-spacing: .04em;-->
+    <!--        }-->
+    <!---->
+    <!--        .pill-available {-->
+    <!--            background: #ecfdf3;-->
+    <!--            color: #047857;-->
+    <!--        }-->
+    <!---->
+    <!--        .pill-assigned {-->
+    <!--            background: #eff6ff;-->
+    <!--            color: #2563eb;-->
+    <!--        }-->
+    <!---->
+    <!--        .pill-repair {-->
+    <!--            background: #fff7ed;-->
+    <!--            color: #c2410c;-->
+    <!--        }-->
+    <!---->
+    <!--        .pill-lost {-->
+    <!--            background: #fef2f2;-->
+    <!--            color: #dc2626;-->
+    <!--        }-->
+    <!---->
+    <!--        .pill-scrap {-->
+    <!--            background: #f5f3ff;-->
+    <!--            color: #7c3aed;-->
+    <!--        }-->
+    <!---->
+    <!--        .asset-name-link {-->
+    <!--            color: var(--blue);-->
+    <!--            text-decoration: none;-->
+    <!--            font-weight: 600;-->
+    <!--        }-->
+    <!---->
+    <!--        .asset-name-link:hover {-->
+    <!--            text-decoration: underline;-->
+    <!--        }-->
+    <!---->
+    <!--        .empty-state {-->
+    <!--            padding: 48px 20px;-->
+    <!--            text-align: center;-->
+    <!--            color: var(--slate-500);-->
+    <!--        }-->
+    <!--    </style>-->
+    <link rel="stylesheet" href="../resources/css/style.css">
+</head>
+<body>
+<div class="page">
+    <?php include '../resources/views/layouts/header.php'; ?>
+
+    <nav class="admin-tabs">
+        <a href="index.php?route=users" class="tab-link">Users</a>
+        <a href="index.php?route=departments" class="tab-link">Departments</a>
+        <a href="index.php?route=designations" class="tab-link">Designations</a>
+        <a href="index.php?route=assets" class="tab-link active">Assets</a>
+    </nav>
+
+    <div class="page-header">
+        <div>
+            <h2>Assets</h2>
+            <p>Manage office assets, availability, and requests from one place.</p>
+        </div>
+        <?php if ($canManageAssets ?? false): ?>
+            <a class="btn btn-primary" href="index.php?route=assets/create">Add Asset</a>
+        <?php endif; ?>
+    </div>
+
+    <!-- Success Message Banner -->
+    <?php
+    if (isset($_SESSION['success'])): ?>
+        <div class="alert-success">
+            <svg viewBox="0 0 24 24">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                <polyline points="22 4 12 14.01 9 11.01"/>
+            </svg>
+            <div><?= htmlspecialchars($_SESSION['success']) ?></div>
+        </div>
+        <?php unset($_SESSION['success']);
+    endif;
+    ?>
+
+    <div class="card">
+        <table>
+            <thead>
+            <tr>
+                <th>Asset ID</th>
+                <th>Asset Name</th>
+                <th>Status</th>
+            </tr>
+            </thead>
+            <tbody>
+            <?php if (empty($assets ?? [])): ?>
+                <tr>
+                    <td colspan="3" class="empty-state">No assets found yet.</td>
+                </tr>
+            <?php else: ?>
+                <?php foreach ($assets ?? [] as $asset): ?>
+                    <tr>
+                        <td><?= htmlspecialchars($asset['id'] ?? '') ?></td>
+                        <td><a class="asset-name-link"
+                               href="index.php?route=assets/show&id=<?= (int)($asset['id'] ?? 0) ?>"><?= htmlspecialchars($asset['name'] ?? '') ?></a>
+                        </td>
+                        <td>
+                            <?php $status = strtolower((string)($asset['status'] ?? '')); ?>
+                            <span class="pill pill-<?= htmlspecialchars($status === '' ? 'available' : $status) ?>"><?= htmlspecialchars($asset['status'] ?? '') ?></span>
+                        </td>
+                    </tr>
+                <?php endforeach; ?>
+            <?php endif; ?>
+            </tbody>
+        </table>
+    </div>
+</div>
+</body>
+</html>
