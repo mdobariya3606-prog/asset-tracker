@@ -2,9 +2,9 @@
 
 namespace App\Controllers\User;
 
-use App\Models\User;
 use App\Models\Department;
 use App\Models\Designation;
+use App\Models\User;
 use PDO;
 
 class SelectUserController
@@ -28,13 +28,7 @@ class SelectUserController
 
 		// Render dashboard identity and access controls from the latest database
 		// record instead of relying on values saved at sign-in.
-		$dashboardUser = $this->userModel->find((int) $_SESSION['user_id'])[0] ?? null;
-		if ($dashboardUser === null) {
-			session_unset();
-			$_SESSION['login_error'] = 'Your account is no longer available.';
-			header('Location: index.php?route=login');
-			exit;
-		}
+		$dashboardUser = $this->userModel->dashboardUser();
 		$dashboardUserRole = strtoupper($dashboardUser['role'] ?? 'EMPLOYEE');
 
 		$search = trim($getParams['search'] ?? '');
@@ -64,7 +58,7 @@ class SelectUserController
 
 		$totalUsers = $this->userModel->count($search, $departmentId, $designationId);
 		$totalPages = (int)ceil($totalUsers / $perPage);
-		
+
 		if ($page > $totalPages && $totalPages > 0) {
 			$page = $totalPages;
 		}
@@ -79,8 +73,6 @@ class SelectUserController
 			}
 		}
 
-		$success = $_SESSION['success'] ?? null;
-		unset($_SESSION['success']);
 		require '../resources/views/users/select.php';
 	}
 }

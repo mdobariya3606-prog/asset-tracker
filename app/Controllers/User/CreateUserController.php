@@ -10,21 +10,82 @@ class CreateUserController
 	private PDO $conn;
 	private User $user;
 
-	public function __construct(PDO $conn) {
+	public function __construct(PDO $conn)
+	{
 		$this->conn = $conn;
 		$this->user = new User($conn);
 	}
 
-	public function showForm(): array {
-		return [
-			'departments' => $this->getDepartments(),
-			'designations' => $this->getDesignations(),
-		];
+	public function store(array $postData)
+	{
+		try {
+			if (empty($_SESSION['user_id'])) {
+				$_SESSION['login_error'] = 'Please sign in to add users.';
+				header('Location: index.php?route=login');
+				exit;
+			}
+			if (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'EMPLOYEE') {
+				require '../resources/views/errors/403.php';
+				exit;
+			}
+
+			// Separate file data from post data
+			$file = $_FILES['profile_image'] ?? null;
+			$result = $this->register($postData);
+			if ($result['success']) {
+				$userId = $result['user_id'];
+				// Handle profile image upload if provided
+				if ($file && $file['error'] === UPLOAD_ERR_OK) {
+					$allowed = ['image/jpeg', 'image/png', 'image/webp'];
+					$maxSize = 2 * 1024 * 1024; // 2 MB
+					if (!in_array($file['type'], $allowed, true)) {
+						$result['success'] = false;
+						$result['errors']['profile_image'] = 'Invalid file type. Allowed: jpg, jpeg, png, webp.';
+					} elseif ($file['size'] > $maxSize) {
+						$result['success'] = false;
+						$result['errors']['profile_image'] = 'File exceeds maximum size of 2 MB.';
+					} else {
+						$ext = pathinfo($file['name'], PATHINFO_EXTENSION);
+						$filename = "profile_{$userId}." . strtolower($ext);
+						$dest = __DIR__ . '/../../../storage/profile_images/' . $filename;
+						if (!move_uploaded_file($file['tmp_name'], $dest)) {
+							$result['success'] = false;
+							$result['errors']['profile_image'] = 'Failed to move uploaded file.';
+						} else {
+							// Update user with image filename
+							$this->user->update($userId, ['profile_image' => $filename]);
+						}
+					}
+				}
+				if ($result['success']) {
+					$_SESSION['success'] = 'User registered successfully!';
+					header('Location: index.php?route=users');
+					exit;
+				}
+			}
+			// On failure, re‑display form with errors
+			$errors = $result['errors'];
+			$old = $result['old'];
+			// Log errors for debugging
+			$this->logError('User registration errors: ' . json_encode($errors));
+			$formData = $this->showForm();
+			$departments = $formData['departments'];
+			$designations = $formData['designations'];
+			$roleOptions = $formData['role_options'];
+			require '../resources/views/users/register.php';
+		} catch (\Exception $e) {
+			$this->logError('Exception in store: ' . $e->getMessage());
+			$_SESSION['login_error'] = 'An unexpected error occurred.';
+			header('Location: index.php?route=users/create');
+			exit;
+		}
 	}
 
-	public function register(array $data): array {
+	public function register(array $data): array
+	{
 		$errors = $this->user->validate($data);
-
+		$roleErrors = $this->validateAssignedRole($data);
+		$errors = array_merge($errors, $roleErrors);
 		if (!empty($errors)) {
 			return [
 				'success' => false,
@@ -32,9 +93,8 @@ class CreateUserController
 				'old' => $data,
 			];
 		}
-
+		// Create user without profile image first to obtain id
 		$userId = $this->user->create($data);
-
 		return [
 			'success' => true,
 			'errors' => [],
@@ -42,7 +102,54 @@ class CreateUserController
 		];
 	}
 
-	public function create() {
+	private function validateAssignedRole(array $data): array
+	{
+		$allowedRoles = array_column($this->getRoleOptions(), 'value');
+		$selectedRole = strtoupper(trim($data['role'] ?? 'EMPLOYEE'));
+
+		if (empty($allowedRoles)) {
+			return [];
+		}
+
+		if (!in_array($selectedRole, $allowedRoles, true)) {
+			return ['role' => 'You are not allowed to assign this role.'];
+		}
+
+		return [];
+	}
+
+	private function getRoleOptions(): array
+	{
+		$viewerRole = strtoupper($_SESSION['user_role'] ?? 'EMPLOYEE');
+
+		if ($viewerRole === 'ADMIN') {
+			return [
+				['value' => 'EMPLOYEE', 'label' => 'Employee'],
+				['value' => 'MANAGER', 'label' => 'Manager'],
+				['value' => 'HR', 'label' => 'HR'],
+				['value' => 'ADMIN', 'label' => 'Admin'],
+			];
+		}
+
+		if ($viewerRole === 'MANAGER') {
+			return [
+				['value' => 'EMPLOYEE', 'label' => 'Employee'],
+				['value' => 'MANAGER', 'label' => 'Manager'],
+				['value' => 'HR', 'label' => 'HR'],
+			];
+		}
+
+		if ($viewerRole === 'HR') {
+			return [
+				['value' => 'EMPLOYEE', 'label' => 'Employee'],
+			];
+		}
+
+		return [];
+	}
+
+	public function create()
+	{
 		if (empty($_SESSION['user_id'])) {
 			$_SESSION['login_error'] = 'Please sign in to add users.';
 			header('Location: index.php?route=login');
@@ -52,53 +159,49 @@ class CreateUserController
 			require '../resources/views/errors/403.php';
 			exit;
 		}
-
 		$formData = $this->showForm();
 		$departments = $formData['departments'];
 		$designations = $formData['designations'];
+		$roleOptions = $formData['role_options'];
 		$errors = [];
 		$old = [];
 		$success = $_SESSION['success'] ?? null;
 		unset($_SESSION['success']);
-
 		require '../resources/views/users/register.php';
 	}
 
-	public function store(array $postData) {
-		if (empty($_SESSION['user_id'])) {
-			$_SESSION['login_error'] = 'Please sign in to add users.';
-			header('Location: index.php?route=login');
-			exit;
-		}
-		if (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'EMPLOYEE') {
-			require '../resources/views/errors/403.php';
-			exit;
-		}
-
-		$result = $this->register($postData);
-
-		if ($result['success']) {
-			$_SESSION['success'] = 'User registered successfully!';
-			header('Location: index.php?route=users');
-			exit;
-		}
-
-		$errors = $result['errors'];
-		$old = $result['old'];
-		$formData = $this->showForm();
-		$departments = $formData['departments'];
-		$designations = $formData['designations'];
-
-		require '../resources/views/users/register.php';
+	public function showForm(): array
+	{
+		return [
+			'departments' => $this->getDepartments(),
+			'designations' => $this->getDesignations(),
+			'role_options' => $this->getRoleOptions(),
+		];
 	}
 
-	private function getDepartments(): array {
+	private function getDepartments(): array
+	{
 		$stmt = $this->conn->query('SELECT * FROM departments');
 		return $stmt->fetchAll(PDO::FETCH_ASSOC);
 	}
 
-	private function getDesignations(): array {
+	private function getDesignations(): array
+	{
 		$stmt = $this->conn->query('SELECT * FROM designations');
 		return $stmt->fetchAll(PDO::FETCH_ASSOC);
 	}
+
+	private function logError(string $message): void
+	{
+		$logFile = __DIR__ . '/../../../logs/errors.log';
+		$date = date('c');
+		$line = "[{$date}] {$message}" . PHP_EOL;
+		// Ensure logs directory exists
+		if (!is_dir(dirname($logFile))) {
+			@mkdir(dirname($logFile), 0777, true);
+		}
+		@file_put_contents($logFile, $line, FILE_APPEND);
+	}
 }
+
+?>

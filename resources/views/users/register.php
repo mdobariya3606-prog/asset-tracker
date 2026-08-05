@@ -6,7 +6,11 @@
     <title>Register User — AssetTracker</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
 
         body {
             font-family: 'Inter', sans-serif;
@@ -20,13 +24,11 @@
             overflow-x: hidden;
         }
 
-
-
         .register-container {
             position: relative;
             z-index: 1;
             width: 100%;
-            max-width: 580px;
+            max-width: 760px;
         }
 
         .card {
@@ -55,7 +57,8 @@
         }
 
         .card-header .icon svg {
-            width: 28px; height: 28px;
+            width: 28px;
+            height: 28px;
             fill: none;
             stroke: #fff;
             stroke-width: 2;
@@ -76,7 +79,6 @@
             margin-top: 6px;
         }
 
-        /* Success alert */
         .alert-success {
             background: #ecfdf5;
             border: 1px solid #a7f3d0;
@@ -93,16 +95,25 @@
         }
 
         .alert-success svg {
-            width: 20px; height: 20px; flex-shrink: 0;
-            stroke: #34d399; fill: none; stroke-width: 2;
+            width: 20px;
+            height: 20px;
+            flex-shrink: 0;
+            stroke: #34d399;
+            fill: none;
+            stroke-width: 2;
         }
 
         @keyframes slideDown {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
-        /* Form grid */
         .form-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -140,7 +151,8 @@
             left: 14px;
             top: 50%;
             transform: translateY(-50%);
-            width: 18px; height: 18px;
+            width: 18px;
+            height: 18px;
             stroke: #94a3b8;
             fill: none;
             stroke-width: 2;
@@ -169,7 +181,7 @@
 
         .form-group select {
             padding-right: 40px;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='rgba(255,255,255,0.4)' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 6l4 4 4-4'/%3E%3C/svg%3E");
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 6l4 4 4-4'/%3E%3C/svg%3E");
             background-repeat: no-repeat;
             background-position: right 14px center;
             cursor: pointer;
@@ -196,7 +208,6 @@
             stroke: #3b82f6;
         }
 
-        /* Error state */
         .form-group.has-error input,
         .form-group.has-error select {
             border-color: #f87171;
@@ -219,11 +230,14 @@
         }
 
         .error-text svg {
-            width: 14px; height: 14px; flex-shrink: 0;
-            stroke: #f87171; fill: none; stroke-width: 2;
+            width: 14px;
+            height: 14px;
+            flex-shrink: 0;
+            stroke: #f87171;
+            fill: none;
+            stroke-width: 2;
         }
 
-        /* Password toggle */
         .pass-toggle {
             position: absolute;
             right: 14px;
@@ -237,9 +251,11 @@
         }
 
         .pass-toggle svg {
-            width: 18px; height: 18px;
+            width: 18px;
+            height: 18px;
             stroke: #94a3b8;
-            fill: none; stroke-width: 2;
+            fill: none;
+            stroke-width: 2;
             transition: stroke 0.2s;
         }
 
@@ -247,12 +263,11 @@
             stroke: #475569;
         }
 
-        /* Submit button */
         .btn-submit {
             width: 100%;
             padding: 14px;
             margin-top: 8px;
-            background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+            background: #133458;
             color: #fff;
             border: none;
             border-radius: 12px;
@@ -270,7 +285,7 @@
             content: '';
             position: absolute;
             inset: 0;
-            background: linear-gradient(135deg, transparent, rgba(255,255,255,0.15), transparent);
+            background: linear-gradient(135deg, transparent, rgba(255, 255, 255, 0.15), transparent);
             transform: translateX(-100%);
             transition: transform 0.5s ease;
         }
@@ -288,7 +303,6 @@
             transform: translateY(0);
         }
 
-        /* Footer link */
         .form-footer {
             text-align: center;
             margin-top: 24px;
@@ -312,18 +326,24 @@
             color: #2563eb;
         }
 
-        /* Responsive */
         @media (max-width: 600px) {
-            .card { padding: 32px 24px; }
-            .form-grid { grid-template-columns: 1fr; }
-            .card-header h1 { font-size: 22px; }
+            .card {
+                padding: 32px 24px;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .card-header h1 {
+                font-size: 22px;
+            }
         }
     </style>
 </head>
 <body>
 <div class="register-container">
     <div class="card">
-
         <div class="card-header">
             <div class="icon">
                 <svg viewBox="0 0 24 24">
@@ -339,67 +359,82 @@
 
         <?php if (!empty($success)): ?>
             <div class="alert-success">
-                <svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                <svg viewBox="0 0 24 24">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                    <polyline points="22 4 12 14.01 9 11.01"/>
+                </svg>
                 <?php echo htmlspecialchars($success); ?>
             </div>
         <?php endif; ?>
 
-        <form action="index.php?route=users/create" method="post" novalidate>
+        <form action="index.php?route=users/create" method="post" enctype="multipart/form-data" novalidate>
             <div class="form-grid">
-
-                <!-- Name -->
                 <div class="form-group full-width <?php echo isset($errors['name']) ? 'has-error' : ''; ?>">
                     <label for="name">Full Name <span class="required">*</span></label>
                     <div class="input-wrapper">
-                        <input type="text" name="name" id="name"
-                               placeholder="Enter full name"
+                        <input type="text" name="name" id="name" placeholder="Enter full name"
                                value="<?php echo htmlspecialchars($old['name'] ?? ''); ?>">
-                        <svg class="input-icon" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                        <svg class="input-icon" viewBox="0 0 24 24">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                            <circle cx="12" cy="7" r="4"/>
+                        </svg>
                     </div>
                     <?php if (isset($errors['name'])): ?>
                         <div class="error-text">
-                            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                            <svg viewBox="0 0 24 24">
+                                <circle cx="12" cy="12" r="10"/>
+                                <line x1="12" y1="8" x2="12" y2="12"/>
+                                <line x1="12" y1="16" x2="12.01" y2="16"/>
+                            </svg>
                             <?php echo htmlspecialchars($errors['name']); ?>
                         </div>
                     <?php endif; ?>
                 </div>
 
-                <!-- Email -->
                 <div class="form-group full-width <?php echo isset($errors['email']) ? 'has-error' : ''; ?>">
                     <label for="email">Email Address <span class="required">*</span></label>
                     <div class="input-wrapper">
-                        <input type="email" name="email" id="email"
-                               placeholder="name@company.com"
+                        <input type="email" name="email" id="email" placeholder="name@company.com"
                                value="<?php echo htmlspecialchars($old['email'] ?? ''); ?>">
-                        <svg class="input-icon" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                        <svg class="input-icon" viewBox="0 0 24 24">
+                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                            <polyline points="22,6 12,13 2,6"/>
+                        </svg>
                     </div>
                     <?php if (isset($errors['email'])): ?>
                         <div class="error-text">
-                            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                            <svg viewBox="0 0 24 24">
+                                <circle cx="12" cy="12" r="10"/>
+                                <line x1="12" y1="8" x2="12" y2="12"/>
+                                <line x1="12" y1="16" x2="12.01" y2="16"/>
+                            </svg>
                             <?php echo htmlspecialchars($errors['email']); ?>
                         </div>
                     <?php endif; ?>
                 </div>
 
-                <!-- Mobile -->
                 <div class="form-group <?php echo isset($errors['mobile']) ? 'has-error' : ''; ?>">
                     <label for="mobile">Mobile <span class="required">*</span></label>
                     <div class="input-wrapper">
-                        <input type="text" name="mobile" id="mobile"
-                               placeholder="10-digit number"
-                               value="<?php echo htmlspecialchars($old['mobile'] ?? ''); ?>"
-                               maxlength="10">
-                        <svg class="input-icon" viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+                        <input type="text" name="mobile" id="mobile" placeholder="10-digit number"
+                               value="<?php echo htmlspecialchars($old['mobile'] ?? ''); ?>" maxlength="10">
+                        <svg class="input-icon" viewBox="0 0 24 24">
+                            <rect x="5" y="2" width="14" height="20" rx="2" ry="2"/>
+                            <line x1="12" y1="18" x2="12.01" y2="18"/>
+                        </svg>
                     </div>
                     <?php if (isset($errors['mobile'])): ?>
                         <div class="error-text">
-                            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                            <svg viewBox="0 0 24 24">
+                                <circle cx="12" cy="12" r="10"/>
+                                <line x1="12" y1="8" x2="12" y2="12"/>
+                                <line x1="12" y1="16" x2="12.01" y2="16"/>
+                            </svg>
                             <?php echo htmlspecialchars($errors['mobile']); ?>
                         </div>
                     <?php endif; ?>
                 </div>
 
-                <!-- Department -->
                 <div class="form-group <?php echo isset($errors['department_id']) ? 'has-error' : ''; ?>">
                     <label for="department_id">Department <span class="required">*</span></label>
                     <div class="input-wrapper">
@@ -407,22 +442,28 @@
                             <option value="">Select department</option>
                             <?php foreach ($departments ?? [] as $department): ?>
                                 <option value="<?php echo $department['id']; ?>"
-                                    <?php echo (isset($old['department_id']) && $old['department_id'] == $department['id']) ? 'selected' : ''; ?>>
+                                        <?php echo (isset($old['department_id']) && $old['department_id'] == $department['id']) ? 'selected' : ''; ?>>
                                     <?php echo htmlspecialchars($department['name']); ?>
                                 </option>
                             <?php endforeach; ?>
                         </select>
-                        <svg class="input-icon" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                        <svg class="input-icon" viewBox="0 0 24 24">
+                            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                            <polyline points="9 22 9 12 15 12 15 22"/>
+                        </svg>
                     </div>
                     <?php if (isset($errors['department_id'])): ?>
                         <div class="error-text">
-                            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                            <svg viewBox="0 0 24 24">
+                                <circle cx="12" cy="12" r="10"/>
+                                <line x1="12" y1="8" x2="12" y2="12"/>
+                                <line x1="12" y1="16" x2="12.01" y2="16"/>
+                            </svg>
                             <?php echo htmlspecialchars($errors['department_id']); ?>
                         </div>
                     <?php endif; ?>
                 </div>
 
-                <!-- Designation -->
                 <div class="form-group <?php echo isset($errors['designation_id']) ? 'has-error' : ''; ?>">
                     <label for="designation_id">Designation <span class="required">*</span></label>
                     <div class="input-wrapper">
@@ -430,99 +471,144 @@
                             <option value="">Select designation</option>
                             <?php foreach ($designations ?? [] as $designation): ?>
                                 <option value="<?php echo $designation['id']; ?>"
-                                    <?php echo (isset($old['designation_id']) && $old['designation_id'] == $designation['id']) ? 'selected' : ''; ?>>
+                                        <?php echo (isset($old['designation_id']) && $old['designation_id'] == $designation['id']) ? 'selected' : ''; ?>>
                                     <?php echo htmlspecialchars($designation['name']); ?>
                                 </option>
                             <?php endforeach; ?>
                         </select>
-                        <svg class="input-icon" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+                        <svg class="input-icon" viewBox="0 0 24 24">
+                            <rect x="2" y="7" width="20" height="14" rx="2" ry="2"/>
+                            <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
+                        </svg>
                     </div>
                     <?php if (isset($errors['designation_id'])): ?>
                         <div class="error-text">
-                            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                            <svg viewBox="0 0 24 24">
+                                <circle cx="12" cy="12" r="10"/>
+                                <line x1="12" y1="8" x2="12" y2="12"/>
+                                <line x1="12" y1="16" x2="12.01" y2="16"/>
+                            </svg>
                             <?php echo htmlspecialchars($errors['designation_id']); ?>
                         </div>
                     <?php endif; ?>
                 </div>
 
-                <!-- Role -->
                 <div class="form-group <?php echo isset($errors['role']) ? 'has-error' : ''; ?>">
                     <label for="role">Role <span class="required">*</span></label>
                     <div class="input-wrapper">
                         <select name="role" id="role">
-                            <option value="EMPLOYEE" <?php echo (isset($old['role']) && strtoupper($old['role']) == 'EMPLOYEE') ? 'selected' : ''; ?>>Employee</option>
-                            <option value="MANAGER" <?php echo (isset($old['role']) && strtoupper($old['role']) == 'MANAGER') ? 'selected' : ''; ?>>Manager</option>
-                            <option value="HR" <?php echo (isset($old['role']) && strtoupper($old['role']) == 'HR') ? 'selected' : ''; ?>>HR</option>
-                            <option value="ADMIN" <?php echo (isset($old['role']) && strtoupper($old['role']) == 'ADMIN') ? 'selected' : ''; ?>>Admin</option>
+                            <?php foreach ($roleOptions ?? [] as $roleOption): ?>
+                                <option value="<?php echo htmlspecialchars($roleOption['value']); ?>"
+                                        <?php echo (isset($old['role']) && strtoupper($old['role']) == strtoupper($roleOption['value'])) ? 'selected' : ''; ?>>
+                                    <?php echo htmlspecialchars($roleOption['label']); ?>
+                                </option>
+                            <?php endforeach; ?>
                         </select>
-                        <svg class="input-icon" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                        <svg class="input-icon" viewBox="0 0 24 24">
+                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                        </svg>
                     </div>
                     <?php if (isset($errors['role'])): ?>
                         <div class="error-text">
-                            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                            <svg viewBox="0 0 24 24">
+                                <circle cx="12" cy="12" r="10"/>
+                                <line x1="12" y1="8" x2="12" y2="12"/>
+                                <line x1="12" y1="16" x2="12.01" y2="16"/>
+                            </svg>
                             <?php echo htmlspecialchars($errors['role']); ?>
                         </div>
                     <?php endif; ?>
                 </div>
 
-                <!-- Password -->
                 <div class="form-group <?php echo isset($errors['password']) ? 'has-error' : ''; ?>">
                     <label for="password">Password <span class="required">*</span></label>
                     <div class="input-wrapper">
-                        <input type="password" name="password" id="password"
-                               placeholder="Min 6 characters">
-                        <svg class="input-icon" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                        <input type="password" name="password" id="password" placeholder="Min 6 characters">
+                        <svg class="input-icon" viewBox="0 0 24 24">
+                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                        </svg>
                         <button type="button" class="pass-toggle" onclick="togglePassword('password', this)">
-                            <svg viewBox="0 0 24 24" class="eye-open"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                            <svg viewBox="0 0 24 24" class="eye-closed" style="display:none"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+                            <svg viewBox="0 0 24 24" class="eye-open">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                                <circle cx="12" cy="12" r="3"/>
+                            </svg>
+                            <svg viewBox="0 0 24 24" class="eye-closed" style="display:none">
+                                <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/>
+                                <line x1="1" y1="1" x2="23" y2="23"/>
+                            </svg>
                         </button>
                     </div>
                     <?php if (isset($errors['password'])): ?>
                         <div class="error-text">
-                            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                            <svg viewBox="0 0 24 24">
+                                <circle cx="12" cy="12" r="10"/>
+                                <line x1="12" y1="8" x2="12" y2="12"/>
+                                <line x1="12" y1="16" x2="12.01" y2="16"/>
+                            </svg>
                             <?php echo htmlspecialchars($errors['password']); ?>
                         </div>
                     <?php endif; ?>
                 </div>
 
-                <!-- Confirm Password -->
                 <div class="form-group <?php echo isset($errors['confirm_password']) ? 'has-error' : ''; ?>">
                     <label for="confirm_password">Confirm Password <span class="required">*</span></label>
                     <div class="input-wrapper">
                         <input type="password" name="confirm_password" id="confirm_password"
                                placeholder="Re-enter password">
-                        <svg class="input-icon" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                        <svg class="input-icon" viewBox="0 0 24 24">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                        </svg>
                         <button type="button" class="pass-toggle" onclick="togglePassword('confirm_password', this)">
-                            <svg viewBox="0 0 24 24" class="eye-open"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                            <svg viewBox="0 0 24 24" class="eye-closed" style="display:none"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+                            <svg viewBox="0 0 24 24" class="eye-open">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                                <circle cx="12" cy="12" r="3"/>
+                            </svg>
+                            <svg viewBox="0 0 24 24" class="eye-closed" style="display:none">
+                                <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/>
+                                <line x1="1" y1="1" x2="23" y2="23"/>
+                            </svg>
                         </button>
                     </div>
                     <?php if (isset($errors['confirm_password'])): ?>
                         <div class="error-text">
-                            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                            <svg viewBox="0 0 24 24">
+                                <circle cx="12" cy="12" r="10"/>
+                                <line x1="12" y1="8" x2="12" y2="12"/>
+                                <line x1="12" y1="16" x2="12.01" y2="16"/>
+                            </svg>
                             <?php echo htmlspecialchars($errors['confirm_password']); ?>
                         </div>
                     <?php endif; ?>
                 </div>
 
-                <!-- Submit -->
-                <div class="full-width">
-                    <button type="submit" class="btn-submit">
-                        Create Account
-                    </button>
+                <div class="form-group full-width <?php echo isset($errors['profile_image']) ? 'has-error' : ''; ?>">
+                    <label for="profile_image">Profile Image (optional)</label>
+                    <div class="input-wrapper">
+                        <input type="file" name="profile_image" id="profile_image" accept=".png,.jpg,.jpeg,.webp">
+                    </div>
+                    <?php if (isset($errors['profile_image'])): ?>
+                        <div class="error-text">
+                            <svg viewBox="0 0 24 24">
+                                <circle cx="12" cy="12" r="10"/>
+                                <line x1="12" y1="8" x2="12" y2="12"/>
+                                <line x1="12" y1="16" x2="12.01" y2="16"/>
+                            </svg>
+                            <?php echo htmlspecialchars($errors['profile_image']); ?>
+                        </div>
+                    <?php endif; ?>
                 </div>
 
+                <div class="full-width">
+                    <button type="submit" class="btn-submit">Create Account</button>
+                </div>
             </div>
         </form>
 
         <div class="form-footer">
-            <span>Already have an account? <a href="index.php?route=login">Sign in</a></span>
-            &nbsp;·&nbsp;
             <span><a href="index.php?route=users">View all users</a></span>
-            &nbsp;·&nbsp;
-            <span><a href="index.php?route=users/bulk-create">Add Multiple Users</a></span>
         </div>
-
     </div>
 </div>
 

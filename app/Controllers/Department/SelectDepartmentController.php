@@ -3,11 +3,12 @@
 namespace App\Controllers\Department;
 
 use App\Models\Department;
+use App\Models\User;
 
 class SelectDepartmentController
 {
 	private \PDO $conn;
-	private Department  $department;
+	private Department $department;
 
 	public function __construct(\PDO $conn)
 	{
@@ -15,18 +16,11 @@ class SelectDepartmentController
 		$this->department = new Department($conn);
 	}
 
-	public function all() {
-		return $this->department->all();
-	}
-
-	public function index(array $getParams) {
+	public function index(array $getParams)
+	{
 		if (empty($_SESSION['user_id'])) {
 			$_SESSION['login_error'] = 'Please sign in to view departments.';
 			header('Location: index.php?route=login');
-			exit;
-		}
-		if (empty($_SESSION['user_role']) || $_SESSION['user_role'] !== 'ADMIN') {
-			require '../resources/views/errors/403.php';
 			exit;
 		}
 		if (isset($getParams['id'])) {
@@ -37,6 +31,17 @@ class SelectDepartmentController
 		} else {
 			$departments = $this->department->all();
 		}
+
+		// Render dashboard identity and access controls from the latest database
+		// record instead of relying on values saved at sign-in.
+		$dashboardUser = (new User($this->conn))->dashboardUser();
+		$dashboardUserRole = strtoupper($dashboardUser['role'] ?? 'EMPLOYEE');
+
 		require '../resources/views/departments/select.php';
+	}
+
+	public function all()
+	{
+		return $this->department->all();
 	}
 }

@@ -10,6 +10,8 @@
 session_start();
 
 use App\Config\Database;
+use App\Controllers\Asset\CreateAssetController;
+use App\Controllers\Asset\SelectAssetController;
 use App\Controllers\Department\CreateDepartmentController;
 use App\Controllers\Department\SelectDepartmentController;
 use App\Controllers\Designation\CreateDesignationController;
@@ -17,8 +19,10 @@ use App\Controllers\Designation\SelectDesignationController;
 use App\Controllers\User\CreateUserController;
 use App\Controllers\User\EditUserController;
 use App\Controllers\User\LoginController;
+use App\Controllers\User\ProfileController;
 use App\Controllers\User\ResetPasswordController;
 use App\Controllers\User\SelectUserController;
+use App\Models\Asset;
 
 /**
  * ============================================================================
@@ -46,7 +50,7 @@ $conn = (new Database())->getConnection();
 // The session retains authentication state; name, email, and role are refreshed
 // from the database for every authenticated request.
 if (!empty($_SESSION['user_id'])) {
-	$currentUser = (new \App\Models\User($conn))->find((int) $_SESSION['user_id'])[0] ?? null;
+	$currentUser = (new \App\Models\User($conn))->find((int)$_SESSION['user_id'])[0] ?? null;
 	if ($currentUser === null) {
 		session_unset();
 	} else {
@@ -77,150 +81,206 @@ $route = $_GET['route'] ?? '';
 
 try {
 	switch ("$method:$route") {
+		// GET:/index - Send visitors to the appropriate landing page
+		case 'GET:':
+			header('Location: index.php?route=' . (empty($_SESSION['user_id']) ? 'login' : 'users'));
+			exit;
 
-	/* ------------------------------------------------------------------------
-	 * ROUTE GROUP: DEPARTMENT VIEWS
-	 * ------------------------------------------------------------------------ */
+		/* ------------------------------------------------------------------------
+		 * ROUTE GROUP: DEPARTMENT VIEWS
+		 * ------------------------------------------------------------------------ */
 
-	// GET:departments - View department list or details of a single department
-	case 'GET:departments':
-		(new SelectDepartmentController($conn))->index($_GET);
-		break;
+		// GET:departments - View department list or details of a single department
+		case 'GET:departments':
+			(new SelectDepartmentController($conn))->index($_GET);
+			break;
 
-	/* ------------------------------------------------------------------------
-	 * ROUTE GROUP: DESIGNATION VIEWS
-	 * ------------------------------------------------------------------------ */
+		/* ------------------------------------------------------------------------
+		 * ROUTE GROUP: DESIGNATION VIEWS
+		 * ------------------------------------------------------------------------ */
 
-	// GET:designations - View designation list or details of a single designation
-	case 'GET:designations':
-		(new SelectDesignationController($conn))->index($_GET);
-		break;
+		// GET:designations - View designation list or details of a single designation
+		case 'GET:designations':
+			(new SelectDesignationController($conn))->index($_GET);
+			break;
 
-	/* ------------------------------------------------------------------------
-	 * ROUTE GROUP: USER VIEWS (PAGINATED LIST)
-	 * ------------------------------------------------------------------------ */
+		/* ------------------------------------------------------------------------
+		 * ROUTE GROUP: USER VIEWS (PAGINATED LIST)
+		 * ------------------------------------------------------------------------ */
 
-	// GET:users - Display paginated, filterable, and sorted list of users
-	case 'GET:users':
-		(new SelectUserController($conn))->index($_GET);
-		break;
+		// GET:users - Display paginated, filterable, and sorted list of users
+		case 'GET:users':
+			(new SelectUserController($conn))->index($_GET);
+			break;
 
-	/* ------------------------------------------------------------------------
-	 * ROUTE GROUP: DEPARTMENT CREATION (GET FORM)
-	 * ------------------------------------------------------------------------ */
+		/* ------------------------------------------------------------------------
+		 * ROUTE GROUP: ASSET VIEWS
+		 * ------------------------------------------------------------------------ */
 
-	// GET:departments/create - Render the department creation form
-	case 'GET:departments/create':
-		(new CreateDepartmentController($conn))->create();
-		break;
+		case 'GET:assets':
+			(new SelectAssetController($conn))->index();
+			break;
 
-	/* ------------------------------------------------------------------------
-	 * ROUTE GROUP: DESIGNATION CREATION (GET FORM)
-	 * ------------------------------------------------------------------------ */
+		case 'GET:assets/show':
+			(new SelectAssetController($conn))->show((int)($_GET['id'] ?? 0));
+			break;
 
-	// GET:designations/create - Render the designation creation form
-	case 'GET:designations/create':
-		(new CreateDesignationController($conn))->create();
-		break;
+		case 'GET:assets/create':
+			(new CreateAssetController($conn))->create();
+			break;
 
-	/* ------------------------------------------------------------------------
-	 * ROUTE GROUP: USER CREATION (GET FORM & POST ACTIONS)
-	 * ------------------------------------------------------------------------ */
+		case 'POST:assets/create':
+			(new CreateAssetController($conn))->store($_POST);
+			break;
 
-	// GET:users/create - Render user registration form with departments and designations
-	case 'GET:users/create':
-		(new CreateUserController($conn))->create();
-		break;
+		case 'GET:assets/edit':
+			(new CreateAssetController($conn))->edit((int)($_GET['id'] ?? 0));
+			break;
 
-	// POST:users/create - Handle submission of user registration form
-	case 'POST:users/create':
-		(new CreateUserController($conn))->store($_POST);
-		break;
+		case 'GET:assets/edit/v1':
+			(new CreateAssetController($conn))->edit2((int)($_GET['id'] ?? 0));
+			break;
 
-	/* ------------------------------------------------------------------------
-	 * ROUTE GROUP: USER MODIFICATION (GET & POST ACTIONS)
-	 * ------------------------------------------------------------------------ */
+		case 'POST:assets/edit':
+			(new CreateAssetController($conn))->update((int)($_GET['id'] ?? 0), $_POST);
+			break;
 
-	// GET:users/edit - Render edit user form loaded with existing values
-	case 'GET:users/edit':
-		(new EditUserController($conn))->edit($_GET);
-		break;
+		case 'GET:assets/delete':
+			(new CreateAssetController($conn))->delete((int)($_GET['id'] ?? 0));
+			break;
 
-	// POST:users/edit - Process requested user changes
-	case 'POST:users/edit':
-		(new EditUserController($conn))->updateUser($_GET, $_POST);
-		break;
+		case 'GET:assets/request':
+			$asset = (new Asset($conn))->find((int)($_GET['id'] ?? 0));
+			if (empty($asset) || strtoupper((string)($asset['status'] ?? '')) !== 'AVAILABLE') {
+				$_SESSION['login_error'] = 'This asset is not available for request.';
+				header('Location: index.php?route=assets');
+				exit;
+			}
+			$_SESSION['success'] = 'Asset request submitted successfully.';
+			header('Location: index.php?route=assets');
+			exit;
 
-	/* ------------------------------------------------------------------------
-	 * ROUTE GROUP: ADMIN PASSWORD RESET
-	 * ------------------------------------------------------------------------ */
+		/* ------------------------------------------------------------------------
+		 * ROUTE GROUP: DEPARTMENT CREATION (GET FORM)
+		 * ------------------------------------------------------------------------ */
 
-	// GET/POST:users/reset-password - Admin resets a user's password
-	case 'GET:users/reset-password':
-		(new ResetPasswordController($conn))->edit($_GET);
-		break;
+		// GET:departments/create - Render the department creation form
+		case 'GET:departments/create':
+			(new CreateDepartmentController($conn))->create();
+			break;
 
-	case 'POST:users/reset-password':
-		(new ResetPasswordController($conn))->store($_GET, $_POST);
-		break;
+		/* ------------------------------------------------------------------------
+		 * ROUTE GROUP: DESIGNATION CREATION (GET FORM)
+		 * ------------------------------------------------------------------------ */
 
-	/* ------------------------------------------------------------------------
-	 * ROUTE GROUP: USER DELETION
-	 * ------------------------------------------------------------------------ */
+		// GET:designations/create - Render the designation creation form
+		case 'GET:designations/create':
+			(new CreateDesignationController($conn))->create();
+			break;
 
-	// GET:users/delete - Permanently deletes a single user
-	case 'GET:users/delete':
-		(new EditUserController($conn))->destroy($_GET);
-		break;
+		/* ------------------------------------------------------------------------
+		 * ROUTE GROUP: USER CREATION (GET FORM & POST ACTIONS)
+		 * ------------------------------------------------------------------------ */
 
-	/* ------------------------------------------------------------------------
-	 * ROUTE GROUP: FORM SUBMISSIONS (DEPARTMENTS & DESIGNATIONS)
-	 * ------------------------------------------------------------------------ */
+		// GET:users/create - Render user registration form with departments and designations
+		case 'GET:users/create':
+			(new CreateUserController($conn))->create();
+			break;
 
-	// POST:designations/create - Store a newly created designation
-	case 'POST:designations/create':
-		(new CreateDesignationController($conn))->store($_POST);
-		break;
+		// POST:users/create - Handle submission of user registration form
+		case 'POST:users/create':
+			(new CreateUserController($conn))->store($_POST);
+			break;
 
-	// POST:departments/create - Store a newly created department
-	case 'POST:departments/create':
-		(new CreateDepartmentController($conn))->store($_POST);
-		break;
+		/* ------------------------------------------------------------------------
+		 * ROUTE GROUP: USER MODIFICATION (GET & POST ACTIONS)
+		 * ------------------------------------------------------------------------ */
 
-	/* ------------------------------------------------------------------------
-	 * ROUTE GROUP: AUTHENTICATION FLOW (LOGIN & LOGOUT)
-	 * ------------------------------------------------------------------------ */
+		// GET:users/edit - Render edit user form loaded with existing values
+		case 'GET:users/edit':
+			(new EditUserController($conn))->edit($_GET);
+			break;
 
-	// GET:login - Render the user login form page
-	case 'GET:login':
-		(new LoginController($conn))->showLoginForm();
-		break;
+		// POST:users/edit - Process requested user changes
+		case 'POST:users/edit':
+			(new EditUserController($conn))->updateUser($_GET, $_POST);
+			break;
 
-	// POST:login - Process login credentials and authenticate user
-	case 'POST:login':
-		(new LoginController($conn))->login($_POST);
-		break;
+		// GET:users/profile - Display a user's profile and admin actions
+		case 'GET:users/profile':
+			(new ProfileController($conn))->show($_GET);
+			break;
 
-	// GET:logout - Ends the user session and redirects to login
-	case 'GET:logout':
-		(new LoginController($conn))->signout();
-		break;
+		/* ------------------------------------------------------------------------
+		 * ROUTE GROUP: ADMIN PASSWORD RESET
+		 * ------------------------------------------------------------------------ */
 
-	/* ------------------------------------------------------------------------
-	 * ROUTE GROUP: FALLBACK DEFAULTS
-	 * ------------------------------------------------------------------------ */
+		// GET/POST:users/reset-password - Admin resets a user's password
+		case 'GET:users/reset-password':
+			(new ResetPasswordController($conn))->edit($_GET);
+			break;
 
-	// Default fallback for layout requests that match no routes (404 Page Not Found)
-	default:
-		require '../resources/views/errors/404.php';
-		break;
+		case 'POST:users/reset-password':
+			(new ResetPasswordController($conn))->store($_GET, $_POST);
+			break;
+
+		/* ------------------------------------------------------------------------
+		 * ROUTE GROUP: USER DELETION
+		 * ------------------------------------------------------------------------ */
+
+		// GET:users/delete - Permanently deletes a single user
+		case 'GET:users/delete':
+			(new EditUserController($conn))->destroy($_GET);
+			break;
+
+		/* ------------------------------------------------------------------------
+		 * ROUTE GROUP: FORM SUBMISSIONS (DEPARTMENTS & DESIGNATIONS)
+		 * ------------------------------------------------------------------------ */
+
+		// POST:designations/create - Store a newly created designation
+		case 'POST:designations/create':
+			(new CreateDesignationController($conn))->store($_POST);
+			break;
+
+		// POST:departments/create - Store a newly created department
+		case 'POST:departments/create':
+			(new CreateDepartmentController($conn))->store($_POST);
+			break;
+
+		/* ------------------------------------------------------------------------
+		 * ROUTE GROUP: AUTHENTICATION FLOW (LOGIN & LOGOUT)
+		 * ------------------------------------------------------------------------ */
+
+		// GET:login - Render the user login form page
+		case 'GET:login':
+			(new LoginController($conn))->showLoginForm();
+			break;
+
+		// POST:login - Process login credentials and authenticate user
+		case 'POST:login':
+			(new LoginController($conn))->login($_POST);
+			break;
+
+		// GET:logout - Ends the user session and redirects to login
+		case 'GET:logout':
+			(new LoginController($conn))->signout();
+			break;
+
+		/* ------------------------------------------------------------------------
+		 * ROUTE GROUP: FALLBACK DEFAULTS
+		 * ------------------------------------------------------------------------ */
+
+		// Default fallback for layout requests that match no routes (404 Page Not Found)
+		default:
+			require '../resources/views/errors/404.php';
+			break;
 	}
 } catch (\Throwable $e) {
 	/**
 	 * ============================================================================
 	 * SECTION 6: GLOBAL EXCEPTION HANDLING
 	 * ============================================================================
-	 * Catches all unhandled exceptions, logs detailed traces internally, and 
+	 * Catches all unhandled exceptions, logs detailed traces internally, and
 	 * displays a generic 500 server error view to the user.
 	 */
 	error_log($e->getMessage() . "\n" . $e->getTraceAsString());

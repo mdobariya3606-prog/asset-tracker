@@ -18,8 +18,6 @@ class ResetPasswordController
 
     public function edit(array $getParams): void
     {
-        $this->authorizeAdmin();
-
         $id = (int) ($getParams['id'] ?? 0);
         $user = $this->user->find($id)[0] ?? null;
         if ($user === null) {
@@ -27,6 +25,8 @@ class ResetPasswordController
             header('Location: index.php?route=users');
             exit;
         }
+
+        $this->authorizePrivileged($user['role'] ?? 'EMPLOYEE');
 
         $errors = [];
         $old = [];
@@ -35,8 +35,6 @@ class ResetPasswordController
 
     public function store(array $getParams, array $postParams): void
     {
-        $this->authorizeAdmin();
-
         $id = (int) ($getParams['id'] ?? 0);
         $user = $this->user->find($id)[0] ?? null;
         if ($user === null) {
@@ -44,6 +42,8 @@ class ResetPasswordController
             header('Location: index.php?route=users');
             exit;
         }
+
+        $this->authorizePrivileged($user['role'] ?? 'EMPLOYEE');
 
         $password = (string) ($postParams['password'] ?? '');
         $confirmation = (string) ($postParams['password_confirmation'] ?? '');
@@ -73,16 +73,38 @@ class ResetPasswordController
         exit;
     }
 
-    private function authorizeAdmin(): void
+    private function authorizePrivileged(string $targetRole): void
     {
         if (empty($_SESSION['user_id'])) {
             $_SESSION['login_error'] = 'Please sign in to reset a password.';
             header('Location: index.php?route=login');
             exit;
         }
-        if (($_SESSION['user_role'] ?? '') !== 'ADMIN') {
-            require '../resources/views/errors/403.php';
-            exit;
+
+        $viewerRole = strtoupper($_SESSION['user_role'] ?? 'EMPLOYEE');
+        $targetRole = strtoupper($targetRole);
+
+        if ($viewerRole === 'ADMIN') {
+            return;
         }
+
+        if ($viewerRole === 'MANAGER') {
+            if ($targetRole === 'ADMIN') {
+                require '../resources/views/errors/403.php';
+                exit;
+            }
+            return;
+        }
+
+        if ($viewerRole === 'HR') {
+            if (in_array($targetRole, ['ADMIN', 'MANAGER'], true)) {
+                require '../resources/views/errors/403.php';
+                exit;
+            }
+            return;
+        }
+
+        require '../resources/views/errors/403.php';
+        exit;
     }
 }
