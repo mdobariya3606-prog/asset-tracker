@@ -14,15 +14,37 @@
         <!-- ========================= -->
         <div class="card-header">
             <div class="icon">
-                <?php if (!empty($assetData['profile_image'])): ?>
-                    <img src="../storage/profile_images/<?= htmlspecialchars($assetData['profile_image']) ?>"
-                         alt="Profile image">
-                <?php else: ?>
-                    <svg viewBox="0 0 24 24">
-                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
-                        <path d="M18.5 2.5a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4Z"/>
-                    </svg>
-                <?php endif; ?>
+                <svg xmlns="http://www.w3.org/2000/svg"
+                     width="24"
+                     height="24"
+                     viewBox="0 0 24 24"
+                     fill="none"
+                     stroke="currentColor"
+                     stroke-width="2"
+                     stroke-linecap="round"
+                     stroke-linejoin="round">
+
+                    <!-- Main Department -->
+                    <rect x="9" y="3" width="6" height="4" rx="1"/>
+
+                    <!-- Connection -->
+                    <path d="M12 7v3"/>
+                    <path d="M6 10h12"/>
+
+                    <!-- Sub Departments -->
+                    <rect x="3" y="10" width="6" height="4" rx="1"/>
+                    <rect x="15" y="10" width="6" height="4" rx="1"/>
+
+                    <!-- Bottom Connections -->
+                    <path d="M6 14v3"/>
+                    <path d="M18 14v3"/>
+                    <path d="M6 17h12"/>
+
+                    <!-- Teams -->
+                    <rect x="3" y="17" width="6" height="4" rx="1"/>
+                    <rect x="15" y="17" width="6" height="4" rx="1"/>
+
+                </svg>
             </div>
             <h1>Add New Department</h1>
         </div>
