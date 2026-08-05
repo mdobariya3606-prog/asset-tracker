@@ -1,0 +1,124 @@
+<style>
+    /* ── Navigation / Header ── */
+    .navbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: var(--white);
+        border: 1px solid var(--slate-200);
+        border-radius: var(--radius-md);
+        padding: 16px 24px;
+        box-shadow: var(--shadow-sm);
+        margin-bottom: 32px;
+    }
+
+    .logo-section {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .logo-icon {
+        width: 40px;
+        height: 40px;
+        background: linear-gradient(135deg, var(--blue), var(--cyan));
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 12px rgba(59, 130, 246, .25);
+    }
+
+    .logo-icon svg {
+        width: 20px;
+        height: 20px;
+        stroke: #fff;
+        fill: none;
+        stroke-width: 2;
+    }
+
+    .logo-text h1 {
+        font-size: 18px;
+        font-weight: 700;
+        color: var(--slate-900);
+        letter-spacing: -.3px;
+    }
+
+    .logo-text span {
+        font-size: 11px;
+        color: var(--slate-400);
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: .5px;
+    }
+
+    .nav-user {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+    }
+
+    .avatar-badge {
+        width: 36px;
+        height: 36px;
+        background: var(--slate-100);
+        border: 1.5px solid var(--slate-200);
+        color: var(--slate-700);
+        font-weight: 600;
+        font-size: 13px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+</style>
+
+<!-- Navbar -->
+<header class="navbar">
+    <div class="logo-section">
+        <div class="logo-icon">
+            <svg viewBox="0 0 24 24">
+                <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+            </svg>
+        </div>
+        <div class="logo-text">
+            <h1>AssetTracker</h1>
+            <span>System Administration</span>
+        </div>
+    </div>
+
+    <div class="nav-user">
+        <?php if (!empty($dashboardUser)): ?>
+            <div class="avatar-badge">
+                <?php if (!empty($dashboardUser['profile_image'])): ?>
+                    <img src="../storage/profile_images/<?= htmlspecialchars($dashboardUser['profile_image']) ?>"
+                         alt="<?= htmlspecialchars($dashboardUser['name']) ?> profile image"
+                         style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%; display: block;">
+                <?php else: ?>
+                    <?= strtoupper(substr($dashboardUser['name'], 0, 1)) ?>
+                <?php endif; ?>
+            </div>
+            <div style="text-align: left; line-height: 1.2;">
+                <div style="font-weight: 600; font-size: 13px; color: var(--slate-800);"><?= htmlspecialchars($dashboardUser['name']) ?></div>
+                <div style="font-size: 11px; color: var(--slate-500);"><?= htmlspecialchars($dashboardUser['email']) ?></div>
+            </div>
+            <a href="index.php?route=users/edit&id=<?= (int)$dashboardUser['id'] ?>" class="btn btn-secondary"
+               style="padding: 6px 12px; font-size: 12px;">
+                <svg viewBox="0 0 24 24" style="width:14px;height:14px;">
+                    <circle cx="12" cy="8" r="4"/>
+                    <path d="M4 21a8 8 0 0 1 16 0"/>
+                </svg>
+                Profile
+            </a>
+            <a href="index.php?route=logout" class="btn btn-logout" style="padding: 6px 12px; font-size: 12px;">
+                <svg viewBox="0 0 24 24" style="width:14px;height:14px;">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                    <polyline points="16 17 21 12 16 7"/>
+                    <line x1="21" y1="12" x2="9" y2="12"/>
+                </svg>
+                Sign out
+            </a>
+        <?php endif; ?>
+    </div>
+</header>
