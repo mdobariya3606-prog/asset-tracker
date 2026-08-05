@@ -72,6 +72,15 @@ class Asset
 
 	public function validate(array $asset, ?int $excludeId = null): array
 	{
+		try {
+			$category_ids = $this->conn->query('select id from categories')->fetchAll(PDO::FETCH_COLUMN);
+			$vendor_ids = $this->conn->query('select id from vendors')->fetchAll(PDO::FETCH_COLUMN);
+		} catch (\Exception $e) {
+			$this->logError($e->getMessage());
+			require '../resources/views/errors/500.php';
+			exit();
+		}
+
 		$normalized = $this->normalizeInput($asset);
 		$errors = [];
 		$requiredFields = ['name', 'category_id', 'brand', 'model', 'serial_number', 'purchase_date', 'warranty_date', 'vendor_id', 'cost', 'status'];
@@ -90,6 +99,10 @@ class Asset
 			$errors['category_id'] = 'Category is not valid.';
 		}
 
+		if (empty($errors['category_id']) && !in_array((int)$normalized['category_id'], $category_ids, true)) {
+			$errors['category_id'] = 'Category is not valid.';
+		}
+
 		if (($normalized['brand'] ?? '') !== '' && mb_strlen($normalized['brand']) > 100) {
 			$errors['brand'] = 'Brand must not exceed 100 characters.';
 		}
@@ -99,6 +112,10 @@ class Asset
 		}
 
 		if (($normalized['vendor_id'] ?? '') !== '' && !is_numeric($normalized['vendor_id'])) {
+			$errors['vendor_id'] = 'Vendor is not valid.';
+		}
+
+		if (empty($errors['vendor_id']) && !in_array((int)$normalized['vendor_id'], $vendor_ids, true)) {
 			$errors['vendor_id'] = 'Vendor is not valid.';
 		}
 
@@ -137,6 +154,19 @@ class Asset
 		}
 
 		return $errors;
+	}
+
+	private function logError(string $message): void
+	{
+		$logFile = '../logs/errors.log';
+		$date = date('c');
+		$line = "[{$date}] {$message}" . PHP_EOL;
+
+		if (!is_dir(dirname($logFile))) {
+			@mkdir(dirname($logFile), 0777, true);
+		}
+
+		@file_put_contents($logFile, $line, FILE_APPEND);
 	}
 
 	private function isValidDate(string $value): bool
