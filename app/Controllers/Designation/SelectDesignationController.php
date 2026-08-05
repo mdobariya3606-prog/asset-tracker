@@ -37,6 +37,8 @@ class SelectDesignationController
 		$dashboardUser = (new User($this->conn))->dashboardUser();
 		$dashboardUserRole = strtoupper($dashboardUser['role'] ?? 'EMPLOYEE');
 
+		$role = $_SESSION['user_role'];
+
 		require '../resources/views/designation/select.php';
 	}
 
