@@ -17,6 +17,7 @@
         <a href="index.php?route=departments" class="tab-link active">Departments</a>
         <a href="index.php?route=designations" class="tab-link">Designations</a>
         <a href="index.php?route=assets" class="tab-link">Assets</a>
+        <a href="index.php?route=requests" class="tab-link">Requests</a>
     </nav>
 
     <!-- Success Message Banner -->

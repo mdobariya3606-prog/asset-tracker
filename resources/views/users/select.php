@@ -45,8 +45,9 @@ function getSortIndicator(string $column, string $currentSort, string $currentOr
         <a href="index.php?route=departments" class="tab-link">Departments</a>
         <a href="index.php?route=designations" class="tab-link">Designations</a>
         <a href="index.php?route=assets" class="tab-link">Assets</a>
+        <a href="index.php?route=requests" class="tab-link">Requests</a>
     </nav>
-    
+
 
     <!-- Success Message Banner -->
     <?php

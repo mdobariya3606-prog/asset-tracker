@@ -12,6 +12,7 @@ session_start();
 use App\Config\Database;
 use App\Controllers\Asset\CreateAssetController;
 use App\Controllers\Asset\SelectAssetController;
+use App\Controllers\Asset_request\RequestAssetController;
 use App\Controllers\Department\CreateDepartmentController;
 use App\Controllers\Department\SelectDepartmentController;
 use App\Controllers\Designation\CreateDesignationController;
@@ -23,6 +24,7 @@ use App\Controllers\User\ProfileController;
 use App\Controllers\User\ResetPasswordController;
 use App\Controllers\User\SelectUserController;
 use App\Models\Asset;
+use App\Models\AssetRequest;
 
 /**
  * ============================================================================
@@ -137,10 +139,6 @@ try {
 			(new CreateAssetController($conn))->edit((int)($_GET['id'] ?? 0));
 			break;
 
-		case 'GET:assets/edit/v1':
-			(new CreateAssetController($conn))->edit2((int)($_GET['id'] ?? 0));
-			break;
-
 		case 'POST:assets/edit':
 			(new CreateAssetController($conn))->update((int)($_GET['id'] ?? 0), $_POST);
 			break;
@@ -152,13 +150,26 @@ try {
 		case 'GET:assets/request':
 			$asset = (new Asset($conn))->find((int)($_GET['id'] ?? 0));
 			if (empty($asset) || strtoupper((string)($asset['status'] ?? '')) !== 'AVAILABLE') {
-				$_SESSION['login_error'] = 'This asset is not available for request.';
+				$_SESSION['general'] = 'Asset #' . $asset['id'] . ' is not available for request.';
 				header('Location: index.php?route=assets');
 				exit;
 			}
-			$_SESSION['success'] = 'Asset request submitted successfully.';
-			header('Location: index.php?route=assets');
-			exit;
+
+			(new AssetRequest($conn))->create($asset);
+//			$_SESSION['success'] = 'Asset request submitted successfully.';
+//			header('Location: index.php?route=assets');
+			break;
+
+		case 'POST:assets/request':
+			$asset = (new Asset($conn))->find((int)($_GET['id'] ?? 0));
+			if (empty($asset) || strtoupper((string)($asset['status'] ?? '')) !== 'AVAILABLE') {
+				$_SESSION['general'] = 'Asset #' . $asset['id'] . ' is not available for request.';
+				header('Location: index.php?route=assets');
+				exit;
+			}
+
+			(new RequestAssetController($conn))->store($_GET['id'], $_POST);
+			break;
 
 		/* ------------------------------------------------------------------------
 		 * ROUTE GROUP: DEPARTMENT CREATION (GET FORM)
@@ -285,5 +296,6 @@ try {
 	 */
 	error_log($e->getMessage() . "\n" . $e->getTraceAsString());
 	require '../resources/views/errors/500.php';
+//	throw $e;
 	exit;
 }

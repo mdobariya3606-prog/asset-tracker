@@ -1,0 +1,12 @@
+[2026-08-05T16:19:42+05:30] PDOException: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'asset_tracker.vensdors' doesn't exist in C:\xampp\htdocs\AssetTracker\app\Models\Asset.php:77
+Stack trace:
+#0 C:\xampp\htdocs\AssetTracker\app\Models\Asset.php(77): PDO->query('select id from ...')
+#1 C:\xampp\htdocs\AssetTracker\app\Controllers\Asset\CreateAssetController.php(168): App\Models\Asset->validate(Array, 16)
+#2 C:\xampp\htdocs\AssetTracker\public\index.php(142): App\Controllers\Asset\CreateAssetController->update(16, Array)
+#3 {main}
+[2026-08-05T16:19:47+05:30] PDOException: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'asset_tracker.vensdors' doesn't exist in C:\xampp\htdocs\AssetTracker\app\Models\Asset.php:77
+Stack trace:
+#0 C:\xampp\htdocs\AssetTracker\app\Models\Asset.php(77): PDO->query('select id from ...')
+#1 C:\xampp\htdocs\AssetTracker\app\Controllers\Asset\CreateAssetController.php(168): App\Models\Asset->validate(Array, 16)
+#2 C:\xampp\htdocs\AssetTracker\public\index.php(142): App\Controllers\Asset\CreateAssetController->update(16, Array)
+#3 {main}
