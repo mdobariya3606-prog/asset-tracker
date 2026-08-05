@@ -111,7 +111,7 @@ class CreateAssetController
 
 		$asset = $this->asset->find($id);
 		if (empty($asset)) {
-			$_SESSION['login_error'] = 'Asset not found.';
+			$_SESSION['general'] = 'Asset #' . $asset['id'] . ' is not found.';
 			header('Location: index.php?route=assets');
 			exit;
 		}
