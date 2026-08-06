@@ -157,14 +157,8 @@ try {
 			break;
 
 		case 'GET:assets/request':
-			$asset = (new Asset($conn))->find((int)($_GET['id'] ?? 0));
-			if (empty($asset) || strtoupper((string)($asset['status'] ?? '')) !== 'AVAILABLE') {
-				$_SESSION['general'] = 'Asset #' . $asset['id'] . ' is not available for request.';
-				header('Location: index.php?route=assets');
-				exit;
-			}
+			(new AssetRequest($conn))->create($_GET['id']);
 
-			(new AssetRequest($conn))->create($asset);
 //			$_SESSION['success'] = 'Asset request submitted successfully.';
 //			header('Location: index.php?route=assets');
 			break;
