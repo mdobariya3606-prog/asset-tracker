@@ -21,8 +21,8 @@
         <!-- ========================= -->
         <div class="card-header">
             <div class="icon">
-                <?php if (!empty($assetData['profile_image'])): ?>
-                    <img src="../storage/profile_images/<?= htmlspecialchars($assetData['profile_image']) ?>"
+                <?php if (!empty($assetRequest['profile_image'])): ?>
+                    <img src="../storage/profile_images/<?= htmlspecialchars($assetRequest['profile_image']) ?>"
                          alt="Profile image">
                 <?php else: ?>
                     <svg viewBox="0 0 24 24">
@@ -61,7 +61,7 @@
                     <label for="name">Asset Name <span class="required">*</span></label>
                     <div class="input-wrapper">
                         <input type="text" name="name" id="name" placeholder="ex. Dell OptiPlex 7010"
-                               value="<?php echo htmlspecialchars($old['name'] ?? $assetData['name'] ?? ''); ?>">
+                               value="<?php echo htmlspecialchars($old['name'] ?? $assetRequest['name'] ?? ''); ?>">
                         <svg class="input-icon" viewBox="0 0 24 24">
                             <path d="M20 7 12 3 4 7v10l8 4 8-4V7z"/>
                             <path d="M12 21V11"/>
@@ -87,7 +87,7 @@
                     <label for="name">Serial Number <span class="required">*</span></label>
                     <div class="input-wrapper">
                         <input type="text" id="serial_number" name="serial_number" placeholder="ex. DOPT7010SN15"
-                               value="<?= htmlspecialchars($old['serial_number'] ?? $assetData['serial_number'] ?? '') ?>">
+                               value="<?= htmlspecialchars($old['serial_number'] ?? $assetRequest['serial_number'] ?? '') ?>">
 
                         <svg class="input-icon" viewBox="0 0 24 24">
                             <path d="M20 7 12 3 4 7v10l8 4 8-4V7z"/>
@@ -115,7 +115,7 @@
                     <label for="email">Brand <span class="required">*</span></label>
                     <div class="input-wrapper">
                         <input type="text" name="brand" id="brand" placeholder="ex. Dell"
-                               value="<?php echo htmlspecialchars($old['brand'] ?? $assetData['brand'] ?? ''); ?>">
+                               value="<?php echo htmlspecialchars($old['brand'] ?? $assetRequest['brand'] ?? ''); ?>">
                         <svg class="input-icon" viewBox="0 0 24 24">
                             <circle cx="12" cy="8" r="6"/>
                             <path d="M8.5 14 7 22l5-3 5 3-1.5-8"/>
@@ -139,7 +139,7 @@
                     <label for="model">Model <span class="required">*</span></label>
                     <div class="input-wrapper">
                         <input type="text" name="model" id="model" placeholder="ex. OptiPlex 7010"
-                               value="<?php echo htmlspecialchars($old['model'] ?? $assetData['model'] ?? ''); ?>">
+                               value="<?php echo htmlspecialchars($old['model'] ?? $assetRequest['model'] ?? ''); ?>">
                         <svg class="input-icon" viewBox="0 0 24 24">
                             <rect x="7" y="7" width="10" height="10" rx="1"/>
                             <path d="M9 1v3M15 1v3M9 20v3M15 20v3"/>
@@ -164,7 +164,7 @@
                     <div class="input-wrapper">
                         <select id="category_id" name="category_id">
                             <option value="">Select Category</option>
-                            <?php $selectedCategory = (int)($assetData['category_id'] ?? 0); ?>
+                            <?php $selectedCategory = (int)($assetRequest['category_id'] ?? 0); ?>
                             <?php foreach ($categories ?? [] as $category): ?>
                                 <option value="<?= (int)$category['id'] ?>" <?= $selectedCategory === (int)$category['id'] ? 'selected' : '' ?>><?= htmlspecialchars($category['name']) ?></option>
                             <?php endforeach; ?>
@@ -191,7 +191,7 @@
                     <div class="input-wrapper">
                         <select id="vendor_id" name="vendor_id">
                             <option value="">Select Vendor</option>
-                            <?php $selectedVendor = (int)($assetData['vendor_id'] ?? 0); ?>
+                            <?php $selectedVendor = (int)($assetRequest['vendor_id'] ?? 0); ?>
                             <?php foreach ($vendors ?? [] as $vendor): ?>
                                 <option value="<?= (int)$vendor['id'] ?>" <?= $selectedVendor === (int)$vendor['id'] ? 'selected' : '' ?>><?= htmlspecialchars($vendor['name']) ?></option>
                             <?php endforeach; ?>
@@ -221,7 +221,7 @@
                     <div class="input-wrapper">
                         <select name="status" id="status">
                             <option value="">Select Status</option>
-                            <?php $currentStat = $assetData['status'] ?? 'AVAILABLE'; ?>
+                            <?php $currentStat = $assetRequest['status'] ?? 'AVAILABLE'; ?>
                             <?php foreach ($statusEnum ?? [] as $status): ?>
                                 <option value="<?php echo strtoupper($status) ?>" <?php echo($currentStat == strtoupper($status) ? 'selected' : ''); ?>><?php echo htmlspecialchars($status); ?></option>
                             <?php endforeach; ?>
@@ -255,7 +255,7 @@
                     <label for="mobile">Cost <span class="required">*</span></label>
                     <div class="input-wrapper">
                         <input type="text" name="cost" id="cost" placeholder="ex. 48000" maxlength="10"
-                               value="<?php echo htmlspecialchars($old['cost'] ?? $assetData['cost'] ?? ''); ?>">
+                               value="<?php echo htmlspecialchars($old['cost'] ?? $assetRequest['cost'] ?? ''); ?>">
                         <svg class="input-icon" viewBox="0 0 24 24">
                             <path d="M20.59 13.41L11 3H4v7l9.59 9.59a2 2 0 0 0 2.82 0l4.18-4.18a2 2 0 0 0 0-2.82z"/>
                             <circle cx="7.5" cy="7.5" r="1.5"/>
@@ -280,7 +280,7 @@
                     <label for="mobile">Purchase Date <span class="required">*</span></label>
                     <div class="input-wrapper">
                         <input type="date" id="purchase_date" name="purchase_date"
-                               value="<?= htmlspecialchars($old['purchase_date'] ?? $assetData['purchase_date'] ?? '') ?>">
+                               value="<?= htmlspecialchars($old['purchase_date'] ?? $assetRequest['purchase_date'] ?? '') ?>">
                         <svg class="input-icon" viewBox="0 0 24 24">
                             <rect x="3" y="4" width="18" height="18" rx="2"/>
                             <line x1="16" y1="2" x2="16" y2="6"/>
@@ -307,7 +307,7 @@
                     <label for="mobile">Warranty Date <span class="required">*</span></label>
                     <div class="input-wrapper">
                         <input type="date" id="warranty_date" name="warranty_date"
-                               value="<?= htmlspecialchars($old['warranty_date'] ?? $assetData['warranty_date'] ?? '') ?>">
+                               value="<?= htmlspecialchars($old['warranty_date'] ?? $assetRequest['warranty_date'] ?? '') ?>">
                         <svg class="input-icon" viewBox="0 0 24 24">
                             <rect x="3" y="4" width="18" height="18" rx="2"/>
                             <line x1="16" y1="2" x2="16" y2="6"/>
@@ -335,9 +335,10 @@
                     <div class="input-wrapper">
                         <input type="file" name="profile_image" id="profile_image" accept=".png,.jpg,.jpeg,.webp">
                     </div>
-                    <?php if (!empty($assetData['profile_image'])): ?>
+                    <?php if (!empty($assetRequest['profile_image'])): ?>
                         <div class="error-text" style="margin-top: 10px; display: block; color: #475569;">
-                            Current image: <strong><?php echo htmlspecialchars($assetData['profile_image']); ?></strong>
+                            Current image:
+                            <strong><?php echo htmlspecialchars($assetRequest['profile_image']); ?></strong>
                         </div>
                     <?php endif; ?>
                     <?php if (isset($errors['profile_image'])): ?>
