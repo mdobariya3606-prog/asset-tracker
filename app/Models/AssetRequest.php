@@ -48,4 +48,52 @@ class AssetRequest
 
 		return $errors;
 	}
+
+	public function update(int $id, array $request)
+	{
+		$stmt = $this->conn->prepare("
+			UPDATE asset_requests 
+			SET status = :status,
+			
+			    approved_at = :approved_at,
+			    approved_by = :approved_by, 
+			    
+			    rejected_at = :rejected_at,
+			    rejected_by = :rejected_by,
+			    
+			    rejection_reason = :rejection_reason,
+			    
+			    issued_at = :issued_at,
+			    issued_by = :issued_by, 
+			    
+			    remark = :remark,
+			    returned_at = :returned_at
+			    
+			WHERE id = :id"
+		);
+		$stmt->execute([
+			'status' => $request['status'],
+
+			'approved_at' => $request['approved_at'],
+			'approved_by' => $request['approved_by'],
+
+			'rejected_at' => $request['rejected_at'],
+			'rejected_by' => $request['rejected_by'],
+
+			'rejection_reason' => $request['rejection_reason'],
+
+			'issued_at' => $request['issued_at'],
+			'issued_by' => $request['issued_by'],
+
+			'remark' => $request['remark'],
+			'returned_at' => $request['returned_at'],
+
+			'id' => $id,
+		]);
+	}
+
+	public function pendingRequests(): int
+	{
+		return $this->conn->query('select count(*) from asset_requests where status = "PENDING"')->fetchColumn();
+	}
 }

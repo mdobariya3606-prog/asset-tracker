@@ -235,12 +235,12 @@
 <main class="card">
     <section class="hero">
         <div class="hero-icon">
-			<?= strtoupper(substr($requestInfo['asset_name'], 0, 1)) ?>
+            <?= strtoupper(substr($requestInfo['asset_name'], 0, 1)) ?>
         </div>
         <h1><?= htmlspecialchars($requestInfo['asset_name'] ?? '') ?></h1>
         <p>Asset Request ID: <?= htmlspecialchars($requestInfo['id'] ?? '') ?></p>
 
-		<?php $status = strtolower((string)($requestInfo['status'] ?? '')); ?>
+        <?php $status = strtolower((string)($requestInfo['status'] ?? '')); ?>
         <span class="badge badge-<?= strtolower($requestInfo['status']) ?>">
             <?= htmlspecialchars($requestInfo['status'] ?? '') ?>
         </span>
@@ -313,22 +313,31 @@
             <span><?= htmlspecialchars($requestInfo['remarks'] ?? 'N/A') ?></span>
         </div>
 
+        <!--Rejection reason-->
+        <div class="detail">
+            <label>Rejection reason</label>
+            <span><?= htmlspecialchars($requestInfo['rejection_reason'] ?? 'N/A') ?></span>
+        </div>
+
+        <!--Returned at-->
+        <div class="detail">
+            <label>Returned at</label>
+            <span><?= htmlspecialchars($requestInfo['returned_at'] ?? 'N/A') ?></span>
+        </div>
+
     </section>
     <nav class="actions">
         <a class="back" href="<?php
-		if (isset($_SESSION['back'])) {
-			echo $_SESSION['back'];
-			unset($_SESSION['back']);
-		} else {
-			echo "index.php?route=assets";
-		}
-		?>">Back</a>
+        if (isset($_SESSION['back'])) {
+            echo $_SESSION['back'];
+            unset($_SESSION['back']);
+        } else {
+            echo "index.php?route=assets";
+        }
+        ?>">Back</a>
 
-        <a class="edit" href="index.php?route=assets/edit&id=<?= (int)$requestInfo['id'] ?>">Edit Asset</a>
-        <a class="delete" href="index.php?route=assets/delete&id=<?= (int)$requestInfo['id'] ?>"
-           onclick="return confirm('Are you sure you want to delete this asset?');">Delete Asset</a>
-
-        <a class="request" href="index.php?route=assets/request&id=<?= (int)$requestInfo['id'] ?>">Request Asset</a>
+        <a class="edit" href="index.php?route=assets/requests/manage&id=<?= (int)$requestInfo['id'] ?>">Manage
+            Request</a>
 
     </nav>
 </main>
