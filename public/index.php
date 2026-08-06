@@ -13,6 +13,7 @@ use App\Config\Database;
 use App\Controllers\Asset\CreateAssetController;
 use App\Controllers\Asset\SelectAssetController;
 use App\Controllers\Asset_request\RequestAssetController;
+use App\Controllers\Asset_request\SelectAssetRequestController;
 use App\Controllers\Department\CreateDepartmentController;
 use App\Controllers\Department\SelectDepartmentController;
 use App\Controllers\Designation\CreateDesignationController;
@@ -145,6 +146,10 @@ try {
 
 		case 'GET:assets/delete':
 			(new CreateAssetController($conn))->delete((int)($_GET['id'] ?? 0));
+			break;
+
+		case 'GET:assets/requests':
+			(new SelectAssetRequestController($conn))->index();
 			break;
 
 		case 'GET:assets/request':

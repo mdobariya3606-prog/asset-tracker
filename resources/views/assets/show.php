@@ -186,6 +186,7 @@
     </style>
 </head>
 <body>
+
 <main class="card">
     <section class="hero">
         <div class="hero-icon">
@@ -212,7 +213,14 @@
         <div class="detail"><label>Cost</label><span><?= htmlspecialchars($asset['cost'] ?? 'N/A') ?></span></div>
     </section>
     <nav class="actions">
-        <a class="back" href="index.php?route=assets">Back to Assets</a>
+        <a class="back" href="<?php
+        if (isset($_SESSION['back'])) {
+            echo $_SESSION['back'];
+            unset($_SESSION['back']);
+        } else {
+            echo "index.php?route=assets";
+        }
+        ?>">Back</a>
         <?php if ($canManageAssets): ?>
             <a class="edit" href="index.php?route=assets/edit&id=<?= (int)$asset['id'] ?>">Edit Asset</a>
             <a class="delete" href="index.php?route=assets/delete&id=<?= (int)$asset['id'] ?>"
