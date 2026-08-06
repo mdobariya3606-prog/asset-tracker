@@ -59,14 +59,28 @@ class ManageRequestController
 		}
 
 		$data = $this->normalize($data);
+		if (($data['status'] === 'APPROVED' || $data['status'] === 'ISSUED')
+			&& $this->alreadyAssigned($assetRequest)) {
 
-		if ($data['status'] === 'APPROVED' || $data['status'] === 'ISSUED') {
-			if ($this->alreadyAssigned($assetRequest)) {
-				$errors['general'] = 'This asset is already assigned.';
-				$statusEnum = $this->getStatus();
-				require '../resources/views/asset_requests/manage.php';
-				exit;
-			}
+			$errors['general'] = 'This asset is already assigned.';
+		} elseif ($assetRequest['status'] === 'CANCELLED' && $data['status'] !== 'CANCELLED') {
+
+			$errors['general'] = 'This asset request is cancelled.';
+		} elseif ($assetRequest['status'] === 'REJECTED' && $data['status'] !== 'REJECTED') {
+
+			$errors['general'] = 'This asset request is rejected.';
+		} elseif ($data['status'] === 'ISSUED' && $assetRequest['status'] !== 'APPROVED') {
+
+			$errors['general'] = 'This asset is not approved yet.';
+		} elseif ($data['status'] === 'RETURNED' && $assetRequest['status'] !== 'ISSUED') {
+
+			$errors['general'] = 'This asset is not issued yet.';
+		}
+
+		if (!empty($errors['general'])) {
+			$statusEnum = $this->getStatus();
+			require '../resources/views/asset_requests/manage.php';
+			exit;
 		}
 
 		$this->assetRequestModel->update($requestId, $data);
