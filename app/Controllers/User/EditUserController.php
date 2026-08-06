@@ -7,349 +7,350 @@ use PDO;
 
 class EditUserController
 {
-    private PDO $conn;
-    private User $user;
+	private PDO $conn;
+	private User $user;
 
-    public function __construct(PDO $conn)
-    {
-        $this->conn = $conn;
-        $this->user = new User($conn);
-    }
+	public function __construct(PDO $conn)
+	{
+		$this->conn = $conn;
+		$this->user = new User($conn);
+	}
 
-    /**
-     * Retrieve data for editing a user.
-     *
-     * @param int $id
-     * @return array|null
-     */
-    public function showForm(int $id): ?array
-    {
-        $userData = $this->user->find($id);
-        if (empty($userData)) {
-            return null;
-        }
+	public function edit(array $getParams)
+	{
+		if (empty($_SESSION['user_id'])) {
+			$_SESSION['login_error'] = 'Please sign in to edit a user.';
+			header('Location: index.php?route=login');
+			exit;
+		}
 
-        return [
-            'user'         => $userData[0],
-            'departments'  => $this->getDepartments(),
-            'designations' => $this->getDesignations(),
-        ];
-    }
+		$id = (int)($getParams['id'] ?? 0);
+		$isOwnProfile = $id === (int)$_SESSION['user_id'];
+		$viewerRole = strtoupper($_SESSION['user_role'] ?? 'EMPLOYEE');
 
-    /**
-     * Update a user profile.
-     *
-     * @param int $id
-     * @param array $data
-     * @return array
-     */
-    public function update(int $id, array $data): array
-    {
-        $errors = $this->user->validate($data, true, $id);
+		$formData = $this->showForm($id);
+		if (!$formData) {
+			$_SESSION['login_error'] = 'User not found.';
+			header('Location: index.php?route=users');
+			exit;
+		}
 
-        if (!empty($errors)) {
-            return [
-                'success' => false,
-                'errors'  => $errors,
-                'old'     => $data,
-            ];
-        }
+		$targetUser = $formData['user'];
+		$targetRole = strtoupper($targetUser['role'] ?? 'EMPLOYEE');
 
-        $success = $this->user->update($id, $data);
+		if (!$this->canEditTarget($viewerRole, $targetRole, $isOwnProfile)) {
+			require '../resources/views/errors/403.php';
+			exit;
+		}
 
-        return [
-            'success' => $success,
-            'errors'  => $success ? [] : ['general' => 'Failed to update user in the database.'],
-        ];
-    }
+		$user = $targetUser;
+		$departments = $formData['departments'];
+		$designations = $formData['designations'];
+		$errors = [];
+		$old = [];
 
-    /**
-     * Delete a user by ID.
-     *
-     * @param int $id
-     * @return bool
-     */
-    public function delete(int $id): bool
-    {
-        return $this->user->delete($id);
-    }
+		require '../resources/views/users/edit.php';
+	}
 
-    public function edit(array $getParams)
-    {
-        if (empty($_SESSION['user_id'])) {
-            $_SESSION['login_error'] = 'Please sign in to edit a user.';
-            header('Location: index.php?route=login');
-            exit;
-        }
+	/**
+	 * Retrieve data for editing a user.
+	 *
+	 * @param int $id
+	 * @return array|null
+	 */
+	public function showForm(int $id): ?array
+	{
+		$userData = $this->user->find($id);
+		if (empty($userData)) {
+			return null;
+		}
 
-        $id           = (int)($getParams['id'] ?? 0);
-        $isOwnProfile = $id === (int) $_SESSION['user_id'];
-        $viewerRole   = strtoupper($_SESSION['user_role'] ?? 'EMPLOYEE');
+		return [
+			'user' => $userData[0],
+			'departments' => $this->getDepartments(),
+			'designations' => $this->getDesignations(),
+		];
+	}
 
-        $formData = $this->showForm($id);
-        if (!$formData) {
-            $_SESSION['login_error'] = 'User not found.';
-            header('Location: index.php?route=users');
-            exit;
-        }
+	private function getDepartments(): array
+	{
+		$stmt = $this->conn->query('SELECT * FROM departments');
+		return $stmt->fetchAll(PDO::FETCH_ASSOC);
+	}
 
-        $targetUser = $formData['user'];
-        $targetRole = strtoupper($targetUser['role'] ?? 'EMPLOYEE');
+	private function getDesignations(): array
+	{
+		$stmt = $this->conn->query('SELECT * FROM designations');
+		return $stmt->fetchAll(PDO::FETCH_ASSOC);
+	}
 
-        if (!$this->canEditTarget($viewerRole, $targetRole, $isOwnProfile)) {
-            require '../resources/views/errors/403.php';
-            exit;
-        }
+	private function canEditTarget(string $viewerRole, string $targetRole, bool $isOwnProfile): bool
+	{
+		$viewerRole = strtoupper($viewerRole);
+		$targetRole = strtoupper($targetRole);
 
-        $user         = $targetUser;
-        $departments  = $formData['departments'];
-        $designations = $formData['designations'];
-        $errors       = [];
-        $old          = [];
+		if ($this->isAdmin($viewerRole)) {
+			return true;
+		}
 
-        require '../resources/views/users/edit.php';
-    }
+		if ($viewerRole === 'MANAGER') {
+			if ($isOwnProfile) {
+				return true;
+			}
+			return $targetRole !== 'ADMIN';
+		}
 
-    public function updateUser(array $getParams, array $postParams)
-    {
-        if (empty($_SESSION['user_id'])) {
-            $_SESSION['login_error'] = 'Please sign in to edit a user.';
-            header('Location: index.php?route=login');
-            exit;
-        }
+		if ($viewerRole === 'HR') {
+			if ($isOwnProfile) {
+				return true;
+			}
+			return !in_array($targetRole, ['ADMIN', 'MANAGER'], true);
+		}
 
-        $id           = (int)($getParams['id'] ?? 0);
-        $isOwnProfile = $id === (int) $_SESSION['user_id'];
-        $viewerRole   = strtoupper($_SESSION['user_role'] ?? 'EMPLOYEE');
+		return $isOwnProfile;
+	}
 
-        $currentUser = $this->user->find($id)[0] ?? null;
-        if (!$currentUser) {
-            $_SESSION['login_error'] = 'User not found.';
-            header('Location: index.php?route=users');
-            exit;
-        }
+	private function isAdmin(string $role): bool
+	{
+		return strtoupper($role) === 'ADMIN';
+	}
 
-        $targetRole = strtoupper($currentUser['role'] ?? 'EMPLOYEE');
-        if (!$this->canEditTarget($viewerRole, $targetRole, $isOwnProfile)) {
-            require '../resources/views/errors/403.php';
-            exit;
-        }
+	public function updateUser(array $getParams, array $postParams)
+	{
+		if (empty($_SESSION['user_id'])) {
+			$_SESSION['login_error'] = 'Please sign in to edit a user.';
+			header('Location: index.php?route=login');
+			exit;
+		}
 
-        // Password changes are handled outside the profile edit form.
-        unset($postParams['password'], $postParams['confirm_password']);
+		$id = (int)($getParams['id'] ?? 0);
+		$isOwnProfile = $id === (int)$_SESSION['user_id'];
+		$viewerRole = strtoupper($_SESSION['user_role'] ?? 'EMPLOYEE');
 
-        if ($viewerRole === 'HR') {
-            $postParams['role']           = $currentUser['role'];
-            $postParams['designation_id'] = $currentUser['designation_id'];
-        } elseif (!$this->isAdmin($viewerRole) && $isOwnProfile) {
-            $postParams['department_id']  = $currentUser['department_id'];
-            $postParams['designation_id'] = $currentUser['designation_id'];
-            $postParams['role']           = $currentUser['role'];
-        } elseif (!$this->isAdmin($viewerRole)) {
-            $postParams['role'] = $currentUser['role'];
-        }
+		$currentUser = $this->user->find($id)[0] ?? null;
+		if (!$currentUser) {
+			$_SESSION['login_error'] = 'User not found.';
+			header('Location: index.php?route=users');
+			exit;
+		}
 
-        $result = $this->update($id, $postParams);
+		$targetRole = strtoupper($currentUser['role'] ?? 'EMPLOYEE');
+		if (!$this->canEditTarget($viewerRole, $targetRole, $isOwnProfile)) {
+			require '../resources/views/errors/403.php';
+			exit;
+		}
 
-        if ($result['success']) {
-            $file = $_FILES['profile_image'] ?? null;
-            if ($file && ($file['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_NO_FILE) {
-                $imageResult = $this->handleProfileImageUpload($id, $file);
-                if (!$imageResult['success']) {
-                    $result['success'] = false;
-                    $result['errors'] = array_merge($result['errors'], $imageResult['errors']);
-                    $result['old'] = $postParams;
-                    $this->logError('Profile image upload failed for user #' . $id . ': ' . json_encode($imageResult['errors']));
-                }
-            }
-        }
+		// Password changes are handled outside the profile edit form.
+		unset($postParams['password'], $postParams['confirm_password']);
 
-        if ($result['success']) {
-            if ($isOwnProfile) {
-                $_SESSION['user_name']  = trim($postParams['name']);
-                $_SESSION['user_email'] = strtolower(trim($postParams['email']));
-            }
-            $_SESSION['success'] = 'User details updated successfully!';
-            header('Location: index.php?route=users');
-            exit;
-        }
+		if ($viewerRole === 'HR') {
+			$postParams['role'] = $currentUser['role'];
+			$postParams['designation_id'] = $currentUser['designation_id'];
+		} elseif (!$this->isAdmin($viewerRole) && $isOwnProfile) {
+			$postParams['department_id'] = $currentUser['department_id'];
+			$postParams['designation_id'] = $currentUser['designation_id'];
+			$postParams['role'] = $currentUser['role'];
+		} elseif (!$this->isAdmin($viewerRole)) {
+			$postParams['role'] = $currentUser['role'];
+		}
 
-        $formData = $this->showForm($id);
-        if (!$formData) {
-            $_SESSION['login_error'] = 'User not found.';
-            header('Location: index.php?route=users');
-            exit;
-        }
+		$result = $this->update($id, $postParams);
 
-        $user         = $formData['user'];
-        $departments  = $formData['departments'];
-        $designations = $formData['designations'];
-        $errors       = $result['errors'];
-        $old          = $result['old'];
+		if ($result['success']) {
+			$file = $_FILES['profile_image'] ?? null;
+			if ($file && ($file['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_NO_FILE) {
 
-        require '../resources/views/users/edit.php';
-    }
+				$imageResult = $this->handleProfileImageUpload($id, $file);
+				if (!$imageResult['success']) {
+					$result['success'] = false;
+					$result['errors'] = array_merge($result['errors'], $imageResult['errors']);
+					$result['old'] = $postParams;
+					$this->logError('Profile image upload failed for user #' . $id . ': ' . json_encode($imageResult['errors']));
+				}
+			}
+		}
 
-    public function destroy(array $getParams)
-    {
-        if (empty($_SESSION['user_id'])) {
-            $_SESSION['login_error'] = 'Please sign in to delete a user.';
-            header('Location: index.php?route=login');
-            exit;
-        }
+		if ($result['success']) {
+			if ($isOwnProfile) {
+				$_SESSION['user_name'] = trim($postParams['name']);
+				$_SESSION['user_email'] = strtolower(trim($postParams['email']));
+			}
+			$_SESSION['success'] = 'User details updated successfully!';
+			header('Location: index.php?route=users');
+			exit;
+		}
 
-        $id = (int)($getParams['id'] ?? 0);
-        $targetUser = $this->user->find($id)[0] ?? null;
-        if ($targetUser === null) {
-            $_SESSION['login_error'] = 'User not found.';
-            header('Location: index.php?route=users');
-            exit;
-        }
+		$formData = $this->showForm($id);
+		if (!$formData) {
+			$_SESSION['login_error'] = 'User not found.';
+			header('Location: index.php?route=users');
+			exit;
+		}
 
-        $viewerRole = strtoupper($_SESSION['user_role'] ?? 'EMPLOYEE');
-        $targetRole = strtoupper($targetUser['role'] ?? 'EMPLOYEE');
-        if (!$this->canManageTarget($viewerRole, $targetRole)) {
-            require '../resources/views/errors/403.php';
-            exit;
-        }
+		$user = $formData['user'];
+		$departments = $formData['departments'];
+		$designations = $formData['designations'];
+		$errors = $result['errors'];
+		$old = $result['old'];
 
-        if ($this->delete($id)) {
-            $_SESSION['success'] = 'User deleted successfully!';
-        } else {
-            $_SESSION['login_error'] = 'Failed to delete user.';
-        }
-        header('Location: index.php?route=users');
-        exit;
-    }
+		require '../resources/views/users/edit.php';
+	}
 
-    private function canEditTarget(string $viewerRole, string $targetRole, bool $isOwnProfile): bool
-    {
-        $viewerRole = strtoupper($viewerRole);
-        $targetRole = strtoupper($targetRole);
+	/**
+	 * Update a user profile.
+	 *
+	 * @param int $id
+	 * @param array $data
+	 * @return array
+	 */
+	public function update(int $id, array $data): array
+	{
+		$errors = $this->user->validate($data, true, $id);
 
-        if ($this->isAdmin($viewerRole)) {
-            return true;
-        }
+		if (!empty($errors)) {
+			return [
+				'success' => false,
+				'errors' => $errors,
+				'old' => $data,
+			];
+		}
 
-        if ($viewerRole === 'MANAGER') {
-            if ($isOwnProfile) {
-                return true;
-            }
-            return $targetRole !== 'ADMIN';
-        }
+		$success = $this->user->update($id, $data);
 
-        if ($viewerRole === 'HR') {
-            if ($isOwnProfile) {
-                return true;
-            }
-            return !in_array($targetRole, ['ADMIN', 'MANAGER'], true);
-        }
+		return [
+			'success' => $success,
+			'errors' => $success ? [] : ['general' => 'Failed to update user in the database.'],
+		];
+	}
 
-        return $isOwnProfile;
-    }
+	private function handleProfileImageUpload(int $userId, array $file): array
+	{
+		if (($file['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_OK) {
+			return [
+				'success' => false,
+				'errors' => ['profile_image' => 'Failed to upload profile image.'],
+			];
+		}
 
-    private function canManageTarget(string $viewerRole, string $targetRole): bool
-    {
-        $viewerRole = strtoupper($viewerRole);
-        $targetRole = strtoupper($targetRole);
+		$allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+		$maxSize = 2 * 1024 * 1024;
+		$mimeType = $file['type'] ?? '';
+		if (!in_array($mimeType, $allowedTypes, true)) {
+			return [
+				'success' => false,
+				'errors' => ['profile_image' => 'Invalid file type. Allowed: jpg, jpeg, png, webp.'],
+			];
+		}
 
-        if ($this->isAdmin($viewerRole)) {
-            return true;
-        }
+		if (($file['size'] ?? 0) > $maxSize) {
+			return [
+				'success' => false,
+				'errors' => ['profile_image' => 'File exceeds maximum size of 2 MB.'],
+			];
+		}
 
-        if ($viewerRole === 'MANAGER') {
-            return $targetRole !== 'ADMIN';
-        }
+		$storageDir = '../storage/profile_images';
+		if (!is_dir($storageDir)) {
+			@mkdir($storageDir, 0777, true);
+		}
 
-        if ($viewerRole === 'HR') {
-            return $targetRole === 'EMPLOYEE';
-        }
+		$ext = strtolower(pathinfo($file['name'] ?? 'profile.jpg', PATHINFO_EXTENSION));
+		if ($ext === '') {
+			$ext = 'jpg';
+		}
 
-        return false;
-    }
+		$filename = "profile_{$userId}.{$ext}";
+		$destination = $storageDir . '/' . $filename;
 
-    private function isAdmin(string $role): bool
-    {
-        return strtoupper($role) === 'ADMIN';
-    }
+		foreach (glob($storageDir . '/profile_' . $userId . '.*') as $existingFile) {
+			@unlink($existingFile);
+		}
 
-    private function getDepartments(): array
-    {
-        $stmt = $this->conn->query('SELECT * FROM departments');
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
-    }
+		if (!move_uploaded_file($file['tmp_name'], $destination)) {
+			return [
+				'success' => false,
+				'errors' => ['profile_image' => 'Failed to store profile image.'],
+			];
+		}
 
-    private function getDesignations(): array
-    {
-        $stmt = $this->conn->query('SELECT * FROM designations');
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
-    }
+		$this->user->update($userId, ['profile_image' => $filename]);
 
-    private function handleProfileImageUpload(int $userId, array $file): array
-    {
-        if (($file['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_OK) {
-            return [
-                'success' => false,
-                'errors' => ['profile_image' => 'Failed to upload profile image.'],
-            ];
-        }
+		return [
+			'success' => true,
+			'errors' => [],
+		];
+	}
 
-        $allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
-        $maxSize = 2 * 1024 * 1024;
-        $mimeType = $file['type'] ?? '';
-        if (!in_array($mimeType, $allowedTypes, true)) {
-            return [
-                'success' => false,
-                'errors' => ['profile_image' => 'Invalid file type. Allowed: jpg, jpeg, png, webp.'],
-            ];
-        }
+	private function logError(string $message): void
+	{
+		$logFile = __DIR__ . '/../../../logs/errors.log';
+		$line = '[' . date('c') . '] ' . $message . PHP_EOL;
+		if (!is_dir(dirname($logFile))) {
+			@mkdir(dirname($logFile), 0777, true);
+		}
+		@file_put_contents($logFile, $line, FILE_APPEND);
+	}
 
-        if (($file['size'] ?? 0) > $maxSize) {
-            return [
-                'success' => false,
-                'errors' => ['profile_image' => 'File exceeds maximum size of 2 MB.'],
-            ];
-        }
+	public function destroy(array $getParams)
+	{
+		if (empty($_SESSION['user_id'])) {
+			$_SESSION['login_error'] = 'Please sign in to delete a user.';
+			header('Location: index.php?route=login');
+			exit;
+		}
 
-        $storageDir = __DIR__ . '/../../../storage/profile_images';
-        if (!is_dir($storageDir)) {
-            @mkdir($storageDir, 0777, true);
-        }
+		$id = (int)($getParams['id'] ?? 0);
+		$targetUser = $this->user->find($id)[0] ?? null;
+		if ($targetUser === null) {
+			$_SESSION['login_error'] = 'User not found.';
+			header('Location: index.php?route=users');
+			exit;
+		}
 
-        $ext = strtolower(pathinfo($file['name'] ?? 'profile.jpg', PATHINFO_EXTENSION));
-        if ($ext === '') {
-            $ext = 'jpg';
-        }
+		$viewerRole = strtoupper($_SESSION['user_role'] ?? 'EMPLOYEE');
+		$targetRole = strtoupper($targetUser['role'] ?? 'EMPLOYEE');
+		if (!$this->canManageTarget($viewerRole, $targetRole)) {
+			require '../resources/views/errors/403.php';
+			exit;
+		}
 
-        $filename = "profile_{$userId}.{$ext}";
-        $destination = $storageDir . '/' . $filename;
+		if ($this->delete($id)) {
+			$_SESSION['success'] = 'User deleted successfully!';
+		} else {
+			$_SESSION['login_error'] = 'Failed to delete user.';
+		}
+		header('Location: index.php?route=users');
+		exit;
+	}
 
-        foreach (glob($storageDir . '/profile_' . $userId . '.*') as $existingFile) {
-            @unlink($existingFile);
-        }
+	private function canManageTarget(string $viewerRole, string $targetRole): bool
+	{
+		$viewerRole = strtoupper($viewerRole);
+		$targetRole = strtoupper($targetRole);
 
-        if (!move_uploaded_file($file['tmp_name'], $destination)) {
-            return [
-                'success' => false,
-                'errors' => ['profile_image' => 'Failed to store profile image.'],
-            ];
-        }
+		if ($this->isAdmin($viewerRole)) {
+			return true;
+		}
 
-        $this->user->update($userId, ['profile_image' => $filename]);
+		if ($viewerRole === 'MANAGER') {
+			return $targetRole !== 'ADMIN';
+		}
 
-        return [
-            'success' => true,
-            'errors' => [],
-        ];
-    }
+		if ($viewerRole === 'HR') {
+			return $targetRole === 'EMPLOYEE';
+		}
 
-    private function logError(string $message): void
-    {
-        $logFile = __DIR__ . '/../../../logs/errors.log';
-        $line = '[' . date('c') . '] ' . $message . PHP_EOL;
-        if (!is_dir(dirname($logFile))) {
-            @mkdir(dirname($logFile), 0777, true);
-        }
-        @file_put_contents($logFile, $line, FILE_APPEND);
-    }
+		return false;
+	}
+
+	/**
+	 * Delete a user by ID.
+	 *
+	 * @param int $id
+	 * @return bool
+	 */
+	public function delete(int $id): bool
+	{
+		return $this->user->delete($id);
+	}
 }
