@@ -12,6 +12,7 @@ session_start();
 use App\Config\Database;
 use App\Controllers\Asset\CreateAssetController;
 use App\Controllers\Asset\SelectAssetController;
+use App\Controllers\Asset_request\ManageRequestController;
 use App\Controllers\Asset_request\RequestAssetController;
 use App\Controllers\Asset_request\SelectAssetRequestController;
 use App\Controllers\Department\CreateDepartmentController;
@@ -156,6 +157,14 @@ try {
 			(new SelectAssetRequestController($conn))->show((int)($_GET['id'] ?? 0));
 			break;
 
+		case 'GET:assets/requests/manage':
+			(new ManageRequestController($conn))->show((int)($_GET['id'] ?? 0));
+			break;
+
+		case 'POST:assets/requests/manage':
+			(new ManageRequestController($conn))->update((int)($_GET['id'] ?? 0), $_POST);
+			break;
+
 		case 'GET:assets/request':
 			(new AssetRequest($conn))->create($_GET['id']);
 
@@ -298,7 +307,7 @@ try {
 	 * displays a generic 500 server error view to the user.
 	 */
 	error_log($e->getMessage() . "\n" . $e->getTraceAsString());
-	require '../resources/views/errors/500.php';
-//	throw $e;
+//	require '../resources/views/errors/500.php';
+	throw $e;
 	exit;
 }
