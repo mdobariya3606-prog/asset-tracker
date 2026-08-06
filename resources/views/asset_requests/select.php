@@ -55,7 +55,7 @@
             <tbody>
             <?php if (empty($requests ?? [])): ?>
                 <tr>
-                    <td colspan="3" class="empty-state">No assets found yet.</td>
+                    <td colspan="3" class="empty-state">No requests found yet.</td>
                 </tr>
             <?php else: ?>
                 <?php foreach ($requests ?? [] as $request): ?>
@@ -66,6 +66,7 @@
                                onclick="<?php $_SESSION['back'] = 'index.php?route=assets/requests'; ?>">
                                 #<?= htmlspecialchars($request['id'] ?? '') ?>
                             </a>
+                        </td>
                         <td>
                             <a href="index.php?route=users/profile&id=<?= $request['user_id'] ?>"
                                style="color: var(--slate-500); font-weight: 600;"
