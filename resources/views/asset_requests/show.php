@@ -332,7 +332,7 @@
             echo $_SESSION['back'];
             unset($_SESSION['back']);
         } else {
-            echo "index.php?route=assets";
+            echo "index.php?route=assets/requests";
         }
         ?>">Back</a>
 

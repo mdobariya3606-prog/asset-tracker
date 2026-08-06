@@ -2,17 +2,20 @@
 
 namespace App\Controllers\Asset_request;
 
+use App\Models\Asset;
 use App\Models\AssetRequest;
 
 class ManageRequestController
 {
 	private \PDO $conn;
 	private AssetRequest $assetRequestModel;
+	private Asset $assetModel;
 
 	public function __construct(\PDO $conn)
 	{
 		$this->conn = $conn;
 		$this->assetRequestModel = new AssetRequest($conn);
+		$this->assetModel = new Asset($conn);
 	}
 
 	public function show(int $id)
@@ -24,9 +27,11 @@ class ManageRequestController
 			exit;
 		}
 
-		$assetRequest = $this->assetRequestModel->find((int)$id);
+		$assetRequest = $this->assetRequestModel->find($id);
+		$asset = $this->assetModel->find($assetRequest['asset_id']);
 
 		$statusEnum = $this->getStatus();
+
 		require '../resources/views/asset_requests/manage.php';
 	}
 
@@ -42,10 +47,10 @@ class ManageRequestController
 		];
 	}
 
-	public function update(int $id, array $request)
+	public function update(int $requestId, array $data)
 	{
-		$assetRequest = $this->assetRequestModel->find($id);
-		$errors = $this->validate($request);
+		$assetRequest = $this->assetRequestModel->find($requestId);
+		$errors = $this->validate($data);
 
 		if (!empty($errors)) {
 			$statusEnum = $this->getStatus();
@@ -53,8 +58,24 @@ class ManageRequestController
 			exit;
 		}
 
-		$request = $this->normalize($request);
-		$this->assetRequestModel->update($id, $request);
+		$data = $this->normalize($data);
+
+		if ($data['status'] === 'APPROVED' || $data['status'] === 'ISSUED') {
+			if ($this->alreadyAssigned($assetRequest)) {
+				$errors['general'] = 'This asset is already assigned.';
+				$statusEnum = $this->getStatus();
+				require '../resources/views/asset_requests/manage.php';
+				exit;
+			}
+		}
+
+		$this->assetRequestModel->update($requestId, $data);
+
+		if ($data['status'] === 'APPROVED') {
+			(new Asset($this->conn))->updateStatus($assetRequest['asset_id'], 'ASSIGNED');
+		} elseif ($data['status'] === 'RETURNED') {
+			(new Asset($this->conn))->updateStatus($assetRequest['asset_id'], 'AVAILABLE');
+		}
 
 		$_SESSION['success'] = 'Asset request updated successfully';
 		header("Location: index.php?route=assets/requests");
@@ -98,5 +119,22 @@ class ManageRequestController
 			'remark' => empty($request['remark']) ? null : $request['remark'],
 			'returned_at' => $request['status'] === 'RETURNED' ? date('Y-m-d H:i:s') : null,
 		];
+	}
+
+	private function alreadyAssigned($assetRequest): bool
+	{
+		$stmt = $this->conn->prepare('select * from asset_requests 
+         where asset_id = :asset_id 
+           and user_id != :user_id
+           and status in ("APPROVED", "ISSUED")
+         LIMIT 1
+        ');
+
+		$stmt->execute([
+			'asset_id' => $assetRequest['asset_id'],
+			'user_id' => $assetRequest['user_id'],
+		]);
+
+		return $stmt->rowCount() === 1;
 	}
 }

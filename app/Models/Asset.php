@@ -263,18 +263,6 @@ class Asset
 		return $stmt->fetchAll(PDO::FETCH_ASSOC);
 	}
 
-	public function find(int $id): array
-	{
-		$sql = 'SELECT a.*, c.name AS category_name, v.name AS vendor_name
-                FROM assets a
-                LEFT JOIN categories c ON a.category_id = c.id
-                LEFT JOIN vendors v ON a.vendor_id = v.id
-                WHERE a.id = ?';
-		$stmt = $this->conn->prepare($sql);
-		$stmt->execute([$id]);
-		return $stmt->fetch(PDO::FETCH_ASSOC) ?: [];
-	}
-
 	public function canManageAssets(string $role): bool
 	{
 		$role = strtoupper($role);
@@ -296,5 +284,25 @@ class Asset
 			'Lost',
 			'Scrap'
 		];
+	}
+
+	public function updateStatus(int $id, string $status)
+	{
+		$asset = $this->find($id);
+
+		$stmt = $this->conn->prepare('update assets set status = :status WHERE id = :id');
+		$stmt->execute(['status' => $status, 'id' => $id]);
+	}
+
+	public function find(int $id): array
+	{
+		$sql = 'SELECT a.*, c.name AS category_name, v.name AS vendor_name
+                FROM assets a
+                LEFT JOIN categories c ON a.category_id = c.id
+                LEFT JOIN vendors v ON a.vendor_id = v.id
+                WHERE a.id = ?';
+		$stmt = $this->conn->prepare($sql);
+		$stmt->execute([$id]);
+		return $stmt->fetch(PDO::FETCH_ASSOC) ?: [];
 	}
 }
