@@ -29,4 +29,15 @@ class AssetRequest
 
 		return $errors;
 	}
+
+	public function find(int $id): array
+	{
+		$stmt = $this->conn->prepare("SELECT * FROM asset_requests WHERE id = :id");
+		$stmt->execute(['id' => $id]);
+		$assetRequest = $stmt->fetch();
+		if (empty($assetRequest)) {
+			return [];
+		}
+		return $assetRequest;
+	}
 }

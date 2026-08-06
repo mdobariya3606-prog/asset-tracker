@@ -46,7 +46,6 @@ class SelectAssetController
 		}
 
 		$role = strtoupper($_SESSION['user_role'] ?? 'EMPLOYEE');
-		$dashboardUserName = $_SESSION['user_name'] ?? 'User';
 		$dashboardUserRole = $role;
 
 		$asset = $this->asset->find($id);

@@ -152,6 +152,10 @@ try {
 			(new SelectAssetRequestController($conn))->index();
 			break;
 
+		case 'GET:assets/requests/show':
+			(new SelectAssetRequestController($conn))->show((int)($_GET['id'] ?? 0));
+			break;
+
 		case 'GET:assets/request':
 			$asset = (new Asset($conn))->find((int)($_GET['id'] ?? 0));
 			if (empty($asset) || strtoupper((string)($asset['status'] ?? '')) !== 'AVAILABLE') {

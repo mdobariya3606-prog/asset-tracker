@@ -61,8 +61,11 @@
                 <?php foreach ($requests ?? [] as $request): ?>
                     <tr>
                         <td style="color: var(--slate-400); font-weight: 600;">
-                            #<?= htmlspecialchars($request['id'] ?? '') ?></td>
-
+                            <a href="index.php?route=assets/requests/show&id=<?= $request['id'] ?>"
+                               style="color: var(--slate-500); font-weight: 600;"
+                               onclick="<?php $_SESSION['back'] = 'index.php?route=assets/requests'; ?>">
+                                #<?= htmlspecialchars($request['id'] ?? '') ?>
+                            </a>
                         <td>
                             <a href="index.php?route=users/profile&id=<?= $request['user_id'] ?>"
                                style="color: var(--slate-500); font-weight: 600;"
