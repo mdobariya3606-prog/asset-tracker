@@ -362,20 +362,20 @@
             <p>All fields are required before the asset can be saved.</p>
         </div>
 
-		<?php $errors = $errors ?? [];
-		$assetData = $assetData ?? $asset ?? []; ?>
-		<?php if (!empty($errors)): ?>
+        <?php $errors = $errors ?? [];
+        $assetData = $assetData ?? $request ?? []; ?>
+        <?php if (!empty($errors)): ?>
             <div class="alert-danger">
                 <strong>Please correct the following:</strong>
                 <ul>
-					<?php foreach ($errors as $error): ?>
+                    <?php foreach ($errors as $error): ?>
                         <li><?= htmlspecialchars($error) ?></li>
-					<?php endforeach; ?>
+                    <?php endforeach; ?>
                 </ul>
             </div>
-		<?php endif; ?>
+        <?php endif; ?>
 
-        <form action="index.php?route=assets/edit&id=<?= (int)($asset['id'] ?? 0) ?>" method="post">
+        <form action="index.php?route=assets/edit&id=<?= (int)($request['id'] ?? 0) ?>" method="post">
             <div class="form-grid">
                 <div class="field">
                     <label for="name">Asset Name</label>
@@ -386,10 +386,10 @@
                     <label for="category_id">Category</label>
                     <select id="category_id" name="category_id" required>
                         <option value="">Select Category</option>
-						<?php $selectedCategory = (int)($assetData['category_id'] ?? 0); ?>
-						<?php foreach ($categories ?? [] as $category): ?>
+                        <?php $selectedCategory = (int)($assetData['category_id'] ?? 0); ?>
+                        <?php foreach ($categories ?? [] as $category): ?>
                             <option value="<?= (int)$category['id'] ?>" <?= $selectedCategory === (int)$category['id'] ? 'selected' : '' ?>><?= htmlspecialchars($category['name']) ?></option>
-						<?php endforeach; ?>
+                        <?php endforeach; ?>
                     </select>
                 </div>
 
@@ -423,10 +423,10 @@
                     <label for="vendor_id">Vendor</label>
                     <select id="vendor_id" name="vendor_id" required>
                         <option value="">Select Vendor</option>
-						<?php $selectedVendor = (int)($assetData['vendor_id'] ?? 0); ?>
-						<?php foreach ($vendors ?? [] as $vendor): ?>
+                        <?php $selectedVendor = (int)($assetData['vendor_id'] ?? 0); ?>
+                        <?php foreach ($vendors ?? [] as $vendor): ?>
                             <option value="<?= (int)$vendor['id'] ?>" <?= $selectedVendor === (int)$vendor['id'] ? 'selected' : '' ?>><?= htmlspecialchars($vendor['name']) ?></option>
-						<?php endforeach; ?>
+                        <?php endforeach; ?>
                     </select>
                 </div>
                 <div class="field">
@@ -437,7 +437,7 @@
                 <div class="field full">
                     <label for="status">Status</label>
                     <select id="status" name="status" required>
-						<?php $selectedStatus = strtoupper((string)($assetData['status'] ?? 'AVAILABLE')); ?>
+                        <?php $selectedStatus = strtoupper((string)($assetData['status'] ?? 'AVAILABLE')); ?>
                         <option value="AVAILABLE" <?= $selectedStatus === 'AVAILABLE' ? 'selected' : '' ?>>Available
                         </option>
                         <option value="ASSIGNED" <?= $selectedStatus === 'ASSIGNED' ? 'selected' : '' ?>>Assigned

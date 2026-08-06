@@ -432,7 +432,7 @@
         <!-- ========================= -->
         <!-- Edit User Form -->
         <!-- ========================= -->
-        <form action="index.php?route=assets/edit&id=<?= (int)($asset['id'] ?? 0) ?>" method="post">
+        <form action="index.php?route=assets/edit&id=<?= (int)($request['id'] ?? 0) ?>" method="post">
             <div class="form-grid">
 
                 <!-- ========================= -->
@@ -738,7 +738,7 @@
                 <!-- Cancel & Save Buttons -->
                 <!-- ========================= -->
                 <div class="actions-row">
-                    <a href="index.php?route=assets/show&id=<?= $asset['id']; ?>" class="btn-cancel">Cancel</a>
+                    <a href="index.php?route=assets/show&id=<?= $request['id']; ?>" class="btn-cancel">Cancel</a>
                     <button type="submit" class="btn-submit">
                         <span class="btn-content">
                             <svg viewBox="0 0 24 24"><path

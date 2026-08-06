@@ -122,3 +122,16 @@
         <?php endif; ?>
     </div>
 </header>
+
+<!-- Admin Navigation Tabs -->
+<?php $route = $_GET['route']; ?>
+<nav class="admin-tabs">
+    <a href="index.php?route=users" class="tab-link <?= $route === 'users' ? 'active' : '' ?>">Users</a>
+    <a href="index.php?route=departments"
+       class="tab-link <?= $route === 'departments' ? 'active' : '' ?>">Departments</a>
+    <a href="index.php?route=designations" class="tab-link <?= $route === 'designations' ? 'active' : '' ?>">Designations</a>
+    <a href="index.php?route=assets" class="tab-link <?= $route === 'assets' ? 'active' : '' ?>">Assets</a>
+    <?php if ($_SESSION['user_role'] === 'ADMIN' || $_SESSION['user_role'] === 'MANAGER') { ?>
+        <a href="index.php?route=assets/requests" class="tab-link <?= $route === 'assets/requests' ? 'active' : '' ?>">Requests</a>
+    <?php } ?>
+</nav>
