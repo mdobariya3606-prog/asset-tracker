@@ -89,21 +89,21 @@
     </div>
 
     <div class="nav-user">
-        <?php if (!empty($dashboardUser)): ?>
+        <?php if (!empty($_SESSION)): ?>
             <div class="avatar-badge">
-                <?php if (!empty($dashboardUser['profile_image'])): ?>
-                    <img src="../storage/profile_images/<?= htmlspecialchars($dashboardUser['profile_image']) ?>"
-                         alt="<?= htmlspecialchars($dashboardUser['name']) ?> profile image"
+                <?php if (!empty($_SESSION['profile_image'])): ?>
+                    <img src="../storage/profile_images/<?= htmlspecialchars($_SESSION['profile_image']) ?>"
+                         alt="<?= htmlspecialchars($_SESSION['user_name']) ?> profile image"
                          style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%; display: block;">
                 <?php else: ?>
-                    <?= strtoupper(substr($dashboardUser['name'], 0, 1)) ?>
+                    <?= strtoupper(substr($_SESSION['user_name'], 0, 1)) ?>
                 <?php endif; ?>
             </div>
             <div style="text-align: left; line-height: 1.2;">
-                <div style="font-weight: 600; font-size: 13px; color: var(--slate-800);"><?= htmlspecialchars($dashboardUser['name']) ?></div>
-                <div style="font-size: 11px; color: var(--slate-500);"><?= htmlspecialchars($dashboardUser['email']) ?></div>
+                <div style="font-weight: 600; font-size: 13px; color: var(--slate-800);"><?= htmlspecialchars($_SESSION['user_name']) ?></div>
+                <div style="font-size: 11px; color: var(--slate-500);"><?= htmlspecialchars($_SESSION['user_email']) ?></div>
             </div>
-            <a href="index.php?route=users/edit&id=<?= (int)$dashboardUser['id'] ?>" class="btn btn-secondary"
+            <a href="index.php?route=users/edit&id=<?= (int)$_SESSION['user_id'] ?>" class="btn btn-secondary"
                style="padding: 6px 12px; font-size: 12px;">
                 <svg viewBox="0 0 24 24" style="width:14px;height:14px;">
                     <circle cx="12" cy="8" r="4"/>
