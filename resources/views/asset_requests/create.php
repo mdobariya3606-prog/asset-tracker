@@ -47,7 +47,7 @@
 
                 </svg>
             </div>
-            <h1>Request <?= $asset['name'] ?? 'not found' ?></h1>
+            <h1>Request <?= $request['name'] ?? 'not found' ?></h1>
         </div>
 
         <!-- ========================= -->
@@ -95,7 +95,7 @@
                 <!-- Cancel & Save Buttons -->
                 <!-- ========================= -->
                 <div class="actions-row">
-                    <a href="index.php?route=assets/show&id=<?= $asset['id']; ?>" class="btn-cancel">Cancel</a>
+                    <a href="index.php?route=assets/show&id=<?= $request['id']; ?>" class="btn-cancel">Cancel</a>
                     <button type="submit" class="btn-submit">
                         <span class="btn-content">
                             <svg viewBox="0 0 24 24"><path
