@@ -72,6 +72,28 @@
         justify-content: center;
     }
 
+    .tab-label {
+        position: relative;
+        display: inline-block;
+    }
+
+    .notification-badge {
+        position: absolute;
+        top: -8px;
+        right: -22px;
+        min-width: 18px;
+        height: 18px;
+        padding: 0 5px;
+        border-radius: 999px;
+        background: #25D366; /* WhatsApp green */
+        color: #fff;
+        font-size: 11px;
+        font-weight: 600;
+        line-height: 18px;
+        text-align: center;
+        box-sizing: border-box;
+    }
+
 </style>
 
 <!-- Navbar -->
@@ -89,7 +111,10 @@
     </div>
 
     <div class="nav-user">
-        <?php if (!empty($_SESSION)): ?>
+        <?php use App\Config\Database;
+        use App\Models\AssetRequest;
+
+        if (!empty($_SESSION)): ?>
             <div class="avatar-badge">
                 <?php if (!empty($_SESSION['profile_image'])): ?>
                     <img src="../storage/profile_images/<?= htmlspecialchars($_SESSION['profile_image']) ?>"
@@ -131,7 +156,21 @@
        class="tab-link <?= $route === 'departments' ? 'active' : '' ?>">Departments</a>
     <a href="index.php?route=designations" class="tab-link <?= $route === 'designations' ? 'active' : '' ?>">Designations</a>
     <a href="index.php?route=assets" class="tab-link <?= $route === 'assets' ? 'active' : '' ?>">Assets</a>
-    <?php if ($_SESSION['user_role'] === 'ADMIN' || $_SESSION['user_role'] === 'MANAGER') { ?>
-        <a href="index.php?route=assets/requests" class="tab-link <?= $route === 'assets/requests' ? 'active' : '' ?>">Requests</a>
+
+    <?php
+    if ($_SESSION['user_role'] === 'ADMIN' || $_SESSION['user_role'] === 'MANAGER') {
+        $pendingRequests = (new AssetRequest((new Database())->getConnection()))->pendingRequests();
+        ?>
+        <a href="index.php?route=assets/requests"
+           class="tab-link <?= $route === 'assets/requests' ? 'active' : '' ?>">
+            <span class="tab-label">
+                Requests
+                <?php if ($pendingRequests > 0): ?>
+                    <span class="notification-badge">
+                        <?= $pendingRequests > 99 ? '99+' : $pendingRequests ?>
+                    </span>
+                <?php endif; ?>
+            </span>
+        </a>
     <?php } ?>
 </nav>
