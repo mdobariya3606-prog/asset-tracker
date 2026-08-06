@@ -75,7 +75,7 @@
                     <label for="name">Department Name <span class="required">*</span></label>
                     <div class="input-wrapper">
                         <input type="text" name="name" id="name" placeholder="ex. Finance"
-                               value="<?php echo htmlspecialchars($old['name'] ?? $assetRequest['name'] ?? ''); ?>">
+                               value="<?php echo htmlspecialchars($old['name'] ?? $assetData['name'] ?? ''); ?>">
                         <svg class="input-icon" viewBox="0 0 24 24">
                             <path d="M20 7 12 3 4 7v10l8 4 8-4V7z"/>
                             <path d="M12 21V11"/>

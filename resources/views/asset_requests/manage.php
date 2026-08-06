@@ -21,8 +21,8 @@
         <!-- ========================= -->
         <div class="card-header">
             <div class="icon">
-                <?php if (!empty($assetRequest['profile_image'])): ?>
-                    <img src="../storage/profile_images/<?= htmlspecialchars($assetRequest['profile_image']) ?>"
+                <?php if (!empty($assetData['profile_image'])): ?>
+                    <img src="../storage/profile_images/<?= htmlspecialchars($assetData['profile_image']) ?>"
                          alt="Profile image">
                 <?php else: ?>
                     <svg viewBox="0 0 24 24">
@@ -33,7 +33,7 @@
             </div>
             <h1>Manage Request</h1>
             <p>Manage Request
-                for <?php echo htmlspecialchars($old['name'] ?? $assetRequest['asset_name'] ?? 'Asset'); ?></p>
+                for <?php echo htmlspecialchars($old['name'] ?? $assetData['asset_name'] ?? 'Asset'); ?></p>
         </div>
         <!-- ========================= -->
         <!-- General Validation Error -->
@@ -62,7 +62,7 @@
                     <label for="status">Status <span class="required">*</span></label>
                     <div class="input-wrapper">
                         <select id="status" name="status">
-                            <?php $selectedStatus = ($assetRequest['status'] ?? 'PENDING'); ?>
+                            <?php $selectedStatus = ($assetData['status'] ?? 'PENDING'); ?>
                             <?php foreach ($statusEnum ?? [] as $status): ?>
                                 <option value="<?= strtoupper($status) ?>" <?= $selectedStatus === $status ? 'selected' : '' ?>><?= htmlspecialchars($status) ?></option>
                             <?php endforeach; ?>
@@ -96,7 +96,7 @@
                     <label for="remark">Remark (optional)</label>
                     <div class="input-wrapper">
                         <input type="text" name="remark" id="remark" placeholder="ex. Approved by department manager."
-                               value="<?php echo htmlspecialchars($old['remark'] ?? $assetRequest['remark'] ?? ''); ?>">
+                               value="<?php echo htmlspecialchars($old['remark'] ?? $assetData['remark'] ?? ''); ?>">
                         <svg class="input-icon" viewBox="0 0 24 24">
                             <path d="M20.59 13.41L11 3H4v7l9.59 9.59a2 2 0 0 0 2.82 0l4.18-4.18a2 2 0 0 0 0-2.82z"/>
                             <circle cx="7.5" cy="7.5" r="1.5"/>
@@ -122,7 +122,7 @@
                     <div class="input-wrapper">
                         <input type="text" name="rejection_reason" id="rejection_reason"
                                placeholder="ex. Approved by department manager."
-                               value="<?php echo htmlspecialchars($old['rejection_reason'] ?? $assetRequest['rejection_reason'] ?? ''); ?>">
+                               value="<?php echo htmlspecialchars($old['rejection_reason'] ?? $assetData['rejection_reason'] ?? ''); ?>">
                         <svg class="input-icon" viewBox="0 0 24 24">
                             <path d="M20.59 13.41L11 3H4v7l9.59 9.59a2 2 0 0 0 2.82 0l4.18-4.18a2 2 0 0 0 0-2.82z"/>
                             <circle cx="7.5" cy="7.5" r="1.5"/>

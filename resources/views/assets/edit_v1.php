@@ -363,7 +363,7 @@
         </div>
 
         <?php $errors = $errors ?? [];
-        $assetRequest = $assetRequest ?? $request ?? []; ?>
+        $assetData = $assetData ?? $request ?? []; ?>
         <?php if (!empty($errors)): ?>
             <div class="alert-danger">
                 <strong>Please correct the following:</strong>
@@ -380,14 +380,14 @@
                 <div class="field">
                     <label for="name">Asset Name</label>
                     <input type="text" id="name" name="name"
-                           value="<?= htmlspecialchars($assetRequest['name'] ?? '') ?>"
+                           value="<?= htmlspecialchars($assetData['name'] ?? '') ?>"
                            required>
                 </div>
                 <div class="field">
                     <label for="category_id">Category</label>
                     <select id="category_id" name="category_id" required>
                         <option value="">Select Category</option>
-                        <?php $selectedCategory = (int)($assetRequest['category_id'] ?? 0); ?>
+                        <?php $selectedCategory = (int)($assetData['category_id'] ?? 0); ?>
                         <?php foreach ($categories ?? [] as $category): ?>
                             <option value="<?= (int)$category['id'] ?>" <?= $selectedCategory === (int)$category['id'] ? 'selected' : '' ?>><?= htmlspecialchars($category['name']) ?></option>
                         <?php endforeach; ?>
@@ -397,34 +397,34 @@
                 <div class="field">
                     <label for="brand">Brand</label>
                     <input type="text" id="brand" name="brand"
-                           value="<?= htmlspecialchars($assetRequest['brand'] ?? '') ?>" required>
+                           value="<?= htmlspecialchars($assetData['brand'] ?? '') ?>" required>
                 </div>
                 <div class="field">
                     <label for="model">Model</label>
                     <input type="text" id="model" name="model"
-                           value="<?= htmlspecialchars($assetRequest['model'] ?? '') ?>" required>
+                           value="<?= htmlspecialchars($assetData['model'] ?? '') ?>" required>
                 </div>
                 <div class="field">
                     <label for="serial_number">Serial Number</label>
                     <input type="text" id="serial_number" name="serial_number"
-                           value="<?= htmlspecialchars($assetRequest['serial_number'] ?? '') ?>" required>
+                           value="<?= htmlspecialchars($assetData['serial_number'] ?? '') ?>" required>
                 </div>
                 <div class="field">
                     <label for="purchase_date">Purchase Date</label>
                     <input type="date" id="purchase_date" name="purchase_date"
-                           value="<?= htmlspecialchars($assetRequest['purchase_date'] ?? '') ?>" required>
+                           value="<?= htmlspecialchars($assetData['purchase_date'] ?? '') ?>" required>
                 </div>
                 <div class="field">
                     <label for="warranty_date">Warranty Date</label>
                     <input type="date" id="warranty_date" name="warranty_date"
-                           value="<?= htmlspecialchars($assetRequest['warranty_date'] ?? '') ?>" required>
+                           value="<?= htmlspecialchars($assetData['warranty_date'] ?? '') ?>" required>
                 </div>
 
                 <div class="field">
                     <label for="vendor_id">Vendor</label>
                     <select id="vendor_id" name="vendor_id" required>
                         <option value="">Select Vendor</option>
-                        <?php $selectedVendor = (int)($assetRequest['vendor_id'] ?? 0); ?>
+                        <?php $selectedVendor = (int)($assetData['vendor_id'] ?? 0); ?>
                         <?php foreach ($vendors ?? [] as $vendor): ?>
                             <option value="<?= (int)$vendor['id'] ?>" <?= $selectedVendor === (int)$vendor['id'] ? 'selected' : '' ?>><?= htmlspecialchars($vendor['name']) ?></option>
                         <?php endforeach; ?>
@@ -433,12 +433,12 @@
                 <div class="field">
                     <label for="cost">Cost</label>
                     <input type="number" step="0.01" min="0" id="cost" name="cost"
-                           value="<?= htmlspecialchars($assetRequest['cost'] ?? '') ?>" required>
+                           value="<?= htmlspecialchars($assetData['cost'] ?? '') ?>" required>
                 </div>
                 <div class="field full">
                     <label for="status">Status</label>
                     <select id="status" name="status" required>
-                        <?php $selectedStatus = strtoupper((string)($assetRequest['status'] ?? 'AVAILABLE')); ?>
+                        <?php $selectedStatus = strtoupper((string)($assetData['status'] ?? 'AVAILABLE')); ?>
                         <option value="AVAILABLE" <?= $selectedStatus === 'AVAILABLE' ? 'selected' : '' ?>>Available
                         </option>
                         <option value="ASSIGNED" <?= $selectedStatus === 'ASSIGNED' ? 'selected' : '' ?>>Assigned
