@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= htmlspecialchars($requestInfo['asset_name'] ?? 'Asset') ?> - Asset Details</title>
+    <title><?= htmlspecialchars($assetRequest['asset_name'] ?? 'Asset') ?> - Asset Details</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         *, *::before, *::after {
@@ -235,14 +235,14 @@
 <main class="card">
     <section class="hero">
         <div class="hero-icon">
-            <?= strtoupper(substr($requestInfo['asset_name'], 0, 1)) ?>
+            <?= strtoupper(substr($assetRequest['asset_name'], 0, 1)) ?>
         </div>
-        <h1><?= htmlspecialchars($requestInfo['asset_name'] ?? '') ?></h1>
-        <p>Asset Request ID: <?= htmlspecialchars($requestInfo['id'] ?? '') ?></p>
+        <h1><?= htmlspecialchars($assetRequest['asset_name'] ?? '') ?></h1>
+        <p>Asset Request ID: <?= htmlspecialchars($assetRequest['id'] ?? '') ?></p>
 
-        <?php $status = strtolower((string)($requestInfo['status'] ?? '')); ?>
-        <span class="badge badge-<?= strtolower($requestInfo['status']) ?>">
-            <?= htmlspecialchars($requestInfo['status'] ?? '') ?>
+        <?php $status = strtolower((string)($assetRequest['status'] ?? '')); ?>
+        <span class="badge badge-<?= strtolower($assetRequest['status']) ?>">
+            <?= htmlspecialchars($assetRequest['status'] ?? '') ?>
         </span>
     </section>
 
@@ -250,79 +250,79 @@
         <!--User Id-->
         <div class="detail">
             <label>User Id</label>
-            <span><?= htmlspecialchars($requestInfo['user_id'] ?? 'N/A') ?></span>
+            <span><?= htmlspecialchars($assetRequest['user_id'] ?? 'N/A') ?></span>
         </div>
 
         <!--Asset Id-->
         <div class="detail">
             <label>Asset Id</label>
-            <span><?= htmlspecialchars($requestInfo['asset_id'] ?? 'N/A') ?></span>
+            <span><?= htmlspecialchars($assetRequest['asset_id'] ?? 'N/A') ?></span>
         </div>
 
         <!--Request at-->
         <div class="detail">
             <label>Request at</label>
-            <span><?= htmlspecialchars($requestInfo['requested_at'] ?? 'N/A') ?></span>
+            <span><?= htmlspecialchars($assetRequest['requested_at'] ?? 'N/A') ?></span>
         </div>
 
         <!--Reason-->
         <div class="detail">
             <label>Reason</label>
-            <span style="color: #1b4e88"><?= htmlspecialchars($requestInfo['reason'] ?? 'N/A') ?></span>
+            <span style="color: #1b4e88"><?= htmlspecialchars($assetRequest['reason'] ?? 'N/A') ?></span>
         </div>
 
         <!--Approved By-->
         <div class="detail">
             <label>Approved By</label>
-            <span><?= htmlspecialchars($requestInfo['approved_by'] ?? 'N/A') ?></span>
+            <span><?= htmlspecialchars($assetRequest['approved_by'] ?? 'N/A') ?></span>
         </div>
 
         <!--Approved at-->
         <div class="detail">
             <label>Approved at</label>
-            <span><?= htmlspecialchars($requestInfo['approved_at'] ?? 'N/A') ?></span>
+            <span><?= htmlspecialchars($assetRequest['approved_at'] ?? 'N/A') ?></span>
         </div>
 
         <!--Rejected By-->
         <div class="detail">
             <label>Rejected By</label>
-            <span><?= htmlspecialchars($requestInfo['rejected_by'] ?? 'N/A') ?></span>
+            <span><?= htmlspecialchars($assetRequest['rejected_by'] ?? 'N/A') ?></span>
         </div>
 
         <!--Rejected at-->
         <div class="detail">
             <label>Rejected at</label>
-            <span><?= htmlspecialchars($requestInfo['rejected_at'] ?? 'N/A') ?></span>
+            <span><?= htmlspecialchars($assetRequest['rejected_at'] ?? 'N/A') ?></span>
         </div>
 
         <!--Issued By-->
         <div class="detail">
             <label>Issued By</label>
-            <span><?= htmlspecialchars($requestInfo['issued_by'] ?? 'N/A') ?></span>
+            <span><?= htmlspecialchars($assetRequest['issued_by'] ?? 'N/A') ?></span>
         </div>
 
         <!--Issued at-->
         <div class="detail">
             <label>Issued at</label>
-            <span><?= htmlspecialchars($requestInfo['issued_at'] ?? 'N/A') ?></span>
+            <span><?= htmlspecialchars($assetRequest['issued_at'] ?? 'N/A') ?></span>
         </div>
 
         <!--Remarks-->
         <div class="detail">
             <label>Remarks</label>
-            <span><?= htmlspecialchars($requestInfo['remarks'] ?? 'N/A') ?></span>
+            <span><?= htmlspecialchars($assetRequest['remarks'] ?? 'N/A') ?></span>
         </div>
 
         <!--Rejection reason-->
         <div class="detail">
             <label>Rejection reason</label>
-            <span><?= htmlspecialchars($requestInfo['rejection_reason'] ?? 'N/A') ?></span>
+            <span><?= htmlspecialchars($assetRequest['rejection_reason'] ?? 'N/A') ?></span>
         </div>
 
         <!--Returned at-->
         <div class="detail">
             <label>Returned at</label>
-            <span><?= htmlspecialchars($requestInfo['returned_at'] ?? 'N/A') ?></span>
+            <span><?= htmlspecialchars($assetRequest['returned_at'] ?? 'N/A') ?></span>
         </div>
 
     </section>
@@ -336,9 +336,10 @@
         }
         ?>">Back</a>
 
-        <a class="edit" href="index.php?route=assets/requests/manage&id=<?= (int)$requestInfo['id'] ?>">Manage
-            Request</a>
-
+        <?php if ($canManageRequest) { ?>
+            <a class="edit" href="index.php?route=assets/requests/manage&id=<?= (int)$assetRequest['id'] ?>">Manage
+                Request</a>
+        <?php } ?>
     </nav>
 </main>
 </body>

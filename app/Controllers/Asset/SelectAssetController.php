@@ -34,7 +34,11 @@ class SelectAssetController
 		$canRequestAsset = $this->asset->canRequestAsset($dashboardUserRole);
 		$assets = $this->asset->all();
 
-		require '../resources/views/assets/select.php';
+		view('assets.select', [
+			'assets' => $assets,
+			'canManageAssets' => $canManageAssets,
+			'canRequestAsset' => $canRequestAsset,
+		]);
 	}
 
 	public function show(int $id): void
@@ -49,6 +53,7 @@ class SelectAssetController
 		$dashboardUserRole = $role;
 
 		$asset = $this->asset->find($id);
+
 		if (empty($asset)) {
 			$_SESSION['login_error'] = 'Asset not found.';
 			header('Location: index.php?route=assets');
@@ -59,6 +64,12 @@ class SelectAssetController
 		$canRequestAsset = $this->asset->canRequestAsset($role);
 		$isAvailable = strtoupper((string)($asset['status'] ?? '')) === 'AVAILABLE';
 
-		require '../resources/views/assets/show.php';
+		view('assets.show', [
+			'dashboardUserRole' => $dashboardUserRole,
+			'asset' => $asset,
+			'canManageAssets' => $canManageAssets,
+			'canRequestAsset' => $canRequestAsset,
+			'isAvailable' => $isAvailable,
+		]);
 	}
 }

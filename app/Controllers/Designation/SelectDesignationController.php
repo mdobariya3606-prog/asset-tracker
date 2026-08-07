@@ -39,11 +39,10 @@ class SelectDesignationController
 
 		$role = $_SESSION['user_role'];
 
-		require '../resources/views/designation/select.php';
-	}
-
-	public function all()
-	{
-		return $this->designation->all();
+		view('designations.select', [
+			'designations' => $designations,
+			'dashboardUserRole' => $dashboardUserRole,
+			'role' => $role,
+		]);
 	}
 }

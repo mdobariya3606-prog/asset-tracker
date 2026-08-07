@@ -18,21 +18,30 @@ class ManageRequestController
 		$this->assetModel = new Asset($conn);
 	}
 
-	public function show(int $id)
+	public function showManageForm(int $assetRequestId)
 	{
 		$role = $_SESSION['user_role'] ?? 'EMPLOYEE';
 
 		if ($role === 'EMPLOYEE' || $role === 'HR') {
-			require '../resources/view/errors/403.php';
+			view('403');
 			exit;
 		}
 
-		$assetRequest = $this->assetRequestModel->find($id);
+		$assetRequest = $this->assetRequestModel->findOrFail($assetRequestId);
+
 		$asset = $this->assetModel->find($assetRequest['asset_id']);
+
+		if ($assetRequest['status'] === 'RETURNED' || $assetRequest['status'] === 'CANCELLED') {
+			$message = "This asset/request has been $assetRequest[status]";
+			view('403', [
+				'message' => $message
+			]);
+			exit;
+		}
 
 		$statusEnum = $this->getStatus();
 
-		require '../resources/views/asset_requests/manage.php';
+		view('asset.requests.manage', ['statusEnum' => $statusEnum]);
 	}
 
 	private function getStatus(): array
@@ -42,44 +51,26 @@ class ManageRequestController
 			'APPROVED',
 			'REJECTED',
 			'ISSUED',
-			'RETURNED',
-			'CANCELLED',
+			'RETURNED'
 		];
 	}
 
 	public function update(int $requestId, array $data)
 	{
-		$assetRequest = $this->assetRequestModel->find($requestId);
+		$assetRequest = $this->assetRequestModel->findOrFail($requestId);
 		$errors = $this->validate($data);
 
 		if (!empty($errors)) {
 			$statusEnum = $this->getStatus();
-			require '../resources/views/asset_requests/manage.php';
+			view('asset.requests.manage');
 			exit;
 		}
 
 		$data = $this->normalize($data);
-		if (($data['status'] === 'APPROVED' || $data['status'] === 'ISSUED')
-			&& $this->alreadyAssigned($assetRequest)) {
 
-			$errors['general'] = 'This asset is already assigned.';
-		} elseif ($assetRequest['status'] === 'CANCELLED' && $data['status'] !== 'CANCELLED') {
-
-			$errors['general'] = 'This asset request is cancelled.';
-		} elseif ($assetRequest['status'] === 'REJECTED' && $data['status'] !== 'REJECTED') {
-
-			$errors['general'] = 'This asset request is rejected.';
-		} elseif ($data['status'] === 'ISSUED' && $assetRequest['status'] !== 'APPROVED') {
-
-			$errors['general'] = 'This asset is not approved yet.';
-		} elseif ($data['status'] === 'RETURNED' && $assetRequest['status'] !== 'ISSUED') {
-
-			$errors['general'] = 'This asset is not issued yet.';
-		}
-
-		if (!empty($errors['general'])) {
+		if ($errors['general'] = $this->validateStatus($assetRequest, $data)) {
 			$statusEnum = $this->getStatus();
-			require '../resources/views/asset_requests/manage.php';
+			view('asset.requests.manage');
 			exit;
 		}
 
@@ -133,6 +124,34 @@ class ManageRequestController
 			'remark' => empty($request['remark']) ? null : $request['remark'],
 			'returned_at' => $request['status'] === 'RETURNED' ? date('Y-m-d H:i:s') : null,
 		];
+	}
+
+	private function validateStatus(array $assetRequest, array $input)
+	{
+		$assetStatus = $assetRequest['status'];
+		$inputStatus = $input['status'];
+
+		switch ($assetStatus) {
+			case 'REJECTED':
+				if ($inputStatus !== 'REJECTED') {
+					return 'This request is rejected.';
+				}
+				break;
+
+			case 'RETURNED':
+				if ($inputStatus !== 'RETURNED') {
+					return 'This asset is returned.';
+				}
+				break;
+
+			case 'CANCELLED':
+				if ($inputStatus !== 'CANCELLED') {
+					return 'This request is already cancelled.';
+				}
+				break;
+		}
+
+		return null;
 	}
 
 	private function alreadyAssigned($assetRequest): bool

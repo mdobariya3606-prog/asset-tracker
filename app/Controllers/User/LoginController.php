@@ -30,7 +30,12 @@ class LoginController
 		$old = [];
 		$success = $_SESSION['login_success'] ?? null;
 		unset($_SESSION['login_success']);
-		require '../resources/views/users/login.php';
+
+		view('login', [
+			'errors' => $errors,
+			'old' => $old,
+			'success' => $success
+		]);
 	}
 
 	public function login(array $postParams)
@@ -45,7 +50,11 @@ class LoginController
 		$errors = $result['errors'];
 		$old = $result['old'] ?? [];
 		$success = null;
-		require '../resources/views/users/login.php';
+		view('login', [
+			'errors' => $errors,
+			'old' => $old,
+			'success' => $success
+		]);
 	}
 
 	/**

@@ -50,10 +50,10 @@ class SelectUserController
 			$activeDeptName = $activeDept[0]['name'] ?? null;
 		}
 
-		$activeDesigName = null;
+		$activeDesignName = null;
 		if ($designationId !== null) {
 			$activeDesig = (new Designation($this->conn))->find($designationId);
-			$activeDesigName = $activeDesig[0]['name'] ?? null;
+			$activeDesignName = $activeDesig[0]['name'] ?? null;
 		}
 
 		$totalUsers = $this->userModel->count($search, $departmentId, $designationId);
@@ -73,6 +73,22 @@ class SelectUserController
 			}
 		}
 
-		require '../resources/views/users/select.php';
+		view('users.select', [
+			'dashboardUser' => $dashboardUser,
+			'dashboardUserRole' => $dashboardUserRole,
+			'search' => $search,
+			'page' => $page,
+			'perPage' => $perPage,
+			'sort' => $sort,
+			'order' => $order,
+			'departmentId' => $departmentId,
+			'designationId' => $designationId,
+			'activeDeptName' => $activeDeptName,
+			'activeDesignName' => $activeDesignName,
+			'totalUsers' => $totalUsers,
+			'totalPages' => $totalPages,
+			'users' => $users,
+			'message' => $message ?? null,
+		]);
 	}
 }

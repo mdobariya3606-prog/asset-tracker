@@ -24,18 +24,18 @@ class CreateDesignationController
 			exit;
 		}
 		if (empty($_SESSION['user_role']) || $_SESSION['user_role'] !== 'ADMIN') {
-			require '../resources/views/errors/403.php';
+			view('403');
 			exit;
 		}
 		$errors = $this->designation->validate($designation);
 
-		if (empty($errors)) {
-			$this->designation->create($designation);
-			header('Location: index.php?route=designations');
+		if (!empty($errors)) {
+			view('designations.create', ['errors' => $errors]);
 			exit;
 		}
 
-		require '../resources/views/designation/create.php';
+		$this->designation->create($designation);
+		header('Location: index.php?route=designations');
 		exit;
 	}
 
@@ -47,9 +47,11 @@ class CreateDesignationController
 			exit;
 		}
 		if (empty($_SESSION['user_role']) || $_SESSION['user_role'] !== 'ADMIN') {
-			require '../resources/views/errors/403.php';
+			view('403');
 			exit;
 		}
-		require '../resources/views/designation/create.php';
+
+		view('designations.create');
+		exit;
 	}
 }

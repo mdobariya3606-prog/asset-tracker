@@ -29,7 +29,7 @@ class CreateAssetController
 
 		$role = strtoupper($_SESSION['user_role'] ?? 'EMPLOYEE');
 		if (!$this->asset->canManageAssets($role)) {
-			require '../resources/views/errors/403.php';
+			view('403');
 			exit;
 		}
 
@@ -83,7 +83,7 @@ class CreateAssetController
 
 		$role = strtoupper($_SESSION['user_role'] ?? 'EMPLOYEE');
 		if (!$this->asset->canManageAssets($role)) {
-			require '../resources/views/errors/403.php';
+			view('403');
 			exit;
 		}
 
@@ -105,7 +105,7 @@ class CreateAssetController
 
 		$role = strtoupper($_SESSION['user_role'] ?? 'EMPLOYEE');
 		if (!$this->asset->canManageAssets($role)) {
-			require '../resources/views/errors/403.php';
+			view('403');
 			exit;
 		}
 
@@ -133,7 +133,7 @@ class CreateAssetController
 
 		$role = strtoupper($_SESSION['user_role'] ?? 'EMPLOYEE');
 		if (!$this->asset->canManageAssets($role)) {
-			require '../resources/views/errors/403.php';
+			view('403');
 			exit;
 		}
 
@@ -150,7 +150,7 @@ class CreateAssetController
 		require '../resources/views/assets/edit_v1.php';
 	}
 
-	public function update(int $id, array $data): void
+	public function update(int $id, array $inputData): void
 	{
 		if (empty($_SESSION['user_id'])) {
 			$_SESSION['login_error'] = 'Please sign in to edit an asset.';
@@ -160,37 +160,57 @@ class CreateAssetController
 
 		$role = strtoupper($_SESSION['user_role'] ?? 'EMPLOYEE');
 		if (!$this->asset->canManageAssets($role)) {
-			require '../resources/views/errors/403.php';
+			view('403');
 			exit;
 		}
 
 		try {
-			$errors = $this->asset->validate($data, $id);
+			$errors = $this->asset->validate($inputData, $id);
+			$old = $inputData;
+
 			if (!empty($errors)) {
 				$this->logError('Asset update validation failed: ' . json_encode($errors));
 				$asset = $this->asset->find($id);
-				$assetData = $data;
+				$assetData = $inputData;
 				$asset = array_merge($asset, $assetData);
 				$statusEnum = (new Asset($this->conn))->statusEnum();
 				$categories = (new Category($this->conn))->all();
 				$vendors = (new Vendor($this->conn))->all();
-				require '../resources/views/assets/edit.php';
+
+				view('assets.edit', [
+					'errors' => $errors,
+					'old' => $old,
+					'assetData' => $assetData,
+					'asset' => $asset,
+					'statusEnum' => $statusEnum,
+					'categories' => $categories,
+					'vendors' => $vendors,
+				]);
 				return;
 			}
 
-			$this->asset->update($id, $data);
+			$this->asset->update($id, $inputData);
 			$_SESSION['success'] = 'Asset updated successfully.';
 			header('Location: index.php?route=assets');
 			exit;
+
 		} catch (InvalidArgumentException $e) {
 			$this->logError('Asset update error: ' . $e->getMessage());
 			$errors = [$e->getMessage()];
 			$asset = $this->asset->find($id);
-			$assetData = $data;
+			$assetData = $inputData;
 			$asset = array_merge($asset, $assetData);
 			$categories = (new Category($this->conn))->all();
 			$vendors = (new Vendor($this->conn))->all();
-			require '../resources/views/assets/edit.php';
+
+			view('assets.edit', [
+				'errors' => $errors,
+				'old' => $old,
+				'asset' => $asset,
+				'assetData' => $assetData,
+				'categories' => $categories,
+				'vendors' => $vendors,
+			]);
 		}
 	}
 
@@ -204,7 +224,7 @@ class CreateAssetController
 
 		$role = strtoupper($_SESSION['user_role'] ?? 'EMPLOYEE');
 		if (!$this->asset->canManageAssets($role)) {
-			require '../resources/views/errors/403.php';
+			view('403');
 			exit;
 		}
 

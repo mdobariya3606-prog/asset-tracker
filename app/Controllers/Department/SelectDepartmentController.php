@@ -39,11 +39,10 @@ class SelectDepartmentController
 
 		$role = $_SESSION['user_role'];
 
-		require '../resources/views/departments/select.php';
-	}
-
-	public function all()
-	{
-		return $this->department->all();
+		view('departments.select', [
+			'departments' => $departments,
+			'dashboardUserRole' => $dashboardUserRole,
+			'role' => $role,
+		]);
 	}
 }

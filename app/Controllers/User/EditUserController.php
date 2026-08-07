@@ -39,7 +39,7 @@ class EditUserController
 		$targetRole = strtoupper($targetUser['role'] ?? 'EMPLOYEE');
 
 		if (!$this->canEditTarget($viewerRole, $targetRole, $isOwnProfile)) {
-			require '../resources/views/errors/403.php';
+			view('403');
 			exit;
 		}
 
@@ -49,7 +49,17 @@ class EditUserController
 		$errors = [];
 		$old = [];
 
-		require '../resources/views/users/edit.php';
+		view('users.edit', [
+			'formData' => $formData,
+			'isOwnProfile' => $isOwnProfile,
+			'targetRole' => $targetRole,
+			'viewerRole' => $viewerRole,
+			'user' => $user,
+			'departments' => $departments,
+			'designations' => $designations,
+			'errors' => $errors,
+			'old' => $old,
+		]);
 	}
 
 	/**
@@ -136,7 +146,7 @@ class EditUserController
 
 		$targetRole = strtoupper($currentUser['role'] ?? 'EMPLOYEE');
 		if (!$this->canEditTarget($viewerRole, $targetRole, $isOwnProfile)) {
-			require '../resources/views/errors/403.php';
+			view('403');
 			exit;
 		}
 
@@ -193,7 +203,17 @@ class EditUserController
 		$errors = $result['errors'];
 		$old = $result['old'];
 
-		require '../resources/views/users/edit.php';
+		view('users.edit', [
+			'formData' => $formData,
+			'isOwnProfile' => $isOwnProfile,
+			'targetRole' => $targetRole,
+			'viewerRole' => $viewerRole,
+			'user' => $user,
+			'departments' => $departments,
+			'designations' => $designations,
+			'errors' => $errors,
+			'old' => $old,
+		]);
 	}
 
 	/**
@@ -310,7 +330,7 @@ class EditUserController
 		$viewerRole = strtoupper($_SESSION['user_role'] ?? 'EMPLOYEE');
 		$targetRole = strtoupper($targetUser['role'] ?? 'EMPLOYEE');
 		if (!$this->canManageTarget($viewerRole, $targetRole)) {
-			require '../resources/views/errors/403.php';
+			view('403');
 			exit;
 		}
 

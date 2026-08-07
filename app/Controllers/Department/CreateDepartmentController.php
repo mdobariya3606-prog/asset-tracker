@@ -24,7 +24,7 @@ class CreateDepartmentController
 			exit;
 		}
 		if (empty($_SESSION['user_role']) || $_SESSION['user_role'] !== 'ADMIN') {
-			require '../resources/views/errors/403.php';
+			view('403');
 			exit;
 		}
 
@@ -37,7 +37,7 @@ class CreateDepartmentController
 			exit;
 		}
 
-		require '../resources/views/departments/create.php';
+		view('departments.create', ['errors' => $errors]);
 	}
 
 	public function create()
@@ -48,9 +48,9 @@ class CreateDepartmentController
 			exit;
 		}
 		if (empty($_SESSION['user_role']) || $_SESSION['user_role'] !== 'ADMIN') {
-			require '../resources/views/errors/403.php';
+			view('403');
 			exit;
 		}
-		require '../resources/views/departments/create.php';
+		view('departments.create');
 	}
 }

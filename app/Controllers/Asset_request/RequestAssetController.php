@@ -26,7 +26,8 @@ class RequestAssetController
 		$errors = $this->assetRequestModel->validate($assetRequest);
 
 		if (empty($errors)) {
-			$stmt = $this->conn->prepare("INSERT INTO asset_requests (user_id, asset_id, asset_name, reason) VALUES (:user_id, :asset_id, :asset_name, :reason)");
+			$stmt = $this->conn->prepare("INSERT INTO asset_requests (user_id, asset_id, asset_name, reason) 
+												VALUES (:user_id, :asset_id, :asset_name, :reason)");
 			$stmt->execute([
 				'user_id' => $_SESSION['user_id'],
 				'asset_id' => $asset_id,
@@ -38,7 +39,7 @@ class RequestAssetController
 			header('Location: index.php?route=assets');
 		}
 
-		require "../resources/views/asset_requests/create.php";
+		view('asset.requests.create', ['errors' => $errors]);
 		exit;
 	}
 

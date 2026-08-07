@@ -158,7 +158,7 @@ try {
 			break;
 
 		case 'GET:assets/requests/manage':
-			(new ManageRequestController($conn))->show((int)($_GET['id'] ?? 0));
+			(new ManageRequestController($conn))->showManageForm((int)($_GET['id'] ?? 0));
 			break;
 
 		case 'POST:assets/requests/manage':
@@ -310,4 +310,52 @@ try {
 //	require '../resources/views/errors/500.php';
 	throw $e;
 	exit;
+}
+
+function view(string $viewFile, array $vars = []): void
+{
+	$pages = [
+		'login' => '../resources/views/users/login.php',
+
+		'403' => '../resources/views/errors/403.php',
+		'404' => '../resources/views/errors/404.php',
+		'500' => '../resources/views/errors/500.php',
+
+		'users.edit' => '../resources/views/users/edit.php',
+		'users.profile' => '../resources/views/users/profile.php',
+		'users.register' => '../resources/views/users/register.php',
+		'users.reset-password' => '../resources/views/users/reset-password.php',
+		'users.select' => '../resources/views/users/select.php',
+
+		'departments.create' => '../resources/views/departments/create.php',
+		'departments.select' => '../resources/views/departments/select.php',
+
+		'designations.create' => '../resources/views/designation/create.php',
+		'designations.select' => '../resources/views/designation/select.php',
+
+		'assets.create' => '../resources/views/assets/create.php',
+		'assets.edit' => '../resources/views/assets/edit.php',
+		'assets.select' => '../resources/views/assets/select.php',
+		'assets.show' => '../resources/views/assets/show.php',
+
+		'asset.requests.create' => '../resources/views/asset_requests/create.php',
+		'asset.requests.select' => '../resources/views/asset_requests/select.php',
+		'asset.requests.manage' => '../resources/views/asset_requests/manage.php',
+		'asset.requests.show' => '../resources/views/asset_requests/show.php',
+	];
+
+	$viewFile = $pages[$viewFile] ?? null;
+	if (!$viewFile) {
+		require '../resources/views/errors/404.php';
+	}
+
+	extract($vars, EXTR_SKIP);
+	require $viewFile;
+}
+
+function redirect(string $page)
+{
+	$pages = [
+		'login' => 'index.php?route=login',
+	];
 }

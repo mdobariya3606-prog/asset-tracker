@@ -25,14 +25,16 @@ class CreateUserController
 				exit;
 			}
 			if (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'EMPLOYEE') {
-				require '../resources/views/errors/403.php';
+				view('403');
 				exit;
 			}
 
 			// Separate file data from post data
 			$file = $_FILES['profile_image'] ?? null;
 			$result = $this->register($postData);
+
 			if ($result['success']) {
+
 				$userId = $result['user_id'];
 				// Handle profile image upload if provided
 				if ($file && $file['error'] === UPLOAD_ERR_OK) {
@@ -63,6 +65,7 @@ class CreateUserController
 					exit;
 				}
 			}
+
 			// On failure, re‑display form with errors
 			$errors = $result['errors'];
 			$old = $result['old'];
@@ -72,7 +75,14 @@ class CreateUserController
 			$departments = $formData['departments'];
 			$designations = $formData['designations'];
 			$roleOptions = $formData['role_options'];
-			require '../resources/views/users/register.php';
+
+			view('users.register', [
+				'departments' => $departments,
+				'designations' => $designations,
+				'roleOptions' => $roleOptions,
+				'old' => $old,
+				'errors' => $errors,
+			]);
 		} catch (\Exception $e) {
 			$this->logError('Exception in store: ' . $e->getMessage());
 			$_SESSION['login_error'] = 'An unexpected error occurred.';
@@ -156,18 +166,22 @@ class CreateUserController
 			exit;
 		}
 		if (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'EMPLOYEE') {
-			require '../resources/views/errors/403.php';
+			view('403');
 			exit;
 		}
 		$formData = $this->showForm();
-		$departments = $formData['departments'];
-		$designations = $formData['designations'];
-		$roleOptions = $formData['role_options'];
-		$errors = [];
-		$old = [];
-		$success = $_SESSION['success'] ?? null;
+
+		view('users.register', [
+			'formData' => $formData,
+			'departments' => $formData['departments'],
+			'designations' => $formData['designations'],
+			'roleOptions' => $formData['role_options'],
+			'errors' => [],
+			'old' => [],
+			'success' => $_SESSION['success'] ?? null,
+		]);
 		unset($_SESSION['success']);
-		require '../resources/views/users/register.php';
+		exit;
 	}
 
 	public function showForm(): array

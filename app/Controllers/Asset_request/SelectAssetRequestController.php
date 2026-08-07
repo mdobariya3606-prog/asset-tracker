@@ -28,12 +28,13 @@ class SelectAssetRequestController
 		}
 
 		if ($_SESSION['user_role'] === 'HR' || $_SESSION['user_role'] === 'EMPLOYEE') {
-			require '../resources/views/errors/403.php';
+			view('403');
 			exit;
 		}
+
 		$stmt = $this->conn->query('select * from asset_requests order by status');
 		$requests = $stmt->fetchAll(\PDO::FETCH_ASSOC);
-		require '../resources/views/asset_requests/select.php';
+		view('asset.requests.select', ['requests' => $requests]);
 		exit;
 	}
 
@@ -48,28 +49,33 @@ class SelectAssetRequestController
 		$role = strtoupper($_SESSION['user_role'] ?? 'EMPLOYEE');
 
 		if ($role === 'EMPLOYEE' || $role === 'HR') {
-			require '../resources/views/errors/403.php';
+			view('403');
 			exit;
 		}
 
 		$dashboardUserRole = $role;
 
-		$requestInfo = $this->assetRequest->find($id);
+		$assetRequest = $this->assetRequest->findOrFail($id);
 
-		$approvedBy = (new User($this->conn))->find($requestInfo["approved_by"]);
-		$rejected_by = (new User($this->conn))->find($requestInfo["rejected_by"]);
-		$issued_by = (new User($this->conn))->find($requestInfo["issued_by"]);
+		$approvedBy = (new User($this->conn))->find($assetRequest["approved_by"]);
+		$rejected_by = (new User($this->conn))->find($assetRequest["rejected_by"]);
+		$issued_by = (new User($this->conn))->find($assetRequest["issued_by"]);
 
-		$requestInfo['approved_by'] = $approvedBy[0]['name'] ?? $requestInfo['approved_by'];
-		$requestInfo['rejected_by'] = $rejected_by[0]['name'] ?? $requestInfo['rejected_by'];
-		$requestInfo['issued_by'] = $issued_by[0]['name'] ?? $requestInfo['issued_by'];
+		$assetRequest['approved_by'] = $approvedBy[0]['name'] ?? $assetRequest['approved_by'];
+		$assetRequest['rejected_by'] = $rejected_by[0]['name'] ?? $assetRequest['rejected_by'];
+		$assetRequest['issued_by'] = $issued_by[0]['name'] ?? $assetRequest['issued_by'];
 
-		if (empty($requestInfo)) {
+		if (empty($assetRequest)) {
 			$_SESSION['login_error'] = 'Request not found.';
 			header('Location: index.php?route=assets/requests');
 			exit;
 		}
 
-		require '../resources/views/asset_requests/show.php';
+		$canManageRequest = ($assetRequest['status'] !== 'RETURNED' && $assetRequest['status'] !== 'CANCELLED');
+
+		view('asset.requests.show', [
+			'assetRequest' => $assetRequest,
+			'canManageRequest' => $canManageRequest
+		]);
 	}
 }

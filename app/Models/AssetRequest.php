@@ -25,13 +25,14 @@ class AssetRequest
 		require '../resources/views/asset_requests/create.php';
 	}
 
-	public function find(int $id): array
+	public function findOrFail(int $id): array
 	{
 		$stmt = $this->conn->prepare("SELECT * FROM asset_requests WHERE id = :id");
 		$stmt->execute(['id' => $id]);
 		$assetRequest = $stmt->fetch();
 		if (empty($assetRequest)) {
-			return [];
+			require '../resources/views/errors/404.php';
+			exit;
 		}
 		return $assetRequest;
 	}
