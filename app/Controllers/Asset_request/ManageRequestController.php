@@ -29,8 +29,6 @@ class ManageRequestController
 
 		$assetRequest = $this->assetRequestModel->findOrFail($assetRequestId);
 
-		$asset = $this->assetModel->find($assetRequest['asset_id']);
-
 		if ($assetRequest['status'] === 'RETURNED' || $assetRequest['status'] === 'CANCELLED') {
 			$message = "This asset/request has been $assetRequest[status]";
 			view('403', [
@@ -41,7 +39,10 @@ class ManageRequestController
 
 		$statusEnum = $this->getStatus();
 
-		view('asset.requests.manage', ['statusEnum' => $statusEnum]);
+		view('asset.requests.manage', [
+			'assetRequest' => $assetRequest,
+			'statusEnum' => $statusEnum
+		]);
 	}
 
 	private function getStatus(): array
@@ -55,33 +56,49 @@ class ManageRequestController
 		];
 	}
 
-	public function update(int $requestId, array $data)
+	public function update(int $requestId, array $inputAssetRequest)
 	{
 		$assetRequest = $this->assetRequestModel->findOrFail($requestId);
-		$errors = $this->validate($data);
+		$errors = $this->validate($inputAssetRequest);
+		$statusEnum = $this->getStatus();
 
 		if (!empty($errors)) {
-			$statusEnum = $this->getStatus();
-			view('asset.requests.manage');
+			view('asset.requests.manage', [
+				'errors' => $errors,
+				'statusEnum' => $statusEnum,
+				'assetRequest' => $assetRequest,
+			]);
 			exit;
 		}
 
-		$data = $this->normalize($data);
+		$inputAssetRequest = $this->normalize($inputAssetRequest);
+		$asset = $this->assetModel->findOrFail($assetRequest['asset_id']);
 
-		if ($errors['general'] = $this->validateStatus($assetRequest, $data)) {
-			$statusEnum = $this->getStatus();
-			view('asset.requests.manage');
+		if ($errors['general'] = $this->alreadyAssigned($asset, $assetRequest, $inputAssetRequest)) {
+			view('asset.requests.manage', [
+				'assetRequest' => $assetRequest,
+				'errors' => $errors,
+				'statusEnum' => $statusEnum,
+			]);
 			exit;
 		}
 
-		$this->assetRequestModel->update($requestId, $data);
+		if ($errors['general'] = $this->validateStatus($assetRequest, $inputAssetRequest)) {
+			view('asset.requests.manage', [
+				'assetRequest' => $assetRequest,
+				'errors' => $errors,
+				'statusEnum' => $statusEnum,
+			]);
+			exit;
+		}
 
-		if ($data['status'] === 'APPROVED') {
-			(new Asset($this->conn))->updateStatus($assetRequest['asset_id'], 'ASSIGNED');
-		} elseif ($data['status'] === 'RETURNED') {
+		$this->assetRequestModel->update($requestId, $inputAssetRequest, $assetRequest);
+
+		if ($inputAssetRequest['status'] === 'APPROVED') {
+			(new Asset($this->conn))->updateStatus($assetRequest['asset_id'], 'ASSIGNED', $assetRequest['user_id']);
+		} elseif ($inputAssetRequest['status'] === 'RETURNED') {
 			(new Asset($this->conn))->updateStatus($assetRequest['asset_id'], 'AVAILABLE');
 		}
-
 		$_SESSION['success'] = 'Asset request updated successfully';
 		route('assets/requests');
 	}
@@ -91,15 +108,14 @@ class ManageRequestController
 		$errors = [];
 
 		$status = $assetRequest['status'];
-		$remark = $assetRequest['remark'];
 		$statusEnum = $this->getStatus();
 
 		if (empty($status)) {
-			$errors['status'] = 'Status is required';
+			$errors['status'] = 'Status is required.';
 		}
 
 		if (!in_array(strtoupper($status), $statusEnum)) {
-			$errors['status'] = 'Status is not valid';
+			$errors['status'] = 'Status is not valid.';
 		}
 
 		return $errors;
@@ -116,7 +132,7 @@ class ManageRequestController
 			'rejected_by' => $request['status'] === 'REJECTED' ? $_SESSION['user_id'] : null,
 			'rejected_at' => $request['status'] === 'REJECTED' ? date('Y-m-d H:i:s') : null,
 
-			'rejection_reason' => empty($request['rejection_reason']) ? null : $request['remark'],
+			'rejection_reason' => empty($request['rejection_reason']) ? null : $request['rejection_reason'],
 
 			'issued_by' => $request['status'] === 'ISSUED' ? $_SESSION['user_id'] : null,
 			'issued_at' => $request['status'] === 'ISSUED' ? date('Y-m-d H:i:s') : null,
@@ -126,48 +142,64 @@ class ManageRequestController
 		];
 	}
 
+	private function alreadyAssigned($asset, $assetRequest, $inputAssetRequest)
+	{
+		switch ($asset['status']) {
+			case 'ASSIGNED':
+				switch ($inputAssetRequest['status']) {
+					case 'APPROVED':
+					case 'ISSUED':
+					case 'RETURNED':
+						return "This asset is already been assigned to #{$assetRequest['user_id']} {$asset['user_name']}.";
+				}
+				break;
+		}
+		return null;
+	}
+
 	private function validateStatus(array $assetRequest, array $input)
 	{
 		$assetStatus = $assetRequest['status'];
 		$inputStatus = $input['status'];
 
 		switch ($assetStatus) {
+//				can approve/reject only
+			case 'PENDING':
+				switch ($inputStatus) {
+					case 'ISSUED':
+						return 'This asset request is not approved yet.';
+					case 'RETURNED':
+						return 'This asset is not issued yet.';
+				}
+				break;
+
+//				can issue only
+			case 'APPROVED':
+				switch ($inputStatus) {
+					case 'PENDING':
+					case 'REJECTED':
+						return 'This asset request has been approved.';
+					case 'RETURNED':
+						return 'This asset has not issued yet.';
+				}
+				break;
+
+			case 'ISSUED':
+				switch ($inputStatus) {
+					case 'PENDING':
+					case 'APPROVED':
+					case 'REJECTED':
+						return 'This asset request is already issued';
+				}
+				break;
+
 			case 'REJECTED':
 				if ($inputStatus !== 'REJECTED') {
-					return 'This request is rejected.';
-				}
-				break;
-
-			case 'RETURNED':
-				if ($inputStatus !== 'RETURNED') {
-					return 'This asset is returned.';
-				}
-				break;
-
-			case 'CANCELLED':
-				if ($inputStatus !== 'CANCELLED') {
-					return 'This request is already cancelled.';
+					return 'This request is already rejected.';
 				}
 				break;
 		}
 
 		return null;
-	}
-
-	private function alreadyAssigned($assetRequest): bool
-	{
-		$stmt = $this->conn->prepare('select * from asset_requests 
-         where asset_id = :asset_id 
-           and user_id != :user_id
-           and status in ("APPROVED", "ISSUED")
-         LIMIT 1
-        ');
-
-		$stmt->execute([
-			'asset_id' => $assetRequest['asset_id'],
-			'user_id' => $assetRequest['user_id'],
-		]);
-
-		return $stmt->rowCount() === 1;
 	}
 }

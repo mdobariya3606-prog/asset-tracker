@@ -91,7 +91,7 @@
                     <label for="remark">Remark (optional)</label>
                     <div class="input-wrapper">
                         <input type="text" name="remark" id="remark" placeholder="ex. Approved by department manager."
-                               value="<?php echo htmlspecialchars($old['remark'] ?? $assetRequest['remark'] ?? ''); ?>">
+                               value="<?php echo htmlspecialchars($assetRequest['remark'] ?? ''); ?>">
                         <svg class="input-icon" viewBox="0 0 24 24">
                             <path d="M20.59 13.41L11 3H4v7l9.59 9.59a2 2 0 0 0 2.82 0l4.18-4.18a2 2 0 0 0 0-2.82z"/>
                             <circle cx="7.5" cy="7.5" r="1.5"/>
@@ -117,7 +117,7 @@
                     <div class="input-wrapper">
                         <input type="text" name="rejection_reason" id="rejection_reason"
                                placeholder="ex. Request does not meet business requirements."
-                               value="<?php echo htmlspecialchars($old['rejection_reason'] ?? $assetRequest['rejection_reason'] ?? ''); ?>">
+                               value="<?php echo htmlspecialchars($assetRequest['rejection_reason'] ?? ''); ?>">
                         <svg class="input-icon" viewBox="0 0 24 24">
                             <path d="M20.59 13.41L11 3H4v7l9.59 9.59a2 2 0 0 0 2.82 0l4.18-4.18a2 2 0 0 0 0-2.82z"/>
                             <circle cx="7.5" cy="7.5" r="1.5"/>

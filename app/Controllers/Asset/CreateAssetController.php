@@ -36,7 +36,7 @@ class CreateAssetController
 		try {
 			$errors = $this->asset->validate($data);
 			if ($errors !== []) {
-				$this->logError('Asset validation failed: ' . json_encode($errors));
+				logError('Asset validation failed: ' . json_encode($errors));
 				$assetData = $data;
 				$categories = (new Category($this->conn))->all();
 				$vendors = (new Vendor($this->conn))->all();
@@ -50,7 +50,7 @@ class CreateAssetController
 			route('asset');
 			exit;
 		} catch (InvalidArgumentException $e) {
-			$this->logError('Asset creation error: ' . $e->getMessage());
+			logError('Asset creation error: ' . $e->getMessage());
 			$errors = [$e->getMessage()];
 			$assetData = $data;
 			$categories = (new Category($this->conn))->all();
@@ -58,19 +58,6 @@ class CreateAssetController
 			$statusEnum = (new Asset($this->conn))->statusEnum();
 			require '../resources/views/assets/create.php';
 		}
-	}
-
-	private function logError(string $message): void
-	{
-		$logFile = __DIR__ . '/../../../logs/errors.log';
-		$date = date('c');
-		$line = "[{$date}] {$message}" . PHP_EOL;
-
-		if (!is_dir(dirname($logFile))) {
-			@mkdir(dirname($logFile), 0777, true);
-		}
-
-		@file_put_contents($logFile, $line, FILE_APPEND);
 	}
 
 	public function create(): void
@@ -169,7 +156,7 @@ class CreateAssetController
 			$old = $inputData;
 
 			if (!empty($errors)) {
-				$this->logError('Asset update validation failed: ' . json_encode($errors));
+				logError('Asset update validation failed: ' . json_encode($errors));
 				$asset = $this->asset->find($id);
 				$assetData = $inputData;
 				$asset = array_merge($asset, $assetData);
@@ -195,7 +182,7 @@ class CreateAssetController
 			exit;
 
 		} catch (InvalidArgumentException $e) {
-			$this->logError('Asset update error: ' . $e->getMessage());
+			logError('Asset update error: ' . $e->getMessage());
 			$errors = [$e->getMessage()];
 			$asset = $this->asset->find($id);
 			$assetData = $inputData;

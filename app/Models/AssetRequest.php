@@ -18,7 +18,7 @@ class AssetRequest
 		$asset = $this->assetModel->find($id);
 		if (empty($asset) || strtoupper((string)($asset['status'] ?? '')) !== 'AVAILABLE') {
 			$_SESSION['general'] = 'Asset #' . $asset['id'] . ' is not available for request.';
-			route('asset');
+			route('assets');
 			exit;
 		}
 
@@ -50,7 +50,7 @@ class AssetRequest
 		return $errors;
 	}
 
-	public function update(int $id, array $request)
+	public function update(int $id, array $request, array $assetRequest)
 	{
 		$stmt = $this->conn->prepare("
 			UPDATE asset_requests 
@@ -75,19 +75,19 @@ class AssetRequest
 		$stmt->execute([
 			'status' => $request['status'],
 
-			'approved_at' => $request['approved_at'],
-			'approved_by' => $request['approved_by'],
+			'approved_at' => $request['approved_at'] ?? $assetRequest['approved_at'],
+			'approved_by' => $request['approved_by'] ?? $assetRequest['approved_by'],
 
-			'rejected_at' => $request['rejected_at'],
-			'rejected_by' => $request['rejected_by'],
+			'rejected_at' => $request['rejected_at'] ?? $assetRequest['rejected_at'],
+			'rejected_by' => $request['rejected_by'] ?? $assetRequest['rejected_by'],
 
 			'rejection_reason' => $request['rejection_reason'],
 
-			'issued_at' => $request['issued_at'],
-			'issued_by' => $request['issued_by'],
+			'issued_at' => $request['issued_at'] ?? $assetRequest['issued_at'],
+			'issued_by' => $request['issued_by'] ?? $assetRequest['issued_by'],
 
 			'remark' => $request['remark'],
-			'returned_at' => $request['returned_at'],
+			'returned_at' => $request['returned_at'] ?? $assetRequest['returned_at'],
 
 			'id' => $id,
 		]);

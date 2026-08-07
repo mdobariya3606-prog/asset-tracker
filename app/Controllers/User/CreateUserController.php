@@ -3,6 +3,7 @@
 namespace App\Controllers\User;
 
 use App\Models\User;
+use Exception;
 use PDO;
 
 class CreateUserController
@@ -16,7 +17,7 @@ class CreateUserController
 		$this->user = new User($conn);
 	}
 
-	public function store(array $postData)
+	public function store(array $postData): void
 	{
 		try {
 			if (empty($_SESSION['user_id'])) {
@@ -36,6 +37,7 @@ class CreateUserController
 			if ($result['success']) {
 
 				$userId = $result['user_id'];
+
 				// Handle profile image upload if provided
 				if ($file && $file['error'] === UPLOAD_ERR_OK) {
 					$allowed = ['image/jpeg', 'image/png', 'image/webp'];
@@ -61,7 +63,7 @@ class CreateUserController
 				}
 				if ($result['success']) {
 					$_SESSION['success'] = 'User registered successfully!';
-					route('users');;
+					route('users');
 					exit;
 				}
 			}
@@ -69,8 +71,9 @@ class CreateUserController
 			// On failure, re‑display form with errors
 			$errors = $result['errors'];
 			$old = $result['old'];
+
 			// Log errors for debugging
-			$this->logError('User registration errors: ' . json_encode($errors));
+			logError('User registration errors: ' . json_encode($errors));
 			$formData = $this->showForm();
 			$departments = $formData['departments'];
 			$designations = $formData['designations'];
@@ -83,8 +86,8 @@ class CreateUserController
 				'old' => $old,
 				'errors' => $errors,
 			]);
-		} catch (\Exception $e) {
-			$this->logError('Exception in store: ' . $e->getMessage());
+		} catch (Exception $e) {
+			logError($e);
 			$_SESSION['login_error'] = 'An unexpected error occurred.';
 			route('users/create');
 			exit;
@@ -158,7 +161,7 @@ class CreateUserController
 		return [];
 	}
 
-	public function create()
+	public function create(): void
 	{
 		if (empty($_SESSION['user_id'])) {
 			$_SESSION['login_error'] = 'Please sign in to add users.';
@@ -203,18 +206,6 @@ class CreateUserController
 	{
 		$stmt = $this->conn->query('SELECT * FROM designations');
 		return $stmt->fetchAll(PDO::FETCH_ASSOC);
-	}
-
-	private function logError(string $message): void
-	{
-		$logFile = __DIR__ . '/../../../logs/errors.log';
-		$date = date('c');
-		$line = "[{$date}] {$message}" . PHP_EOL;
-		// Ensure logs directory exists
-		if (!is_dir(dirname($logFile))) {
-			@mkdir(dirname($logFile), 0777, true);
-		}
-		@file_put_contents($logFile, $line, FILE_APPEND);
 	}
 }
 

@@ -73,11 +73,11 @@ class Asset
 	public function validate(array $asset, ?int $excludeId = null): array
 	{
 		try {
-			$category_ids = $this->conn->query('select id from categories')->fetchAll(PDO::FETCH_COLUMN);
+			$category_ids = $this->conn->query('select id from cadtegories')->fetchAll(PDO::FETCH_COLUMN);
 			$vendor_ids = $this->conn->query('select id from vendors')->fetchAll(PDO::FETCH_COLUMN);
 		} catch (\Exception $e) {
-			$this->logError($e->getMessage());
-			require '../resources/views/errors/500.php';
+			logError($e);
+			view('500');
 			exit();
 		}
 
@@ -154,19 +154,6 @@ class Asset
 		}
 
 		return $errors;
-	}
-
-	private function logError(string $message): void
-	{
-		$logFile = '../logs/errors.log';
-		$date = date('c');
-		$line = "[{$date}] {$message}" . PHP_EOL;
-
-		if (!is_dir(dirname($logFile))) {
-			@mkdir(dirname($logFile), 0777, true);
-		}
-
-		@file_put_contents($logFile, $line, FILE_APPEND);
 	}
 
 	private function isValidDate(string $value): bool

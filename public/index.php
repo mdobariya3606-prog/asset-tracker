@@ -295,7 +295,7 @@ try {
 
 		// Default fallback for layout requests that match no routes (404 Page Not Found)
 		default:
-			require '../resources/views/errors/404.php';
+			view('404');
 			break;
 	}
 } catch (\Throwable $e) {
@@ -306,9 +306,8 @@ try {
 	 * Catches all unhandled exceptions, logs detailed traces internally, and
 	 * displays a generic 500 server error view to the user.
 	 */
-	error_log($e->getMessage() . "\n" . $e->getTraceAsString());
-//	require '../resources/views/errors/500.php';
-	throw $e;
+	logError($e);
+	view('500');
 	exit;
 }
 
@@ -346,7 +345,8 @@ function view(string $viewFile, array $vars = []): void
 
 	$viewFile = $pages[$viewFile] ?? null;
 	if (!$viewFile) {
-		require '../resources/views/errors/404.php';
+		view('404');
+		exit;
 	}
 
 	extract($vars, EXTR_SKIP);
@@ -372,4 +372,36 @@ function route(string $route)
 	}
 
 	header("Location: index.php?route=$route");
+}
+
+function logError(Throwable|string $error, string $file = 'errors'): void
+{
+	if ($error instanceof Throwable) {
+		$message = sprintf(
+			"[%s]\nFile: %s\nLine: %d\n\n%s",
+			$error->getMessage(),
+			$error->getFile(),
+			$error->getLine(),
+			$error->getTraceAsString()
+		);
+	} else {
+		$message = $error;
+	}
+
+	$logDir = '../logs';
+
+	if (!is_dir($logDir)) {
+		mkdir($logDir, 0777, true);
+	}
+
+	$logFile = "{$logDir}/{$file}.log";
+
+	$entry = sprintf(
+		"[%s] %s%s",
+		date('Y-m-d H:i:s'),
+		$message,
+		PHP_EOL
+	);
+
+	file_put_contents($logFile, $entry, FILE_APPEND | LOCK_EX);
 }

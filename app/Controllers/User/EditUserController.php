@@ -175,7 +175,7 @@ class EditUserController
 					$result['success'] = false;
 					$result['errors'] = array_merge($result['errors'], $imageResult['errors']);
 					$result['old'] = $postParams;
-					$this->logError('Profile image upload failed for user #' . $id . ': ' . json_encode($imageResult['errors']));
+					logError('Profile image upload failed for user #' . $id . ': ' . json_encode($imageResult['errors']));
 				}
 			}
 		}
@@ -299,16 +299,6 @@ class EditUserController
 			'success' => true,
 			'errors' => [],
 		];
-	}
-
-	private function logError(string $message): void
-	{
-		$logFile = __DIR__ . '/../../../logs/errors.log';
-		$line = '[' . date('c') . '] ' . $message . PHP_EOL;
-		if (!is_dir(dirname($logFile))) {
-			@mkdir(dirname($logFile), 0777, true);
-		}
-		@file_put_contents($logFile, $line, FILE_APPEND);
 	}
 
 	public function destroy(array $getParams)
