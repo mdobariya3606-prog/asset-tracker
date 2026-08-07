@@ -21,7 +21,7 @@ class SelectAssetController
 	{
 		if (empty($_SESSION['user_id'])) {
 			$_SESSION['login_error'] = 'Please sign in to view assets.';
-			header('Location: index.php?route=login');
+			route('login');
 			exit;
 		}
 
@@ -45,7 +45,7 @@ class SelectAssetController
 	{
 		if (empty($_SESSION['user_id'])) {
 			$_SESSION['login_error'] = 'Please sign in to view asset details.';
-			header('Location: index.php?route=login');
+			route('login');
 			exit;
 		}
 
@@ -56,7 +56,7 @@ class SelectAssetController
 
 		if (empty($asset)) {
 			$_SESSION['login_error'] = 'Asset not found.';
-			header('Location: index.php?route=assets');
+			route('asset');
 			exit;
 		}
 

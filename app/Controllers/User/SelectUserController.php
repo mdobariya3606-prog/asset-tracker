@@ -22,7 +22,7 @@ class SelectUserController
 	{
 		if (empty($_SESSION['user_id'])) {
 			$_SESSION['login_error'] = 'Please sign in to view the users list.';
-			header('Location: index.php?route=login');
+			route('login');
 			exit;
 		}
 
@@ -52,8 +52,8 @@ class SelectUserController
 
 		$activeDesignName = null;
 		if ($designationId !== null) {
-			$activeDesig = (new Designation($this->conn))->find($designationId);
-			$activeDesignName = $activeDesig[0]['name'] ?? null;
+			$activeDesign = (new Designation($this->conn))->find($designationId);
+			$activeDesignName = $activeDesign[0]['name'] ?? null;
 		}
 
 		$totalUsers = $this->userModel->count($search, $departmentId, $designationId);

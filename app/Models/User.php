@@ -315,7 +315,7 @@ class User
 		if ($dashboardUser === null) {
 			session_unset();
 			$_SESSION['login_error'] = 'Your account is no longer available.';
-			header('Location: index.php?route=login');
+			route('login');
 			exit;
 		}
 

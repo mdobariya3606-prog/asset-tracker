@@ -20,7 +20,7 @@ class EditUserController
 	{
 		if (empty($_SESSION['user_id'])) {
 			$_SESSION['login_error'] = 'Please sign in to edit a user.';
-			header('Location: index.php?route=login');
+			route('login');
 			exit;
 		}
 
@@ -31,7 +31,7 @@ class EditUserController
 		$formData = $this->showForm($id);
 		if (!$formData) {
 			$_SESSION['login_error'] = 'User not found.';
-			header('Location: index.php?route=users');
+			route('users');;
 			exit;
 		}
 
@@ -129,7 +129,7 @@ class EditUserController
 	{
 		if (empty($_SESSION['user_id'])) {
 			$_SESSION['login_error'] = 'Please sign in to edit a user.';
-			header('Location: index.php?route=login');
+			route('login');
 			exit;
 		}
 
@@ -140,7 +140,7 @@ class EditUserController
 		$currentUser = $this->user->find($id)[0] ?? null;
 		if (!$currentUser) {
 			$_SESSION['login_error'] = 'User not found.';
-			header('Location: index.php?route=users');
+			route('users');;
 			exit;
 		}
 
@@ -186,14 +186,14 @@ class EditUserController
 				$_SESSION['user_email'] = strtolower(trim($postParams['email']));
 			}
 			$_SESSION['success'] = 'User details updated successfully!';
-			header('Location: index.php?route=users');
+			route('users');;
 			exit;
 		}
 
 		$formData = $this->showForm($id);
 		if (!$formData) {
 			$_SESSION['login_error'] = 'User not found.';
-			header('Location: index.php?route=users');
+			route('users');;
 			exit;
 		}
 
@@ -315,7 +315,7 @@ class EditUserController
 	{
 		if (empty($_SESSION['user_id'])) {
 			$_SESSION['login_error'] = 'Please sign in to delete a user.';
-			header('Location: index.php?route=login');
+			route('login');
 			exit;
 		}
 
@@ -323,7 +323,7 @@ class EditUserController
 		$targetUser = $this->user->find($id)[0] ?? null;
 		if ($targetUser === null) {
 			$_SESSION['login_error'] = 'User not found.';
-			header('Location: index.php?route=users');
+			route('users');;
 			exit;
 		}
 
@@ -339,7 +339,7 @@ class EditUserController
 		} else {
 			$_SESSION['login_error'] = 'Failed to delete user.';
 		}
-		header('Location: index.php?route=users');
+		route('users');;
 		exit;
 	}
 

@@ -43,7 +43,7 @@ class LoginController
 		$result = $this->authenticate($postParams);
 
 		if ($result['success']) {
-			header('Location: index.php?route=users');
+			route('users');;
 			exit;
 		}
 
@@ -158,7 +158,7 @@ class LoginController
 	public function signout()
 	{
 		$this->logout();
-		header('Location: index.php?route=login');
+		route('login');
 		exit;
 	}
 

@@ -36,7 +36,7 @@ class RequestAssetController
 			]);
 
 			$_SESSION['success'] = "Request sent successfully";
-			header('Location: index.php?route=assets');
+			route('asset');
 		}
 
 		view('asset.requests.create', ['errors' => $errors]);

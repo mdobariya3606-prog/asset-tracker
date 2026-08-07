@@ -22,7 +22,7 @@ class ResetPasswordController
 		$user = $this->user->find($id)[0] ?? null;
 		if ($user === null) {
 			$_SESSION['login_error'] = 'User not found.';
-			header('Location: index.php?route=users');
+			route('users');;
 			exit;
 		}
 
@@ -37,7 +37,7 @@ class ResetPasswordController
 	{
 		if (empty($_SESSION['user_id'])) {
 			$_SESSION['login_error'] = 'Please sign in to reset a password.';
-			header('Location: index.php?route=login');
+			route('login');
 			exit;
 		}
 
@@ -74,7 +74,7 @@ class ResetPasswordController
 		$user = $this->user->find($id)[0] ?? null;
 		if ($user === null) {
 			$_SESSION['login_error'] = 'User not found.';
-			header('Location: index.php?route=users');
+			route('users');;
 			exit;
 		}
 
@@ -104,7 +104,7 @@ class ResetPasswordController
 		}
 
 		$_SESSION['success'] = 'Password reset successfully for ' . $user['name'] . '.';
-		header('Location: index.php?route=users');
+		route('users');;
 		exit;
 	}
 }

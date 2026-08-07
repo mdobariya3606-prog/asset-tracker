@@ -18,7 +18,7 @@ class ProfileController
 	{
 		if (empty($_SESSION['user_id'])) {
 			$_SESSION['login_error'] = 'Please sign in to view a user profile.';
-			header('Location: index.php?route=login');
+			route('login');
 			exit;
 		}
 
@@ -28,7 +28,7 @@ class ProfileController
 		$user = $this->user->find($id)[0] ?? null;
 		if ($user === null) {
 			$_SESSION['login_error'] = 'User not found.';
-			header('Location: index.php?route=users');
+			route('users');;
 			exit;
 		}
 

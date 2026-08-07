@@ -21,7 +21,7 @@ class CreateUserController
 		try {
 			if (empty($_SESSION['user_id'])) {
 				$_SESSION['login_error'] = 'Please sign in to add users.';
-				header('Location: index.php?route=login');
+				route('login');
 				exit;
 			}
 			if (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'EMPLOYEE') {
@@ -61,7 +61,7 @@ class CreateUserController
 				}
 				if ($result['success']) {
 					$_SESSION['success'] = 'User registered successfully!';
-					header('Location: index.php?route=users');
+					route('users');;
 					exit;
 				}
 			}
@@ -86,7 +86,7 @@ class CreateUserController
 		} catch (\Exception $e) {
 			$this->logError('Exception in store: ' . $e->getMessage());
 			$_SESSION['login_error'] = 'An unexpected error occurred.';
-			header('Location: index.php?route=users/create');
+			route('users/create');
 			exit;
 		}
 	}
@@ -162,7 +162,7 @@ class CreateUserController
 	{
 		if (empty($_SESSION['user_id'])) {
 			$_SESSION['login_error'] = 'Please sign in to add users.';
-			header('Location: index.php?route=login');
+			route('login');
 			exit;
 		}
 		if (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'EMPLOYEE') {

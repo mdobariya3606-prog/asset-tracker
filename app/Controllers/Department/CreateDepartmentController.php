@@ -20,7 +20,7 @@ class CreateDepartmentController
 	{
 		if (empty($_SESSION['user_id'])) {
 			$_SESSION['login_error'] = 'Please sign in.';
-			header('Location: index.php?route=login');
+			route('login');
 			exit;
 		}
 		if (empty($_SESSION['user_role']) || $_SESSION['user_role'] !== 'ADMIN') {
@@ -33,7 +33,7 @@ class CreateDepartmentController
 			$this->department->create($department);
 			$_SESSION['success'] = 'Department created successfully';
 
-			header('Location: index.php?route=departments');
+			route('departments');
 			exit;
 		}
 
@@ -44,7 +44,7 @@ class CreateDepartmentController
 	{
 		if (empty($_SESSION['user_id'])) {
 			$_SESSION['login_error'] = 'Please sign in to add a department.';
-			header('Location: index.php?route=login');
+			route('login');
 			exit;
 		}
 		if (empty($_SESSION['user_role']) || $_SESSION['user_role'] !== 'ADMIN') {

@@ -87,7 +87,7 @@ try {
 	switch ("$method:$route") {
 		// GET:/index - Send visitors to the appropriate landing page
 		case 'GET:':
-			header('Location: index.php?route=' . (empty($_SESSION['user_id']) ? 'login' : 'users'));
+			route(empty($_SESSION['user_id']) ? 'login' : 'users');
 			exit;
 
 		/* ------------------------------------------------------------------------
@@ -169,14 +169,14 @@ try {
 			(new AssetRequest($conn))->create($_GET['id']);
 
 //			$_SESSION['success'] = 'Asset request submitted successfully.';
-//			header('Location: index.php?route=assets');
+//			route('asset');
 			break;
 
 		case 'POST:assets/request':
 			$asset = (new Asset($conn))->find((int)($_GET['id'] ?? 0));
 			if (empty($asset) || strtoupper((string)($asset['status'] ?? '')) !== 'AVAILABLE') {
 				$_SESSION['general'] = 'Asset #' . $asset['id'] . ' is not available for request.';
-				header('Location: index.php?route=assets');
+				route('asset');
 				exit;
 			}
 
@@ -353,9 +353,23 @@ function view(string $viewFile, array $vars = []): void
 	require $viewFile;
 }
 
-function redirect(string $page)
+function route(string $route)
 {
-	$pages = [
-		'login' => 'index.php?route=login',
+	$routes = [
+		'login',
+		'assets',
+		'assets/requests',
+		'departments',
+		'designations',
+		'users',
+		'users/create',
 	];
+
+
+	if (!in_array($route, $routes, true)) {
+		view('404');
+		exit;
+	}
+
+	header("Location: index.php?route=$route");
 }

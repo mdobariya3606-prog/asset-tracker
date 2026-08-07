@@ -18,7 +18,7 @@ class AssetRequest
 		$asset = $this->assetModel->find($id);
 		if (empty($asset) || strtoupper((string)($asset['status'] ?? '')) !== 'AVAILABLE') {
 			$_SESSION['general'] = 'Asset #' . $asset['id'] . ' is not available for request.';
-			header('Location: index.php?route=assets');
+			route('asset');
 			exit;
 		}
 

@@ -23,7 +23,7 @@ class CreateAssetController
 	{
 		if (empty($_SESSION['user_id'])) {
 			$_SESSION['login_error'] = 'Please sign in to add an asset.';
-			header('Location: index.php?route=login');
+			route('login');
 			exit;
 		}
 
@@ -47,7 +47,7 @@ class CreateAssetController
 
 			$this->asset->create($data);
 			$_SESSION['success'] = 'Asset created successfully.';
-			header('Location: index.php?route=assets');
+			route('asset');
 			exit;
 		} catch (InvalidArgumentException $e) {
 			$this->logError('Asset creation error: ' . $e->getMessage());
@@ -77,7 +77,7 @@ class CreateAssetController
 	{
 		if (empty($_SESSION['user_id'])) {
 			$_SESSION['login_error'] = 'Please sign in to add an asset.';
-			header('Location: index.php?route=login');
+			route('login');
 			exit;
 		}
 
@@ -99,7 +99,7 @@ class CreateAssetController
 	{
 		if (empty($_SESSION['user_id'])) {
 			$_SESSION['login_error'] = 'Please sign in to edit an asset.';
-			header('Location: index.php?route=login');
+			route('login');
 			exit;
 		}
 
@@ -112,7 +112,7 @@ class CreateAssetController
 		$asset = $this->asset->find($id);
 		if (empty($asset)) {
 			$_SESSION['general'] = 'Asset #' . $asset['id'] . ' is not found.';
-			header('Location: index.php?route=assets');
+			route('asset');
 			exit;
 		}
 		$errors = [];
@@ -127,7 +127,7 @@ class CreateAssetController
 	{
 		if (empty($_SESSION['user_id'])) {
 			$_SESSION['login_error'] = 'Please sign in to edit an asset.';
-			header('Location: index.php?route=login');
+			route('login');
 			exit;
 		}
 
@@ -140,7 +140,7 @@ class CreateAssetController
 		$asset = $this->asset->find($id);
 		if (empty($asset)) {
 			$_SESSION['login_error'] = 'Asset not found.';
-			header('Location: index.php?route=assets');
+			route('asset');
 			exit;
 		}
 		$errors = [];
@@ -154,7 +154,7 @@ class CreateAssetController
 	{
 		if (empty($_SESSION['user_id'])) {
 			$_SESSION['login_error'] = 'Please sign in to edit an asset.';
-			header('Location: index.php?route=login');
+			route('login');
 			exit;
 		}
 
@@ -191,7 +191,7 @@ class CreateAssetController
 
 			$this->asset->update($id, $inputData);
 			$_SESSION['success'] = 'Asset updated successfully.';
-			header('Location: index.php?route=assets');
+			route('asset');
 			exit;
 
 		} catch (InvalidArgumentException $e) {
@@ -218,7 +218,7 @@ class CreateAssetController
 	{
 		if (empty($_SESSION['user_id'])) {
 			$_SESSION['login_error'] = 'Please sign in to delete an asset.';
-			header('Location: index.php?route=login');
+			route('login');
 			exit;
 		}
 
@@ -230,7 +230,7 @@ class CreateAssetController
 
 		$this->asset->delete($id);
 		$_SESSION['success'] = 'Asset deleted successfully.';
-		header('Location: index.php?route=assets');
+		route('asset');
 		exit;
 	}
 }

@@ -20,7 +20,7 @@ class CreateDesignationController
 	{
 		if (empty($_SESSION['user_id'])) {
 			$_SESSION['login_error'] = 'Please sign in.';
-			header('Location: index.php?route=login');
+			route('login');
 			exit;
 		}
 		if (empty($_SESSION['user_role']) || $_SESSION['user_role'] !== 'ADMIN') {
@@ -35,7 +35,7 @@ class CreateDesignationController
 		}
 
 		$this->designation->create($designation);
-		header('Location: index.php?route=designations');
+		route('designations');
 		exit;
 	}
 
@@ -43,7 +43,7 @@ class CreateDesignationController
 	{
 		if (empty($_SESSION['user_id'])) {
 			$_SESSION['login_error'] = 'Please sign in to add a designation.';
-			header('Location: index.php?route=login');
+			route('login');
 			exit;
 		}
 		if (empty($_SESSION['user_role']) || $_SESSION['user_role'] !== 'ADMIN') {

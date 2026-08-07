@@ -83,7 +83,7 @@ class ManageRequestController
 		}
 
 		$_SESSION['success'] = 'Asset request updated successfully';
-		header("Location: index.php?route=assets/requests");
+		route('assets/requests');
 	}
 
 	private function validate(array $assetRequest): array

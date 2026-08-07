@@ -20,7 +20,7 @@ class SelectDepartmentController
 	{
 		if (empty($_SESSION['user_id'])) {
 			$_SESSION['login_error'] = 'Please sign in to view departments.';
-			header('Location: index.php?route=login');
+			route('login');
 			exit;
 		}
 		if (isset($getParams['id'])) {
