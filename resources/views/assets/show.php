@@ -230,16 +230,23 @@
             <label>Cost</label>
             <span><?= htmlspecialchars($asset['cost'] ?? 'N/A') ?></span>
         </div>
+        <div class="detail">
+            <label>Assignee</label>
+            <span>
+                <a href="index.php?route=users/profile&id=<?= $asset['assignee_id']; ?>"
+                   style="color: var(--slate-800); font-weight: 500;"
+                   onclick="
+                   <?php $_SESSION['back'] = 'index.php?route=assets/show&id=' . $asset['id']; ?>">
+                    #<?= htmlspecialchars($asset['assignee_id'] ?? 'N/A') ?>
+                </a>
+            </span>
+        </div>
     </section>
     <nav class="actions">
-        <a class="back" href="<?php
-        if (isset($_SESSION['back'])) {
-            echo $_SESSION['back'];
-            unset($_SESSION['back']);
-        } else {
-            echo "index.php?route=assets";
-        }
-        ?>">Back</a>
+        <a class="back"
+           href="index.php?route=assets"
+        >Back</a>
+
         <?php if ($canManageAssets): ?>
             <a class="edit" href="index.php?route=assets/edit&id=<?= (int)$asset['id'] ?>">Edit Asset</a>
             <a class="delete" href="index.php?route=assets/delete&id=<?= (int)$asset['id'] ?>"

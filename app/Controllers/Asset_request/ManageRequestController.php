@@ -150,7 +150,8 @@ class ManageRequestController
 					case 'APPROVED':
 					case 'ISSUED':
 					case 'RETURNED':
-						return "This asset is already been assigned to #{$assetRequest['user_id']} {$asset['user_name']}.";
+						if ($assetRequest['user_id'] !== $asset['assignee_id'])
+							return "This asset is already been assigned to #{$asset['assignee_id']} {$asset['user_name']}.";
 				}
 				break;
 		}

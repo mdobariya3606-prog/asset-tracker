@@ -1,3 +1,11 @@
+<?php
+$back = $_SESSION['back'] ?? 'index.php?route=users';
+if (isset($_SESSION['back'])) {
+    unset($_SESSION['back']);
+}
+?>
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -177,14 +185,7 @@
             <label>Designation</label><span><?= htmlspecialchars($user['designation_name'] ?? 'N/A') ?></span></div>
     </section>
     <nav class="actions">
-        <a class="back" href="<?php
-        if (isset($_SESSION['back'])) {
-            echo $_SESSION['back'];
-            unset($_SESSION['back']);
-        } else {
-            echo "index.php?route=users";
-        }
-        ?>">Back</a>
+        <a class="back" href="<?= $back ?>">Back</a>
         <?php if ($canEditProfile): ?>
             <a class="edit" href="index.php?route=users/edit&id=<?= (int)$user['id'] ?>">Edit Profile</a>
         <?php endif; ?>

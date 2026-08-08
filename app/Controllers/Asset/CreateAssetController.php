@@ -47,7 +47,7 @@ class CreateAssetController
 
 			$this->asset->create($data);
 			$_SESSION['success'] = 'Asset created successfully.';
-			route('asset');
+			route('assets');
 			exit;
 		} catch (InvalidArgumentException $e) {
 			logError('Asset creation error: ' . $e->getMessage());
@@ -99,7 +99,7 @@ class CreateAssetController
 		$asset = $this->asset->find($id);
 		if (empty($asset)) {
 			$_SESSION['general'] = 'Asset #' . $asset['id'] . ' is not found.';
-			route('asset');
+			route('assets');
 			exit;
 		}
 		$errors = [];
@@ -127,7 +127,7 @@ class CreateAssetController
 		$asset = $this->asset->find($id);
 		if (empty($asset)) {
 			$_SESSION['login_error'] = 'Asset not found.';
-			route('asset');
+			route('assets');
 			exit;
 		}
 		$errors = [];
@@ -178,7 +178,7 @@ class CreateAssetController
 
 			$this->asset->update($id, $inputData);
 			$_SESSION['success'] = 'Asset updated successfully.';
-			route('asset');
+			route('assets');
 			exit;
 
 		} catch (InvalidArgumentException $e) {
@@ -217,7 +217,7 @@ class CreateAssetController
 
 		$this->asset->delete($id);
 		$_SESSION['success'] = 'Asset deleted successfully.';
-		route('asset');
+		route('assets');
 		exit;
 	}
 }

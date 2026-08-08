@@ -75,19 +75,19 @@ class AssetRequest
 		$stmt->execute([
 			'status' => $request['status'],
 
-			'approved_at' => $request['approved_at'] ?? $assetRequest['approved_at'],
-			'approved_by' => $request['approved_by'] ?? $assetRequest['approved_by'],
+			'approved_at' => $assetRequest['approved_at'] ?? $request['approved_at'],
+			'approved_by' => $assetRequest['approved_by'] ?? $request['approved_by'],
 
-			'rejected_at' => $request['rejected_at'] ?? $assetRequest['rejected_at'],
-			'rejected_by' => $request['rejected_by'] ?? $assetRequest['rejected_by'],
+			'rejected_at' => $assetRequest['rejected_at'] ?? $request['rejected_at'],
+			'rejected_by' => $assetRequest['rejected_by'] ?? $request['rejected_by'],
 
 			'rejection_reason' => $request['rejection_reason'],
 
-			'issued_at' => $request['issued_at'] ?? $assetRequest['issued_at'],
-			'issued_by' => $request['issued_by'] ?? $assetRequest['issued_by'],
+			'issued_at' => $assetRequest['issued_at'] ?? $request['issued_at'],
+			'issued_by' => $assetRequest['issued_by'] ?? $request['issued_by'],
 
 			'remark' => $request['remark'],
-			'returned_at' => $request['returned_at'] ?? $assetRequest['returned_at'],
+			'returned_at' => $assetRequest['returned_at'] ?? $request['returned_at'],
 
 			'id' => $id,
 		]);

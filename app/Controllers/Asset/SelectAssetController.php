@@ -56,7 +56,7 @@ class SelectAssetController
 
 		if (empty($asset)) {
 			$_SESSION['login_error'] = 'Asset not found.';
-			route('asset');
+			route('assets');
 			exit;
 		}
 

@@ -1,5 +1,29 @@
 <?php
 
+//set_error_handler(function (
+//	int    $severity,
+//	string $message,
+//	string $file,
+//	int    $line
+//) {
+//	logError(sprintf(
+//		"[%s] %s\nFile: %s\nLine: %d",
+//		match ($severity) {
+//			E_WARNING => 'WARNING',
+//			E_NOTICE => 'NOTICE',
+//			E_USER_WARNING => 'USER WARNING',
+//			E_USER_NOTICE => 'USER NOTICE',
+//			default => 'ERROR',
+//		},
+//		$message,
+//		$file,
+//		$line
+//	));
+//
+//	// Don't let PHP display its default warning
+//	return true;
+//});
+
 /**
  * ============================================================================
  * SECTION 1: SESSION INITIALIZATION & IMPORTS
@@ -49,6 +73,7 @@ $dotenv->load();
  */
 
 $conn = (new Database())->getConnection();
+$back = null;
 
 // Keep dashboard identity data in sync with admin updates made in another session.
 // The session retains authentication state; name, email, and role are refreshed
@@ -167,16 +192,13 @@ try {
 
 		case 'GET:assets/request':
 			(new AssetRequest($conn))->create($_GET['id']);
-
-//			$_SESSION['success'] = 'Asset request submitted successfully.';
-//			route('asset');
 			break;
 
 		case 'POST:assets/request':
 			$asset = (new Asset($conn))->find((int)($_GET['id'] ?? 0));
 			if (empty($asset) || strtoupper((string)($asset['status'] ?? '')) !== 'AVAILABLE') {
 				$_SESSION['general'] = 'Asset #' . $asset['id'] . ' is not available for request.';
-				route('asset');
+				route('assets');
 				exit;
 			}
 
@@ -345,7 +367,7 @@ function view(string $viewFile, array $vars = []): void
 
 	$viewFile = $pages[$viewFile] ?? null;
 	if (!$viewFile) {
-		view('404');
+		view('403');
 		exit;
 	}
 
@@ -353,7 +375,7 @@ function view(string $viewFile, array $vars = []): void
 	require $viewFile;
 }
 
-function route(string $route)
+function route(string $route, $params = '')
 {
 	$routes = [
 		'login',
@@ -371,7 +393,7 @@ function route(string $route)
 		exit;
 	}
 
-	header("Location: index.php?route=$route");
+	header("Location: index.php?route=$route&" . $params);
 }
 
 function logError(Throwable|string $error, string $file = 'errors'): void

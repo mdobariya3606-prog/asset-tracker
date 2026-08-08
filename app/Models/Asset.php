@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Exception;
 use InvalidArgumentException;
 use PDO;
 
@@ -73,9 +74,9 @@ class Asset
 	public function validate(array $asset, ?int $excludeId = null): array
 	{
 		try {
-			$category_ids = $this->conn->query('select id from cadtegories')->fetchAll(PDO::FETCH_COLUMN);
+			$category_ids = $this->conn->query('select id from categories')->fetchAll(PDO::FETCH_COLUMN);
 			$vendor_ids = $this->conn->query('select id from vendors')->fetchAll(PDO::FETCH_COLUMN);
-		} catch (\Exception $e) {
+		} catch (Exception $e) {
 			logError($e);
 			view('500');
 			exit();
@@ -245,7 +246,7 @@ class Asset
                 FROM assets a
                 LEFT JOIN categories c ON a.category_id = c.id
                 LEFT JOIN vendors v ON a.vendor_id = v.id
-                ORDER BY a.id DESC';
+                ORDER BY a.status';
 		$stmt = $this->conn->query($sql);
 		return $stmt->fetchAll(PDO::FETCH_ASSOC);
 	}
@@ -273,18 +274,30 @@ class Asset
 		];
 	}
 
-	public function updateStatus(int $id, string $status)
+	public function updateStatus(int $id, string $status, $assignee_id = null)
+	{
+		$stmt = $this->conn->prepare('update assets set status = :status, assignee_id = :assignee_id WHERE id = :id');
+		$stmt->execute([
+			'status' => $status,
+			'id' => $id,
+			'assignee_id' => $assignee_id,
+		]);
+	}
+
+	public function findOrFail(int $id): array
 	{
 		$asset = $this->find($id);
-
-		$stmt = $this->conn->prepare('update assets set status = :status WHERE id = :id');
-		$stmt->execute(['status' => $status, 'id' => $id]);
+		if ($asset === []) {
+			view('404');
+		}
+		return $asset;
 	}
 
 	public function find(int $id): array
 	{
-		$sql = 'SELECT a.*, c.name AS category_name, v.name AS vendor_name
+		$sql = 'SELECT a.*, u.name AS user_name, c.name AS category_name, v.name AS vendor_name
                 FROM assets a
+                LEFT JOIN users u ON a.assignee_id = u.id
                 LEFT JOIN categories c ON a.category_id = c.id
                 LEFT JOIN vendors v ON a.vendor_id = v.id
                 WHERE a.id = ?';
