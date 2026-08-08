@@ -6,7 +6,11 @@
     <title>Login — AssetTracker</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
 
         body {
             font-family: 'Inter', sans-serif;
@@ -30,15 +34,21 @@
             z-index: 0;
             pointer-events: none;
         }
+
         body::before {
-            width: 420px; height: 420px;
+            width: 420px;
+            height: 420px;
             background: radial-gradient(circle, #3b82f6 0%, transparent 70%);
-            top: -120px; right: -100px;
+            top: -120px;
+            right: -100px;
         }
+
         body::after {
-            width: 350px; height: 350px;
+            width: 350px;
+            height: 350px;
             background: radial-gradient(circle, #06b6d4 0%, transparent 70%);
-            bottom: -80px; left: -60px;
+            bottom: -80px;
+            left: -60px;
         }
 
         .login-container {
@@ -74,7 +84,8 @@
         }
 
         .card-header .icon svg {
-            width: 28px; height: 28px;
+            width: 28px;
+            height: 28px;
             fill: none;
             stroke: #fff;
             stroke-width: 2;
@@ -127,15 +138,30 @@
         }
 
         .alert-success svg, .alert-error svg {
-            width: 20px; height: 20px; flex-shrink: 0;
-            fill: none; stroke-width: 2;
+            width: 20px;
+            height: 20px;
+            flex-shrink: 0;
+            fill: none;
+            stroke-width: 2;
         }
-        .alert-success svg { stroke: #34d399; }
-        .alert-error svg   { stroke: #f87171; }
+
+        .alert-success svg {
+            stroke: #34d399;
+        }
+
+        .alert-error svg {
+            stroke: #f87171;
+        }
 
         @keyframes slideDown {
-            from { opacity: 0; transform: translateY(-10px); }
-            to   { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         /* Form */
@@ -167,7 +193,8 @@
             left: 14px;
             top: 50%;
             transform: translateY(-50%);
-            width: 18px; height: 18px;
+            width: 18px;
+            height: 18px;
             stroke: #94a3b8;
             fill: none;
             stroke-width: 2;
@@ -225,8 +252,12 @@
         }
 
         .error-text svg {
-            width: 14px; height: 14px; flex-shrink: 0;
-            stroke: #f87171; fill: none; stroke-width: 2;
+            width: 14px;
+            height: 14px;
+            flex-shrink: 0;
+            stroke: #f87171;
+            fill: none;
+            stroke-width: 2;
         }
 
         /* Password toggle */
@@ -243,9 +274,11 @@
         }
 
         .pass-toggle svg {
-            width: 18px; height: 18px;
+            width: 18px;
+            height: 18px;
             stroke: #94a3b8;
-            fill: none; stroke-width: 2;
+            fill: none;
+            stroke-width: 2;
             transition: stroke 0.2s;
         }
 
@@ -269,7 +302,8 @@
         }
 
         .remember-me input[type="checkbox"] {
-            width: 16px; height: 16px;
+            width: 16px;
+            height: 16px;
             accent-color: #3b82f6;
             border-radius: 4px;
             cursor: pointer;
@@ -315,7 +349,7 @@
             content: '';
             position: absolute;
             inset: 0;
-            background: linear-gradient(135deg, transparent, rgba(255,255,255,0.15), transparent);
+            background: linear-gradient(135deg, transparent, rgba(255, 255, 255, 0.15), transparent);
             transform: translateX(-100%);
             transition: transform 0.5s ease;
         }
@@ -341,9 +375,13 @@
         }
 
         .btn-submit svg {
-            width: 18px; height: 18px;
-            stroke: currentColor; fill: none;
-            stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
+            width: 18px;
+            height: 18px;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
         }
 
         /* Divider */
@@ -400,14 +438,15 @@
         }
 
         .logged-in-banner .avatar {
-            width: 64px; height: 64px;
+            width: 64px;
+            height: 64px;
             background: linear-gradient(135deg, #3b82f6, #06b6d4);
             border-radius: 50%;
             display: inline-flex;
             align-items: center;
             justify-content: center;
             margin-bottom: 16px;
-            box-shadow: 0 4px 16px rgba(59,130,246,.25);
+            box-shadow: 0 4px 16px rgba(59, 130, 246, .25);
         }
 
         .logged-in-banner .avatar span {
@@ -445,13 +484,18 @@
             text-decoration: none;
             transition: all .2s;
         }
+
         .btn-outline:hover {
             background: #fef2f2;
             border-color: #f87171;
         }
+
         .btn-outline svg {
-            width: 16px; height: 16px;
-            stroke: currentColor; fill: none; stroke-width: 2;
+            width: 16px;
+            height: 16px;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 2;
         }
 
         .btn-link-primary {
@@ -469,23 +513,39 @@
             cursor: pointer;
             text-decoration: none;
             transition: all .25s;
-            box-shadow: 0 2px 10px rgba(19,52,88,.3);
+            box-shadow: 0 2px 10px rgba(19, 52, 88, .3);
         }
+
         .btn-link-primary:hover {
             transform: translateY(-1px);
-            box-shadow: 0 6px 20px rgba(59,130,246,.4);
+            box-shadow: 0 6px 20px rgba(59, 130, 246, .4);
         }
+
         .btn-link-primary svg {
-            width: 16px; height: 16px;
-            stroke: currentColor; fill: none; stroke-width: 2;
-            stroke-linecap: round; stroke-linejoin: round;
+            width: 16px;
+            height: 16px;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
         }
 
         /* Responsive */
         @media (max-width: 500px) {
-            .card { padding: 32px 24px; }
-            .card-header h1 { font-size: 22px; }
-            .form-options { flex-direction: column; gap: 12px; align-items: flex-start; }
+            .card {
+                padding: 32px 24px;
+            }
+
+            .card-header h1 {
+                font-size: 22px;
+            }
+
+            .form-options {
+                flex-direction: column;
+                gap: 12px;
+                align-items: flex-start;
+            }
         }
     </style>
 </head>
@@ -497,7 +557,9 @@
             <!-- Already logged in -->
             <div class="card-header">
                 <div class="icon">
-                    <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                    <svg viewBox="0 0 24 24">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                    </svg>
                 </div>
                 <h1>Welcome Back</h1>
                 <p>You are currently logged in</p>
@@ -512,11 +574,18 @@
 
                 <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
                     <a href="index.php?route=users" class="btn-link-primary">
-                        <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+                        <svg viewBox="0 0 24 24">
+                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                            <circle cx="9" cy="7" r="4"/>
+                        </svg>
                         View Users
                     </a>
                     <a href="index.php?route=logout" class="btn-outline">
-                        <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                        <svg viewBox="0 0 24 24">
+                            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                            <polyline points="16 17 21 12 16 7"/>
+                            <line x1="21" y1="12" x2="9" y2="12"/>
+                        </svg>
                         Logout
                     </a>
                 </div>
@@ -538,14 +607,21 @@
 
             <?php if (!empty($success)): ?>
                 <div class="alert-success">
-                    <svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                    <svg viewBox="0 0 24 24">
+                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                        <polyline points="22 4 12 14.01 9 11.01"/>
+                    </svg>
                     <?= htmlspecialchars($success) ?>
                 </div>
             <?php endif; ?>
 
             <?php if (!empty($errors['general'])): ?>
                 <div class="alert-error">
-                    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                    <svg viewBox="0 0 24 24">
+                        <circle cx="12" cy="12" r="10"/>
+                        <line x1="12" y1="8" x2="12" y2="12"/>
+                        <line x1="12" y1="16" x2="12.01" y2="16"/>
+                    </svg>
                     <?= htmlspecialchars($errors['general']) ?>
                 </div>
             <?php endif; ?>
@@ -560,11 +636,18 @@
                                placeholder="name@company.com"
                                value="<?= htmlspecialchars($old['email'] ?? '') ?>"
                                autofocus>
-                        <svg class="input-icon" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                        <svg class="input-icon" viewBox="0 0 24 24">
+                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                            <polyline points="22,6 12,13 2,6"/>
+                        </svg>
                     </div>
                     <?php if (isset($errors['email'])): ?>
                         <div class="error-text">
-                            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                            <svg viewBox="0 0 24 24">
+                                <circle cx="12" cy="12" r="10"/>
+                                <line x1="12" y1="8" x2="12" y2="12"/>
+                                <line x1="12" y1="16" x2="12.01" y2="16"/>
+                            </svg>
                             <?= htmlspecialchars($errors['email']) ?>
                         </div>
                     <?php endif; ?>
@@ -576,15 +659,28 @@
                     <div class="input-wrapper">
                         <input type="password" name="password" id="password"
                                placeholder="Enter your password">
-                        <svg class="input-icon" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                        <svg class="input-icon" viewBox="0 0 24 24">
+                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                        </svg>
                         <button type="button" class="pass-toggle" onclick="togglePassword()">
-                            <svg viewBox="0 0 24 24" id="eyeOpen"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                            <svg viewBox="0 0 24 24" id="eyeClosed" style="display:none"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+                            <svg viewBox="0 0 24 24" id="eyeOpen">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                                <circle cx="12" cy="12" r="3"/>
+                            </svg>
+                            <svg viewBox="0 0 24 24" id="eyeClosed" style="display:none">
+                                <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/>
+                                <line x1="1" y1="1" x2="23" y2="23"/>
+                            </svg>
                         </button>
                     </div>
                     <?php if (isset($errors['password'])): ?>
                         <div class="error-text">
-                            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                            <svg viewBox="0 0 24 24">
+                                <circle cx="12" cy="12" r="10"/>
+                                <line x1="12" y1="8" x2="12" y2="12"/>
+                                <line x1="12" y1="16" x2="12.01" y2="16"/>
+                            </svg>
                             <?= htmlspecialchars($errors['password']) ?>
                         </div>
                     <?php endif; ?>
@@ -601,16 +697,13 @@
                 <!-- Submit -->
                 <button type="submit" class="btn-submit">
                     <span class="btn-content">
-                        <svg viewBox="0 0 24 24"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+                        <svg viewBox="0 0 24 24"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline
+                                    points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
                         Sign In
                     </span>
                 </button>
 
             </form>
-
-            <div class="form-footer">
-                <span>Don't have an account? <a href="index.php?route=users/create">Register now</a></span>
-            </div>
         <?php endif; ?>
 
     </div>
@@ -619,32 +712,131 @@
 <script>
     function togglePassword() {
         const input = document.getElementById('password');
-        const eyeOpen   = document.getElementById('eyeOpen');
+        const eyeOpen = document.getElementById('eyeOpen');
         const eyeClosed = document.getElementById('eyeClosed');
         if (input.type === 'password') {
             input.type = 'text';
-            eyeOpen.style.display   = 'none';
+            eyeOpen.style.display = 'none';
             eyeClosed.style.display = 'block';
         } else {
             input.type = 'password';
-            eyeOpen.style.display   = 'block';
+            eyeOpen.style.display = 'block';
             eyeClosed.style.display = 'none';
         }
     }
 
-    // Prevent double-submit
-    document.getElementById('loginForm')?.addEventListener('submit', function() {
-        const btn = this.querySelector('.btn-submit');
-        btn.disabled = true;
-        btn.style.opacity = '0.7';
-        btn.querySelector('.btn-content').innerHTML = `
-            <svg viewBox="0 0 24 24" style="animation:spin .8s linear infinite;width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2">
-                <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
-            </svg>
-            Signing in...
-        `;
+    document.addEventListener('DOMContentLoaded', () => {
+        const loginForm = document.getElementById('loginForm');
+        if (!loginForm) return;
+
+        const emailInput = document.getElementById('email');
+        const passwordInput = document.getElementById('password');
+
+        // UI Error Helper
+        const showError = (input, message) => {
+            const formGroup = input.closest('.form-group');
+            if (!formGroup) return;
+
+            formGroup.classList.add('has-error');
+            let errorEl = formGroup.querySelector('.error-text');
+
+            if (!errorEl) {
+                errorEl = document.createElement('div');
+                errorEl.className = 'error-text';
+                formGroup.appendChild(errorEl);
+            }
+
+            errorEl.innerHTML = `
+                <svg viewBox="0 0 24 24">
+                    <circle cx="12" cy="12" r="10"/>
+                    <line x1="12" y1="8" x2="12" y2="12"/>
+                    <line x1="12" y1="16" x2="12.01" y2="16"/>
+                </svg>
+                ${message}
+            `;
+        };
+
+        // UI Clear Helper
+        const clearError = (input) => {
+            const formGroup = input.closest('.form-group');
+            if (!formGroup) return;
+
+            formGroup.classList.remove('has-error');
+            const errorEl = formGroup.querySelector('.error-text');
+            if (errorEl) {
+                errorEl.remove();
+            }
+        };
+
+        // Validation Checks
+        const validateEmail = () => {
+            const value = emailInput.value.trim();
+            if (!value) {
+                showError(emailInput, 'Email Address is required.');
+                return false;
+            }
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(value)) {
+                showError(emailInput, 'Please enter a valid email address.');
+                return false;
+            }
+            clearError(emailInput);
+            return true;
+        };
+
+        const validatePassword = () => {
+            const value = passwordInput.value;
+            if (!value) {
+                showError(passwordInput, 'Password is required.');
+                return false;
+            }
+            clearError(passwordInput);
+            return true;
+        };
+
+        // Real-time Event Listeners
+        if (emailInput) {
+            emailInput.addEventListener('input', validateEmail);
+            emailInput.addEventListener('blur', validateEmail);
+        }
+
+        if (passwordInput) {
+            passwordInput.addEventListener('input', validatePassword);
+            passwordInput.addEventListener('blur', validatePassword);
+        }
+
+        // Form Submit Handler
+        loginForm.addEventListener('submit', function (e) {
+            const isEmailValid = validateEmail();
+            const isPasswordValid = validatePassword();
+
+            if (!isEmailValid || !isPasswordValid) {
+                e.preventDefault();
+                // Focus the first invalid input
+                const firstErrorInput = loginForm.querySelector('.has-error input');
+                if (firstErrorInput) {
+                    firstErrorInput.focus();
+                }
+                return;
+            }
+
+            // Prevent double-submit & show loading spinner if valid
+            const btn = this.querySelector('.btn-submit');
+            btn.disabled = true;
+            btn.style.opacity = '0.7';
+            btn.querySelector('.btn-content').innerHTML = `
+                <svg viewBox="0 0 24 24" style="animation:spin .8s linear infinite;width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2">
+                    <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+                </svg>
+                Signing in...
+            `;
+        });
     });
 </script>
-<style>@keyframes spin { to { transform: rotate(360deg); } }</style>
+<style>@keyframes spin {
+           to {
+               transform: rotate(360deg);
+           }
+       }</style>
 </body>
 </html>

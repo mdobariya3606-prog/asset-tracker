@@ -1,27 +1,27 @@
 <?php
 
 //set_error_handler(function (
-//	int    $severity,
-//	string $message,
-//	string $file,
-//	int    $line
+//  int    $severity,
+//  string $message,
+//  string $file,
+//  int    $line
 //) {
-//	logError(sprintf(
-//		"[%s] %s\nFile: %s\nLine: %d",
-//		match ($severity) {
-//			E_WARNING => 'WARNING',
-//			E_NOTICE => 'NOTICE',
-//			E_USER_WARNING => 'USER WARNING',
-//			E_USER_NOTICE => 'USER NOTICE',
-//			default => 'ERROR',
-//		},
-//		$message,
-//		$file,
-//		$line
-//	));
+//  logError(sprintf(
+//     "[%s] %s\nFile: %s\nLine: %d",
+//     match ($severity) {
+//        E_WARNING => 'WARNING',
+//        E_NOTICE => 'NOTICE',
+//        E_USER_WARNING => 'USER WARNING',
+//        E_USER_NOTICE => 'USER NOTICE',
+//        default => 'ERROR',
+//     },
+//     $message,
+//     $file,
+//     $line
+//  ));
 //
-//	// Don't let PHP display its default warning
-//	return true;
+//  // Don't let PHP display its default warning
+//  return true;
 //});
 
 /**
@@ -333,6 +333,13 @@ try {
 	exit;
 }
 
+/**
+ * ============================================================================
+ * SECTION 7: VIEW RENDERING
+ * ============================================================================
+ * Maps logical view names to template files and renders the selected view.
+ */
+
 function view(string $viewFile, array $vars = []): void
 {
 	$pages = [
@@ -375,6 +382,14 @@ function view(string $viewFile, array $vars = []): void
 	require $viewFile;
 }
 
+/**
+ * ============================================================================
+ * SECTION 8: ROUTE REDIRECTION HELPER
+ * ============================================================================
+ * Validates allowed redirect routes and redirects the browser to the target
+ * application route.
+ */
+
 function route(string $route, $params = '')
 {
 	$routes = [
@@ -395,6 +410,14 @@ function route(string $route, $params = '')
 
 	header("Location: index.php?route=$route&" . $params);
 }
+
+/**
+ * ============================================================================
+ * SECTION 9: ERROR LOGGING
+ * ============================================================================
+ * Normalizes exceptions or string errors, creates the log directory when
+ * required, and appends the error details to the configured log file.
+ */
 
 function logError(Throwable|string $error, string $file = 'errors'): void
 {

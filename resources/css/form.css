@@ -1,7 +1,9 @@
 /* ========================= */
-/* Global Styles */
+/* Global Reset & Base */
 /* ========================= */
-*, *::before, *::after {
+*,
+*::before,
+*::after {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
@@ -19,7 +21,9 @@ body {
     overflow-x: hidden;
 }
 
-body::before, body::after {
+/* Background Glowing Blurs */
+body::before,
+body::after {
     content: '';
     position: fixed;
     border-radius: 50%;
@@ -45,13 +49,18 @@ body::after {
     left: -60px;
 }
 
-.edit-container {
+/* ========================= */
+/* Container & Card Layout */
+/* ========================= */
+.edit-container,
+.register-container {
     position: relative;
     z-index: 1;
     width: 100%;
     max-width: 580px;
 }
 
+.register-container,
 .edit-container.admin-edit {
     max-width: 760px;
 }
@@ -112,10 +121,11 @@ body::after {
     margin-top: 6px;
 }
 
-.alert-error {
-    background: #fef2f2;
-    border: 1px solid #fecaca;
-    color: #7f1d1d;
+/* ========================= */
+/* Alerts */
+/* ========================= */
+.alert-error,
+.alert-success {
     border-radius: 12px;
     padding: 14px 18px;
     font-size: 14px;
@@ -127,6 +137,12 @@ body::after {
     animation: slideDown 0.4s ease;
 }
 
+.alert-error {
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    color: #7f1d1d;
+}
+
 .alert-error svg {
     width: 20px;
     height: 20px;
@@ -136,17 +152,24 @@ body::after {
     stroke-width: 2;
 }
 
-@keyframes slideDown {
-    from {
-        opacity: 0;
-        transform: translateY(-10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+.alert-success {
+    background: #ecfdf5;
+    border: 1px solid #a7f3d0;
+    color: #065f46;
 }
 
+.alert-success svg {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+    stroke: #34d399;
+    fill: none;
+    stroke-width: 2;
+}
+
+/* ========================= */
+/* Form Elements */
+/* ========================= */
 .form-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -196,9 +219,10 @@ body::after {
     z-index: 10;
 }
 
-.form-group input, .form-group select {
+.form-group input,
+.form-group select,
+.form-group textarea {
     width: 100%;
-    padding: 12px 14px 12px 44px;
     background: #f8fafc;
     border: 1.5px solid #e2e8f0;
     border-radius: 12px;
@@ -212,22 +236,15 @@ body::after {
     appearance: none;
 }
 
+.form-group input,
+.form-group select {
+    padding: 12px 14px 12px 44px;
+}
+
 .form-group textarea {
     resize: none;
-    width: 100%;
     height: 150px;
     padding: 10px;
-    background: #f8fafc;
-    border: 1.5px solid #e2e8f0;
-    border-radius: 12px;
-    color: #1e293b;
-    font-family: 'Inter', sans-serif;
-    font-size: 14px;
-    outline: none;
-    transition: all 0.3s ease;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    appearance: none;
 }
 
 .form-group select {
@@ -247,22 +264,30 @@ body::after {
     color: #94a3b8;
 }
 
-.form-group input:focus, .form-group select:focus {
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
     border-color: #3b82f6;
     background: #fff;
     box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
 }
 
-.form-group input:focus ~ .input-icon, .form-group select:focus ~ .input-icon {
+.form-group input:focus ~ .input-icon,
+.form-group select:focus ~ .input-icon {
     stroke: #3b82f6;
 }
 
-.form-group.has-error input, .form-group.has-error select {
+/* Form Validation States */
+.form-group.has-error input,
+.form-group.has-error select,
+.form-group.has-error textarea {
     border-color: #f87171;
     background: rgba(248, 113, 113, 0.06);
 }
 
-.form-group.has-error input:focus, .form-group.has-error select:focus {
+.form-group.has-error input:focus,
+.form-group.has-error select:focus,
+.form-group.has-error textarea:focus {
     box-shadow: 0 0 0 4px rgba(248, 113, 113, 0.15);
 }
 
@@ -289,6 +314,35 @@ body::after {
     stroke-width: 2;
 }
 
+/* Password Toggle */
+.pass-toggle {
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    display: flex;
+}
+
+.pass-toggle svg {
+    width: 18px;
+    height: 18px;
+    stroke: #94a3b8;
+    fill: none;
+    stroke-width: 2;
+    transition: stroke 0.2s;
+}
+
+.pass-toggle:hover svg {
+    stroke: #475569;
+}
+
+/* ========================= */
+/* Buttons & Actions */
+/* ========================= */
 .actions-row {
     grid-column: 1 / -1;
     display: flex;
@@ -296,17 +350,30 @@ body::after {
     margin-top: 12px;
 }
 
-.btn-submit {
-    flex: 1;
-    padding: 14px;
-    background: #133458;
-    color: #fff;
-    border: none;
+/* Base Shared Button Styles (Ensures Identical Rendered Height) */
+.btn-submit,
+.btn-cancel {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 14px 24px;
     border-radius: 12px;
     font-family: 'Inter', sans-serif;
-    font-size: 15px;
+    font-size: 14px;
     font-weight: 600;
+    line-height: 1.2;
     cursor: pointer;
+    text-decoration: none;
+    margin: 0;
+}
+
+/* Submit Button Specifics */
+.btn-submit {
+    flex: 1;
+    width: 100%;
+    background: #133458;
+    color: #fff;
+    border: 1.5px solid transparent; /* Matches .btn-cancel border box calculation */
     letter-spacing: 0.3px;
     transition: all 0.3s ease;
     position: relative;
@@ -353,20 +420,11 @@ body::after {
     stroke-linejoin: round;
 }
 
+/* Cancel Button Specifics */
 .btn-cancel {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 14px 24px;
     background: #fff;
     color: #475569;
     border: 1.5px solid #e2e8f0;
-    border-radius: 12px;
-    font-family: 'Inter', sans-serif;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    text-decoration: none;
     transition: all 0.2s;
 }
 
@@ -376,6 +434,49 @@ body::after {
     color: #1e293b;
 }
 
+/* ========================= */
+/* Footer */
+/* ========================= */
+.form-footer {
+    text-align: center;
+    margin-top: 24px;
+    padding-top: 20px;
+    border-top: 1px solid #e2e8f0;
+}
+
+.form-footer span {
+    color: #94a3b8;
+    font-size: 13px;
+}
+
+.form-footer a {
+    color: #3b82f6;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s;
+}
+
+.form-footer a:hover {
+    color: #2563eb;
+}
+
+/* ========================= */
+/* Animations */
+/* ========================= */
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ========================= */
+/* Responsive Styles */
+/* ========================= */
 @media (max-width: 600px) {
     .card {
         padding: 32px 24px;

@@ -5,341 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register User — AssetTracker</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        *, *::before, *::after {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        body {
-            font-family: 'Inter', sans-serif;
-            min-height: 100vh;
-            background: #f1f5f9;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 40px 20px;
-            position: relative;
-            overflow-x: hidden;
-        }
-
-        .register-container {
-            position: relative;
-            z-index: 1;
-            width: 100%;
-            max-width: 760px;
-        }
-
-        .card {
-            background: #ffffff;
-            border: 1px solid #e2e8f0;
-            border-radius: 24px;
-            padding: 44px 40px;
-            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
-        }
-
-        .card-header {
-            text-align: center;
-            margin-bottom: 36px;
-        }
-
-        .card-header .icon {
-            width: 56px;
-            height: 56px;
-            background: linear-gradient(135deg, #3b82f6, #06b6d4);
-            border-radius: 16px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 16px;
-            box-shadow: 0 4px 16px rgba(59, 130, 246, 0.3);
-        }
-
-        .card-header .icon svg {
-            width: 28px;
-            height: 28px;
-            fill: none;
-            stroke: #fff;
-            stroke-width: 2;
-            stroke-linecap: round;
-            stroke-linejoin: round;
-        }
-
-        .card-header h1 {
-            font-size: 26px;
-            font-weight: 700;
-            color: #1e293b;
-            letter-spacing: -0.5px;
-        }
-
-        .card-header p {
-            color: #94a3b8;
-            font-size: 14px;
-            margin-top: 6px;
-        }
-
-        .alert-success {
-            background: #ecfdf5;
-            border: 1px solid #a7f3d0;
-            color: #065f46;
-            border-radius: 12px;
-            padding: 14px 18px;
-            font-size: 14px;
-            font-weight: 500;
-            margin-bottom: 24px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            animation: slideDown 0.4s ease;
-        }
-
-        .alert-success svg {
-            width: 20px;
-            height: 20px;
-            flex-shrink: 0;
-            stroke: #34d399;
-            fill: none;
-            stroke-width: 2;
-        }
-
-        @keyframes slideDown {
-            from {
-                opacity: 0;
-                transform: translateY(-10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .form-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-        }
-
-        .form-grid .full-width {
-            grid-column: 1 / -1;
-        }
-
-        .form-group {
-            position: relative;
-        }
-
-        .form-group label {
-            display: block;
-            font-size: 13px;
-            font-weight: 500;
-            color: #475569;
-            margin-bottom: 8px;
-            letter-spacing: 0.3px;
-        }
-
-        .form-group label .required {
-            color: #f87171;
-            margin-left: 2px;
-        }
-
-        .input-wrapper {
-            position: relative;
-        }
-
-        .input-wrapper .input-icon {
-            position: absolute;
-            left: 14px;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 18px;
-            height: 18px;
-            stroke: #94a3b8;
-            fill: none;
-            stroke-width: 2;
-            stroke-linecap: round;
-            stroke-linejoin: round;
-            transition: stroke 0.3s;
-            pointer-events: none;
-        }
-
-        .form-group input,
-        .form-group select {
-            width: 100%;
-            padding: 12px 14px 12px 44px;
-            background: #f8fafc;
-            border: 1.5px solid #e2e8f0;
-            border-radius: 12px;
-            color: #1e293b;
-            font-family: 'Inter', sans-serif;
-            font-size: 14px;
-            outline: none;
-            transition: all 0.3s ease;
-            -webkit-appearance: none;
-            -moz-appearance: none;
-            appearance: none;
-        }
-
-        .form-group select {
-            padding-right: 40px;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 6l4 4 4-4'/%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: right 14px center;
-            cursor: pointer;
-        }
-
-        .form-group select option {
-            background: #fff;
-            color: #1e293b;
-        }
-
-        .form-group input::placeholder {
-            color: #94a3b8;
-        }
-
-        .form-group input:focus,
-        .form-group select:focus {
-            border-color: #3b82f6;
-            background: #fff;
-            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
-        }
-
-        .form-group input:focus ~ .input-icon,
-        .form-group select:focus ~ .input-icon {
-            stroke: #3b82f6;
-        }
-
-        .form-group.has-error input,
-        .form-group.has-error select {
-            border-color: #f87171;
-            background: rgba(248, 113, 113, 0.06);
-        }
-
-        .form-group.has-error input:focus,
-        .form-group.has-error select:focus {
-            box-shadow: 0 0 0 4px rgba(248, 113, 113, 0.15);
-        }
-
-        .error-text {
-            color: #ef4444;
-            font-size: 12px;
-            margin-top: 6px;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            animation: slideDown 0.3s ease;
-        }
-
-        .error-text svg {
-            width: 14px;
-            height: 14px;
-            flex-shrink: 0;
-            stroke: #f87171;
-            fill: none;
-            stroke-width: 2;
-        }
-
-        .pass-toggle {
-            position: absolute;
-            right: 14px;
-            top: 50%;
-            transform: translateY(-50%);
-            background: none;
-            border: none;
-            cursor: pointer;
-            padding: 4px;
-            display: flex;
-        }
-
-        .pass-toggle svg {
-            width: 18px;
-            height: 18px;
-            stroke: #94a3b8;
-            fill: none;
-            stroke-width: 2;
-            transition: stroke 0.2s;
-        }
-
-        .pass-toggle:hover svg {
-            stroke: #475569;
-        }
-
-        .btn-submit {
-            width: 100%;
-            padding: 14px;
-            margin-top: 8px;
-            background: #133458;
-            color: #fff;
-            border: none;
-            border-radius: 12px;
-            font-family: 'Inter', sans-serif;
-            font-size: 15px;
-            font-weight: 600;
-            cursor: pointer;
-            letter-spacing: 0.3px;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .btn-submit::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(135deg, transparent, rgba(255, 255, 255, 0.15), transparent);
-            transform: translateX(-100%);
-            transition: transform 0.5s ease;
-        }
-
-        .btn-submit:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 24px rgba(124, 58, 237, 0.35);
-        }
-
-        .btn-submit:hover::before {
-            transform: translateX(100%);
-        }
-
-        .btn-submit:active {
-            transform: translateY(0);
-        }
-
-        .form-footer {
-            text-align: center;
-            margin-top: 24px;
-            padding-top: 20px;
-            border-top: 1px solid #e2e8f0;
-        }
-
-        .form-footer span {
-            color: #94a3b8;
-            font-size: 13px;
-        }
-
-        .form-footer a {
-            color: #3b82f6;
-            text-decoration: none;
-            font-weight: 500;
-            transition: color 0.2s;
-        }
-
-        .form-footer a:hover {
-            color: #2563eb;
-        }
-
-        @media (max-width: 600px) {
-            .card {
-                padding: 32px 24px;
-            }
-
-            .form-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .card-header h1 {
-                font-size: 22px;
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="../resources/css/form.css">
 </head>
 <body>
 <div class="register-container">
@@ -367,7 +33,8 @@
             </div>
         <?php endif; ?>
 
-        <form action="index.php?route=users/create" method="post" enctype="multipart/form-data" novalidate>
+        <form action="index.php?route=users/create" method="post" enctype="multipart/form-data" novalidate
+              id="registerForm">
             <div class="form-grid">
                 <div class="form-group full-width <?php echo isset($errors['name']) ? 'has-error' : ''; ?>">
                     <label for="name">Full Name <span class="required">*</span></label>
@@ -497,6 +164,7 @@
                     <label for="role">Role <span class="required">*</span></label>
                     <div class="input-wrapper">
                         <select name="role" id="role">
+                            <option value="">Select role</option>
                             <?php foreach ($roleOptions ?? [] as $roleOption): ?>
                                 <option value="<?php echo htmlspecialchars($roleOption['value']); ?>"
                                         <?php echo (isset($old['role']) && strtoupper($old['role']) == strtoupper($roleOption['value'])) ? 'selected' : ''; ?>>
@@ -627,6 +295,217 @@
             eyeClosed.style.display = 'none';
         }
     }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const form = document.getElementById('registerForm');
+        if (!form) return;
+
+        // UI Error Helper
+        const showError = (input, message) => {
+            const formGroup = input.closest('.form-group');
+            if (!formGroup) return;
+
+            formGroup.classList.add('has-error');
+            let errorEl = formGroup.querySelector('.error-text');
+
+            if (!errorEl) {
+                errorEl = document.createElement('div');
+                errorEl.className = 'error-text';
+                formGroup.appendChild(errorEl);
+            }
+
+            errorEl.innerHTML = `
+                <svg viewBox="0 0 24 24">
+                    <circle cx="12" cy="12" r="10"/>
+                    <line x1="12" y1="8" x2="12" y2="12"/>
+                    <line x1="12" y1="16" x2="12.01" y2="16"/>
+                </svg>
+                ${message}
+            `;
+        };
+
+        // UI Clear Helper
+        const clearError = (input) => {
+            const formGroup = input.closest('.form-group');
+            if (!formGroup) return;
+
+            formGroup.classList.remove('has-error');
+            const errorEl = formGroup.querySelector('.error-text');
+            if (errorEl) {
+                errorEl.remove();
+            }
+        };
+
+        // --- Validation Functions ---
+
+        // 1. Generic Required Check
+        const validateRequired = (input, fieldName) => {
+            if (!input.value.trim()) {
+                showError(input, `${fieldName} is required.`);
+                return false;
+            }
+            clearError(input);
+            return true;
+        };
+
+        // 2. Email Format Check
+        const validateEmail = (input) => {
+            if (!validateRequired(input, 'Email Address')) return false;
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(input.value.trim())) {
+                showError(input, 'Please enter a valid email address.');
+                return false;
+            }
+            clearError(input);
+            return true;
+        };
+
+        // 3. Mobile Number Validation (Numeric & 10 Digits)
+        const validateMobile = (input) => {
+            // Force strict numeric digits live
+            input.value = input.value.replace(/\D/g, '');
+
+            if (!validateRequired(input, 'Mobile number')) return false;
+            if (input.value.length !== 10) {
+                showError(input, 'Mobile number must be exactly 10 digits.');
+                return false;
+            }
+            clearError(input);
+            return true;
+        };
+
+        // 4. Password Strength (Min 6 chars)
+        const validatePassword = (input) => {
+            if (!validateRequired(input, 'Password')) return false;
+            if (input.value.length < 6) {
+                showError(input, 'Password must be at least 6 characters long.');
+                return false;
+            }
+            clearError(input);
+
+            // Re-validate confirm password match if populated
+            const confirmInput = document.getElementById('confirm_password');
+            if (confirmInput && confirmInput.value) {
+                validateConfirmPassword(confirmInput);
+            }
+            return true;
+        };
+
+        // 5. Confirm Password Match
+        const validateConfirmPassword = (input) => {
+            if (!validateRequired(input, 'Confirm Password')) return false;
+            const passwordInput = document.getElementById('password');
+            if (passwordInput && input.value !== passwordInput.value) {
+                showError(input, 'Passwords do not match.');
+                return false;
+            }
+            clearError(input);
+            return true;
+        };
+
+        // 6. Profile Image Extension and Size Check (Max 2MB)
+        const validateProfileImage = (input) => {
+            if (!input.files || input.files.length === 0) {
+                clearError(input);
+                return true;
+            }
+
+            const file = input.files[0];
+            const allowedExtensions = ['jpg', 'jpeg', 'png', 'webp'];
+            const fileExtension = file.name.split('.').pop().toLowerCase();
+            const maxSizeInBytes = 2 * 1024 * 1024; // 2 MB
+
+            if (!allowedExtensions.includes(fileExtension)) {
+                showError(input, 'Only .jpg, .jpeg, .png, and .webp files are allowed.');
+                input.value = '';
+                return false;
+            }
+
+            if (file.size > maxSizeInBytes) {
+                showError(input, 'File size must not exceed 2 MB.');
+                input.value = '';
+                return false;
+            }
+
+            clearError(input);
+            return true;
+        };
+
+        // --- Real-time Validation Listeners ---
+        const nameInput = document.getElementById('name');
+        if (nameInput) {
+            nameInput.addEventListener('input', () => validateRequired(nameInput, 'Full Name'));
+            nameInput.addEventListener('blur', () => validateRequired(nameInput, 'Full Name'));
+        }
+
+        const emailInput = document.getElementById('email');
+        if (emailInput) {
+            emailInput.addEventListener('input', () => validateEmail(emailInput));
+            emailInput.addEventListener('blur', () => validateEmail(emailInput));
+        }
+
+        const mobileInput = document.getElementById('mobile');
+        if (mobileInput) {
+            mobileInput.addEventListener('input', () => validateMobile(mobileInput));
+            mobileInput.addEventListener('blur', () => validateMobile(mobileInput));
+        }
+
+        const deptInput = document.getElementById('department_id');
+        if (deptInput) {
+            deptInput.addEventListener('change', () => validateRequired(deptInput, 'Department'));
+        }
+
+        const desigInput = document.getElementById('designation_id');
+        if (desigInput) {
+            desigInput.addEventListener('change', () => validateRequired(desigInput, 'Designation'));
+        }
+
+        const roleInput = document.getElementById('role');
+        if (roleInput) {
+            roleInput.addEventListener('change', () => validateRequired(roleInput, 'Role'));
+        }
+
+        const passInput = document.getElementById('password');
+        if (passInput) {
+            passInput.addEventListener('input', () => validatePassword(passInput));
+            passInput.addEventListener('blur', () => validatePassword(passInput));
+        }
+
+        const confirmPassInput = document.getElementById('confirm_password');
+        if (confirmPassInput) {
+            confirmPassInput.addEventListener('input', () => validateConfirmPassword(confirmPassInput));
+            confirmPassInput.addEventListener('blur', () => validateConfirmPassword(confirmPassInput));
+        }
+
+        const imageInput = document.getElementById('profile_image');
+        if (imageInput) {
+            imageInput.addEventListener('change', () => validateProfileImage(imageInput));
+        }
+
+        // --- Form Submit Handler ---
+        form.addEventListener('submit', (e) => {
+            let isValid = true;
+
+            if (nameInput && !validateRequired(nameInput, 'Full Name')) isValid = false;
+            if (emailInput && !validateEmail(emailInput)) isValid = false;
+            if (mobileInput && !validateMobile(mobileInput)) isValid = false;
+            if (deptInput && !validateRequired(deptInput, 'Department')) isValid = false;
+            if (desigInput && !validateRequired(desigInput, 'Designation')) isValid = false;
+            if (roleInput && !validateRequired(roleInput, 'Role')) isValid = false;
+            if (passInput && !validatePassword(passInput)) isValid = false;
+            if (confirmPassInput && !validateConfirmPassword(confirmPassInput)) isValid = false;
+            if (imageInput && !validateProfileImage(imageInput)) isValid = false;
+
+            if (!isValid) {
+                e.preventDefault();
+                // Smoothly scroll to the first invalid field
+                const firstError = form.querySelector('.has-error');
+                if (firstError) {
+                    firstError.scrollIntoView({behavior: 'smooth', block: 'center'});
+                }
+            }
+        });
+    });
 </script>
 </body>
 </html>

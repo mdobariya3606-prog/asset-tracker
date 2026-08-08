@@ -36,7 +36,8 @@
             background: #133458;
         }
 
-        .hero-icon {
+        /* Avatar Container matching your specifications */
+        .avatar {
             width: 64px;
             height: 64px;
             display: grid;
@@ -49,7 +50,14 @@
             overflow: hidden;
         }
 
-        .hero-icon svg {
+        /* Avatar Image matching your specifications */
+        .avatar-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .avatar svg {
             width: 30px;
             height: 30px;
             stroke: #fff;
@@ -189,8 +197,14 @@
 
 <main class="card">
     <section class="hero">
-        <div class="hero-icon">
-            <?= strtoupper(substr($asset['name'], 0, 1)) ?>
+        <div class="avatar">
+            <?php if (!empty($asset['image'])): ?>
+                <img class="avatar-image"
+                     src="../<?= htmlspecialchars($asset['image']) ?>"
+                     alt="<?= htmlspecialchars($asset['name'] ?? 'Asset image') ?>">
+            <?php else: ?>
+                <?= strtoupper(substr($asset['name'] ?? 'A', 0, 1)) ?>
+            <?php endif; ?>
         </div>
         <h1><?= htmlspecialchars($asset['name'] ?? '') ?></h1>
         <p>Asset ID: <?= htmlspecialchars($asset['id'] ?? '') ?></p>
@@ -233,19 +247,20 @@
         <div class="detail">
             <label>Assignee</label>
             <span>
-                <a href="index.php?route=users/profile&id=<?= $asset['assignee_id']; ?>"
-                   style="color: var(--slate-800); font-weight: 500;"
-                   onclick="
-                   <?php $_SESSION['back'] = 'index.php?route=assets/show&id=' . $asset['id']; ?>">
-                    #<?= htmlspecialchars($asset['assignee_id'] ?? 'N/A') ?>
-                </a>
+                <?php if (!empty($asset['assignee_id'])): ?>
+                    <a href="index.php?route=users/profile&id=<?= $asset['assignee_id']; ?>"
+                       style="color: #1e293b; font-weight: 500;"
+                       onclick="<?php $_SESSION['back'] = 'index.php?route=assets/show&id=' . $asset['id']; ?>">
+                        #<?= htmlspecialchars($asset['assignee_id']) ?>
+                    </a>
+                <?php else: ?>
+                    N/A
+                <?php endif; ?>
             </span>
         </div>
     </section>
     <nav class="actions">
-        <a class="back"
-           href="index.php?route=assets"
-        >Back</a>
+        <a class="back" href="index.php?route=assets">Back</a>
 
         <?php if ($canManageAssets): ?>
             <a class="edit" href="index.php?route=assets/edit&id=<?= (int)$asset['id'] ?>">Edit Asset</a>
