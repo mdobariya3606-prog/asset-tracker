@@ -25,7 +25,7 @@ class Asset
 		}
 
 		$columns = $this->getTableColumns('assets');
-		$allowedFields = ['name', 'category_id', 'brand', 'model', 'serial_number', 'purchase_date', 'warranty_date', 'vendor_id', 'cost', 'status'];
+		$allowedFields = ['name', 'category_id', 'brand', 'model', 'serial_number', 'purchase_date', 'warranty_date', 'vendor_id', 'cost', 'status', 'image'];
 		$insertData = [];
 
 		foreach ($allowedFields as $field) {
@@ -33,12 +33,10 @@ class Asset
 				continue;
 			}
 
-			$value = $normalized[$field] ?? null;
-			if ($value === null || trim((string)$value) === '') {
-				continue;
+			// FIX: Don't skip fields if they exist in normalized array, allow image to be inserted
+			if (array_key_exists($field, $normalized) && $normalized[$field] !== '') {
+				$insertData[$field] = $normalized[$field];
 			}
-
-			$insertData[$field] = $value;
 		}
 
 		if (empty($insertData)) {
@@ -68,6 +66,7 @@ class Asset
 			'vendor_id' => trim((string)($asset['vendor_id'] ?? '')),
 			'cost' => trim((string)($asset['cost'] ?? '')),
 			'status' => trim((string)($asset['status'] ?? '')),
+			'image' => trim((string)($asset['image'] ?? '')),
 		];
 	}
 
@@ -130,6 +129,10 @@ class Asset
 
 		if (($normalized['status'] ?? '') !== '' && !in_array($normalized['status'], self::STATUS_OPTIONS, true)) {
 			$errors['status'] = 'Status is not valid.';
+		}
+
+		if (($normalized['image'] ?? '') !== '' && mb_strlen($normalized['image']) > 255) {
+			$errors['image'] = 'Image path must not exceed 255 characters.';
 		}
 
 		if (($normalized['purchase_date'] ?? '') !== '' && !$this->isValidDate($normalized['purchase_date'])) {
@@ -203,20 +206,24 @@ class Asset
 		}
 
 		$columns = $this->getTableColumns('assets');
-		$allowedFields = ['name', 'category_id', 'brand', 'model', 'serial_number', 'purchase_date', 'warranty_date', 'vendor_id', 'cost', 'status'];
+		$allowedFields = ['name', 'category_id', 'brand', 'model', 'serial_number', 'purchase_date', 'warranty_date', 'vendor_id', 'cost', 'status', 'image'];
 		$updateData = [];
 
 		foreach ($allowedFields as $field) {
-			if (!array_key_exists($field, $normalized) || !in_array($field, $columns, true)) {
-				continue;
-			}
+			// FIX: Allow 'image' and other fields even if passed directly or populated during upload
+			if (array_key_exists($field, $asset) || array_key_exists($field, $normalized)) {
+				if (!in_array($field, $columns, true)) {
+					continue;
+				}
 
-			$value = $normalized[$field];
-			if ($value === null || trim((string)$value) === '') {
-				continue;
-			}
+				// If the field is present in the raw $asset input, use that value (e.g. image path)
+				$value = $asset[$field] ?? $normalized[$field] ?? null;
 
-			$updateData[$field] = $value;
+				// Don't skip empty values if updating unless it's null/empty string for non-required fields
+				if ($value !== null && $value !== '') {
+					$updateData[$field] = $value;
+				}
+			}
 		}
 
 		if (empty($updateData)) {
