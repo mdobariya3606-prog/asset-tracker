@@ -7,7 +7,8 @@ use App\Models\User;
 use DateTime;
 use PDO;
 
-class ForgotPasswordEmail {
+class ForgotPasswordEmail
+{
     private PDO $conn;
     private User $userModel;
     private Mail $mail;
@@ -19,7 +20,8 @@ class ForgotPasswordEmail {
         $this->mail = new Mail();
     }
 
-    public function sendResetPasswordMail($user_id = null) {
+    public function sendResetPasswordMail($user_id = null)
+    {
         if (!isset($_SESSION['user_id']) && !$user_id) {
             route('fp-mail');
             exit;
@@ -35,24 +37,24 @@ class ForgotPasswordEmail {
 
         $user = $this->userModel->find($user_id);
         if (!$user) {
-            view('404');
+            view(404);
             exit;
         }
 
         $generatedCode = $this->generateFPHash($user_id);
 
         $link = "http://localhost/AssetTracker/public/index.php?route=reset-password&id={$generatedCode['id']}&code=" . urlencode($generatedCode['code']);
-        
+
         $mailAddress = $user[0]['email'];
 
         if ($mailAddress) {
             $this->mail->send($mailAddress, 'Forgot password', $link);
         } else {
-            view('404');
+            view(404);
         }
 
         $_SESSION['success'] = 'Mail sent successfully.';
-        
+
         if (empty($_SESSION['user_id'])) {
             view('fp-mail');
             exit;
@@ -62,7 +64,8 @@ class ForgotPasswordEmail {
 
 
     // data is coming from: POST:fp_mail
-    public function sendForgotPasswordMail(array $data) {
+    public function sendForgotPasswordMail(array $data)
+    {
         $email = $data['email'];
 
         if (empty($email)) {
@@ -87,13 +90,14 @@ class ForgotPasswordEmail {
         $this->sendResetPasswordMail($user['id']);
     }
 
-    private function generateFPHash($user_id) {
+    private function generateFPHash($user_id)
+    {
         $code = bin2hex(random_bytes(32));
         $hash = password_hash($code, PASSWORD_DEFAULT);
 
         $expiresAt = (new DateTime())
-                        ->modify('+5 minutes')
-                        ->format('Y-m-d H:i:s');
+            ->modify('+5 minutes')
+            ->format('Y-m-d H:i:s');
 
         $stmt = $this->conn->prepare('insert into forgot_password (user_id, hash, expires_at) values (?, ?, ?)');
         $stmt->execute([$user_id, $hash, $expiresAt]);
@@ -104,7 +108,8 @@ class ForgotPasswordEmail {
         ];
     }
 
-    public function isSent($user_id) {
+    public function isSent($user_id)
+    {
         $stmt = $this->conn->prepare('select count(*) from forgot_password where user_id = ? and expires_at > now()');
         $stmt->execute([$user_id]);
 

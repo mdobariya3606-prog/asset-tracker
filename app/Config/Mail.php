@@ -5,7 +5,8 @@ namespace App\Config;
 use Exception;
 use PHPMailer\PHPMailer\PHPMailer;
 
-class Mail {
+class Mail
+{
     private PHPMailer $mailer;
 
     public function __construct()
@@ -15,7 +16,8 @@ class Mail {
         $this->configure();
     }
 
-    private function configure() {
+    private function configure()
+    {
         $this->mailer->isSMTP();
 
         $this->mailer->Host = $_ENV['MAIL_HOST'];
@@ -46,7 +48,7 @@ class Mail {
 
             return $this->mailer->send();
         } catch (Exception $e) {
-            view('500');
+            view(500);
             logError($e);
         }
     }
