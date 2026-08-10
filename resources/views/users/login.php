@@ -703,6 +703,14 @@
                     </span>
                 </button>
 
+                <div class="error-text current-img-notice"
+                            style="margin-top: 10px; display: block; color: #475569; text-decoration: none">
+                            Forgot password? <strong>
+                                <a href="index.php?route=send-rp-mail" 
+                                style="color: black">send mail</a>
+                            </strong>
+                        </div> 
+
             </form>
         <?php endif; ?>
 
