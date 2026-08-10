@@ -380,7 +380,7 @@
                     <?php if (!empty($assetData['image'])): ?>
                         <div class="error-text" style="margin-top: 10px; display: block; color: #475569;">
                             Current image:
-                            <strong><?php echo htmlspecialchars($assetData['image']); ?></strong>
+                            <strong><?php echo htmlspecialchars(substr($assetData['image'], 21)); ?></strong>
                         </div>
                     <?php endif; ?>
                     <?php if (isset($errors['image'])): ?>

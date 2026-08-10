@@ -99,7 +99,7 @@ class ManageRequestController
 		} elseif ($inputAssetRequest['status'] === 'RETURNED') {
 			(new Asset($this->conn))->updateStatus($assetRequest['asset_id'], 'AVAILABLE');
 		}
-		$_SESSION['success'] = 'Asset request updated successfully';
+		$_SESSION['success'] = 'Asset request updated successfully.';
 		route('assets/requests');
 	}
 
