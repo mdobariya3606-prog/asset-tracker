@@ -120,11 +120,11 @@ try {
 			route(empty($_SESSION['user_id']) ? 'login' : 'users');
 			exit;
 
-		/* ------------------------------------------------------------------------
+			/* ------------------------------------------------------------------------
 		 * ROUTE GROUP: DEPARTMENT VIEWS
 		 * ------------------------------------------------------------------------ */
 
-		// GET:departments - View department list or details of a single department
+			// GET:departments - View department list or details of a single department
 		case 'GET:departments':
 			(new SelectDepartmentController($conn))->index($_GET);
 			break;
@@ -316,22 +316,27 @@ try {
 			(new LoginController($conn))->signout();
 			break;
 
+		// GET:send-rp-mail - Send a password reset email to the authenticated user
 		case 'GET:send-rp-mail':
 			(new ForgotPasswordEmail($conn))->sendResetPasswordMail();
 			break;
 
+		// GET:reset-password - Verify the reset link and display the password reset form
 		case 'GET:reset-password':
 			(new EmailResetPasswordController($conn))->resetPassword($_GET);
 			break;
 
+		// GET:fp-mail - Display the forgot password form
 		case 'GET:fp-mail':
 			view('fp-mail');
 			break;
 
+		// POST:fp-mail - Process the forgot password form and send a password reset link
 		case 'POST:fp-mail':
 			(new ForgotPasswordEmail($conn))->sendForgotPasswordMail($_POST);
 			break;
 
+		// POST:reset-password - Verify the reset link and update the user's password
 		case 'POST:reset-password':
 			(new ResetViaEmail($conn))->updatePassword($_GET, $_POST);
 			break;
@@ -342,7 +347,7 @@ try {
 
 		// Default fallback for layout requests that match no routes (404 Page Not Found)
 		default:
-			view('404');
+			view(404);
 			break;
 	}
 } catch (\Throwable $e) {
@@ -354,7 +359,7 @@ try {
 	 * displays a generic 500 server error view to the user.
 	 */
 	logError($e);
-	view('500');
+	view(500);
 	exit;
 }
 
@@ -365,44 +370,45 @@ try {
  * Maps logical view names to template files and renders the selected view.
  */
 
-function view(string $viewFile, array $vars = []): void
+function view(int|string $viewFile, array $vars = []): void
 {
+	$prefix = '../resources/views';
 	$pages = [
-		'login' => '../resources/views/users/login.php',
+		'login' => $prefix .  '/users/login.php',
 
-		'403' => '../resources/views/errors/403.php',
-		'404' => '../resources/views/errors/404.php',
-		'500' => '../resources/views/errors/500.php',
+		403 => $prefix .  '/errors/403.php',
+		404 => $prefix .  '/errors/404.php',
+		500 => $prefix .  '/errors/500.php',
 
-		'users.edit' => '../resources/views/users/edit.php',
-		'users.profile' => '../resources/views/users/profile.php',
-		'users.register' => '../resources/views/users/register.php',
-		'users.reset-password' => '../resources/views/users/reset-password.php',
-		'users.select' => '../resources/views/users/select.php',
+		'users.edit' => $prefix .  '/users/edit.php',
+		'users.profile' => $prefix .  '/users/profile.php',
+		'users.register' => $prefix .  '/users/register.php',
+		'users.reset-password' => $prefix .  '/users/reset-password.php',
+		'users.select' => $prefix .  '/users/select.php',
 
-		'departments.create' => '../resources/views/departments/create.php',
-		'departments.select' => '../resources/views/departments/select.php',
+		'departments.create' => $prefix .  '/departments/create.php',
+		'departments.select' => $prefix .  '/departments/select.php',
 
-		'designations.create' => '../resources/views/designation/create.php',
-		'designations.select' => '../resources/views/designation/select.php',
+		'designations.create' => $prefix .  '/designation/create.php',
+		'designations.select' => $prefix .  '/designation/select.php',
 
-		'assets.create' => '../resources/views/assets/create.php',
-		'assets.edit' => '../resources/views/assets/edit.php',
-		'assets.select' => '../resources/views/assets/select.php',
-		'assets.show' => '../resources/views/assets/show.php',
+		'assets.create' => $prefix .  '/assets/create.php',
+		'assets.edit' => $prefix .  '/assets/edit.php',
+		'assets.select' => $prefix .  '/assets/select.php',
+		'assets.show' => $prefix .  '/assets/show.php',
 
-		'asset.requests.create' => '../resources/views/asset_requests/create.php',
-		'asset.requests.select' => '../resources/views/asset_requests/select.php',
-		'asset.requests.manage' => '../resources/views/asset_requests/manage.php',
-		'asset.requests.show' => '../resources/views/asset_requests/show.php',
+		'asset.requests.create' => $prefix .  '/asset_requests/create.php',
+		'asset.requests.select' => $prefix .  '/asset_requests/select.php',
+		'asset.requests.manage' => $prefix .  '/asset_requests/manage.php',
+		'asset.requests.show' => $prefix .  '/asset_requests/show.php',
 
-		'reset-password' => '../resources/views/auth/reset_password.php',
-		'fp-mail' => '../resources/views/auth/fp_mail.php',
+		'reset-password' => $prefix .  '/auth/reset_password.php',
+		'fp-mail' => $prefix .  '/auth/fp_mail.php',
 	];
 
 	$viewFile = $pages[$viewFile] ?? null;
 	if (!$viewFile) {
-		view('403');
+		view(403);
 		exit;
 	}
 
@@ -432,7 +438,7 @@ function route(string $route, $params = '')
 	];
 
 	if (!in_array($route, $routes, true)) {
-		view('404');
+		view(404);
 		exit;
 	}
 
