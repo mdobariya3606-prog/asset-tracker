@@ -224,7 +224,15 @@ class User
 		return $stmt->fetchAll(PDO::FETCH_ASSOC);
 	}
 
-	public function paginate(int $page, int $perPage, string $search = '', string $sort = 'id', string $order = 'asc', ?int $departmentId = null, ?int $designationId = null): array
+	public function paginate(
+			int $page, 
+			int $perPage, 
+			string $search = '', 
+			string $sort = 'id', 
+			string $order = 'asc', 
+			?int $departmentId = null,
+			?int $designationId = null
+		): array
 	{
 		$offset = ($page - 1) * $perPage;
 		$sortColumns = [

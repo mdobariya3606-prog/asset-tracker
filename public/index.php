@@ -1,5 +1,8 @@
 <?php
 
+use App\Config\Mail;
+use App\Controllers\Email\ForgotPasswordEmail;
+
 //set_error_handler(function (
 //  int    $severity,
 //  string $message,
@@ -43,6 +46,7 @@ use App\Controllers\Department\CreateDepartmentController;
 use App\Controllers\Department\SelectDepartmentController;
 use App\Controllers\Designation\CreateDesignationController;
 use App\Controllers\Designation\SelectDesignationController;
+use App\Controllers\Email\ResetPasswordController as EmailResetPasswordController;
 use App\Controllers\User\CreateUserController;
 use App\Controllers\User\EditUserController;
 use App\Controllers\User\LoginController;
@@ -51,6 +55,7 @@ use App\Controllers\User\ResetPasswordController;
 use App\Controllers\User\SelectUserController;
 use App\Models\Asset;
 use App\Models\AssetRequest;
+use App\Controllers\Email\ResetPasswordController as ResetViaEmail;
 
 /**
  * ============================================================================
@@ -311,6 +316,26 @@ try {
 			(new LoginController($conn))->signout();
 			break;
 
+		case 'GET:send-rp-mail':
+			(new ForgotPasswordEmail($conn))->sendResetPasswordMail();
+			break;
+
+		case 'GET:reset-password':
+			(new EmailResetPasswordController($conn))->resetPassword($_GET);
+			break;
+
+		case 'GET:fp-mail':
+			view('fp-mail');
+			break;
+
+		case 'POST:fp-mail':
+			(new ForgotPasswordEmail($conn))->sendForgotPasswordMail($_POST);
+			break;
+
+		case 'POST:reset-password':
+			(new ResetViaEmail($conn))->updatePassword($_GET, $_POST);
+			break;
+
 		/* ------------------------------------------------------------------------
 		 * ROUTE GROUP: FALLBACK DEFAULTS
 		 * ------------------------------------------------------------------------ */
@@ -370,6 +395,9 @@ function view(string $viewFile, array $vars = []): void
 		'asset.requests.select' => '../resources/views/asset_requests/select.php',
 		'asset.requests.manage' => '../resources/views/asset_requests/manage.php',
 		'asset.requests.show' => '../resources/views/asset_requests/show.php',
+
+		'reset-password' => '../resources/views/auth/reset_password.php',
+		'fp-mail' => '../resources/views/auth/fp_mail.php',
 	];
 
 	$viewFile = $pages[$viewFile] ?? null;
@@ -400,8 +428,8 @@ function route(string $route, $params = '')
 		'designations',
 		'users',
 		'users/create',
+		'fp-mail',
 	];
-
 
 	if (!in_array($route, $routes, true)) {
 		view('404');

@@ -6,6 +6,23 @@
     <title>Edit User — AssetTracker</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../resources/css/form.css">
+    <style>
+        /* Success message styling under input */
+        .success-text {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.8125rem;
+            color: #166534;
+            margin-top: 6px;
+        }
+
+        .success-text svg {
+            width: 16px;
+            height: 16px;
+            flex-shrink: 0;
+        }
+    </style>
 </head>
 <body>
 <div class="edit-container<?php echo (!empty($_SESSION['user_role']) && $_SESSION['user_role'] === 'ADMIN') ? ' admin-edit' : ''; ?>">
@@ -25,6 +42,10 @@
             <h1>Edit User Profile</h1>
             <p>Modify details for <?php echo htmlspecialchars($old['name'] ?? $user['name'] ?? 'User'); ?></p>
         </div>
+
+        <!-- ========================= -->
+        <!-- General Validation Error / Top Alert -->
+        <!-- ========================= -->
         <?php if (!empty($errors['general'])): ?>
             <div class="alert-error">
                 <svg viewBox="0 0 24 24">
@@ -35,7 +56,23 @@
                 <?php echo htmlspecialchars($errors['general']); ?>
             </div>
         <?php endif; ?>
-        <form action="index.php?route=users/edit&id=<?php echo $user['id']; ?>" method="post"
+
+        <!-- ========================= -->
+        <!-- Top Success Alert (Global) -->
+        <!-- ========================= -->
+        <?php if (!empty($_SESSION['success'])): ?>
+            <div class="alert-success" style="display: flex; align-items: center; gap: 8px; background-color: #f0fdf4; border: 1px solid #bbf7d0; color: #166534; padding: 12px 16px; border-radius: 8px; margin-bottom: 20px; font-size: 0.875rem;">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="20 6 9 17 4 12"/>
+                </svg>
+                <?php 
+                    echo htmlspecialchars($_SESSION['success']); 
+                    unset($_SESSION['success']); // Clear session variable after display
+                ?>
+            </div>
+        <?php endif; ?>
+
+        <form action="index.php?route=users/edit&id=<?php echo $_SESSION['user_id']; ?>" method="post"
               enctype="multipart/form-data" novalidate id="editForm">
             <div class="form-grid">
                 <!-- Name -->
@@ -58,6 +95,7 @@
                             </svg><?php echo htmlspecialchars($errors['name']); ?></div>
                     <?php endif; ?>
                 </div>
+
                 <!-- Email -->
                 <div class="form-group full-width <?php echo isset($errors['email']) ? 'has-error' : ''; ?>">
                     <label for="email">Email Address <span class="required">*</span></label>
@@ -78,6 +116,7 @@
                             </svg><?php echo htmlspecialchars($errors['email']); ?></div>
                     <?php endif; ?>
                 </div>
+
                 <!-- Mobile -->
                 <div class="form-group <?php echo isset($errors['mobile']) ? 'has-error' : ''; ?>">
                     <label for="mobile">Mobile <span class="required">*</span></label>
@@ -98,6 +137,7 @@
                             </svg><?php echo htmlspecialchars($errors['mobile']); ?></div>
                     <?php endif; ?>
                 </div>
+
                 <?php
                 $viewerSessionRole = strtoupper($_SESSION['user_role'] ?? 'EMPLOYEE');
                 $isOwnProfile = (int)($user['id'] ?? 0) === (int)($_SESSION['user_id'] ?? 0);
@@ -106,6 +146,7 @@
                 $canEditDepartment = $viewerSessionRole === 'ADMIN' || (!$isOwnProfile && $viewerSessionRole !== 'EMPLOYEE');
                 $canEditDesignation = $viewerSessionRole === 'ADMIN' || ($viewerSessionRole === 'MANAGER' && !$isOwnProfile && $targetRole !== 'ADMIN');
                 ?>
+
                 <?php if ($canEditRole): ?>
                     <!-- Role -->
                     <div class="form-group <?php echo isset($errors['role']) ? 'has-error' : ''; ?>">
@@ -140,6 +181,7 @@
                         <?php endif; ?>
                     </div>
                 <?php endif; ?>
+
                 <?php if ($canEditDepartment): ?>
                     <!-- Department -->
                     <div class="form-group <?php echo isset($errors['department_id']) ? 'has-error' : ''; ?>">
@@ -167,6 +209,7 @@
                         <?php endif; ?>
                     </div>
                 <?php endif; ?>
+
                 <?php if ($canEditDesignation): ?>
                     <!-- Designation -->
                     <div class="form-group <?php echo isset($errors['designation_id']) ? 'has-error' : ''; ?>">
@@ -194,6 +237,7 @@
                         <?php endif; ?>
                     </div>
                 <?php endif; ?>
+
                 <div class="form-group full-width <?php echo isset($errors['profile_image']) ? 'has-error' : ''; ?>">
                     <label for="profile_image">Profile Image (optional)</label>
                     <div class="input-wrapper">
@@ -226,6 +270,11 @@
                             Save Changes
                         </span>
                     </button>
+                </div>
+
+                <div class="error-text current-img-notice"
+                     style="margin-top: 10px; display: block; color: #475569;">
+                    Forgot password? <strong><a href="index.php?route=send-rp-mail">send mail</a></strong>
                 </div>
             </div>
         </form>
