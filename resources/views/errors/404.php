@@ -107,7 +107,8 @@ http_response_code(404);
         </div>
         <div class="error-code">404</div>
         <h1 class="error-title">Page Not Found</h1>
-        <p class="error-description">The page you are looking for does not exist, or has been moved to a new route lookup address.</p>
+        <p class="error-description"><?= $message ??
+            'The page you are looking for does not exist, or has been moved to a new route lookup address.'; ?></p>
         <a href="index.php?route=users" class="btn">
             <svg viewBox="0 0 24 24" style="width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round;"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
             Back to Dashboard
