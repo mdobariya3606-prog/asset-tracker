@@ -26,7 +26,7 @@ class CreateUserController
 				exit;
 			}
 			if (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'EMPLOYEE') {
-				view('403');
+				view(403);
 				exit;
 			}
 
@@ -169,7 +169,7 @@ class CreateUserController
 			exit;
 		}
 		if (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'EMPLOYEE') {
-			view('403');
+			view(403);
 			exit;
 		}
 		$formData = $this->showForm();
@@ -208,5 +208,3 @@ class CreateUserController
 		return $stmt->fetchAll(PDO::FETCH_ASSOC);
 	}
 }
-
-?>

@@ -50,7 +50,7 @@ class ResetPasswordController
 
 		if ($viewerRole === 'MANAGER') {
 			if ($targetRole === 'ADMIN') {
-				view('403');
+				view(403);
 				exit;
 			}
 			return;
@@ -58,13 +58,13 @@ class ResetPasswordController
 
 		if ($viewerRole === 'HR') {
 			if (in_array($targetRole, ['ADMIN', 'MANAGER'], true)) {
-				view('403');
+				view(403);
 				exit;
 			}
 			return;
 		}
 
-		view('403');
+		view(403);
 		exit;
 	}
 

@@ -24,7 +24,7 @@ class CreateDesignationController
 			exit;
 		}
 		if (empty($_SESSION['user_role']) || $_SESSION['user_role'] !== 'ADMIN') {
-			view('403');
+			view(403);
 			exit;
 		}
 		$errors = $this->designation->validate($designation);
@@ -47,7 +47,7 @@ class CreateDesignationController
 			exit;
 		}
 		if (empty($_SESSION['user_role']) || $_SESSION['user_role'] !== 'ADMIN') {
-			view('403');
+			view(403);
 			exit;
 		}
 

@@ -24,7 +24,7 @@ class CreateDepartmentController
 			exit;
 		}
 		if (empty($_SESSION['user_role']) || $_SESSION['user_role'] !== 'ADMIN') {
-			view('403');
+			view(403);
 			exit;
 		}
 
@@ -48,7 +48,7 @@ class CreateDepartmentController
 			exit;
 		}
 		if (empty($_SESSION['user_role']) || $_SESSION['user_role'] !== 'ADMIN') {
-			view('403');
+			view(403);
 			exit;
 		}
 		view('departments.create');

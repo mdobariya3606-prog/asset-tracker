@@ -81,7 +81,7 @@ class LoginController
 		$ipAddress = $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1';
 		$throttleComboKey = 'login_throttle:' . md5($ipAddress . '|' . $email);
 		$throttleIpKey = 'login_throttle_ip:' . md5($ipAddress);
-
+	
 		// 2) Check if IP-level block (10 attempts) has been exceeded
 		if ($this->limiter->tooManyAttempts($throttleIpKey, 10)) {
 			$seconds = $this->limiter->retriesIn($throttleIpKey);

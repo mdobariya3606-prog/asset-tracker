@@ -29,7 +29,7 @@ class CreateAssetController
 
 		$role = strtoupper($_SESSION['user_role'] ?? 'EMPLOYEE');
 		if (!$this->asset->canManageAssets($role)) {
-			view('403');
+			view(403);
 			exit;
 		}
 
@@ -83,7 +83,7 @@ class CreateAssetController
 
 		$role = strtoupper($_SESSION['user_role'] ?? 'EMPLOYEE');
 		if (!$this->asset->canManageAssets($role)) {
-			view('403');
+			view(403);
 			exit;
 		}
 
@@ -174,7 +174,7 @@ class CreateAssetController
 
 		$role = strtoupper($_SESSION['user_role'] ?? 'EMPLOYEE');
 		if (!$this->asset->canManageAssets($role)) {
-			view('403');
+			view(403);
 			exit;
 		}
 
@@ -203,7 +203,7 @@ class CreateAssetController
 
 		$role = strtoupper($_SESSION['user_role'] ?? 'EMPLOYEE');
 		if (!$this->asset->canManageAssets($role)) {
-			view('403');
+			view(403);
 			exit;
 		}
 
@@ -298,7 +298,7 @@ class CreateAssetController
 
 		$role = strtoupper($_SESSION['user_role'] ?? 'EMPLOYEE');
 		if (!$this->asset->canManageAssets($role)) {
-			view('403');
+			view(403);
 			exit;
 		}
 

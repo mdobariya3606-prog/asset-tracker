@@ -39,7 +39,7 @@ class EditUserController
 		$targetRole = strtoupper($targetUser['role'] ?? 'EMPLOYEE');
 
 		if (!$this->canEditTarget($viewerRole, $targetRole, $isOwnProfile)) {
-			view('403');
+			view(403);
 			exit;
 		}
 
@@ -146,7 +146,7 @@ class EditUserController
 
 		$targetRole = strtoupper($currentUser['role'] ?? 'EMPLOYEE');
 		if (!$this->canEditTarget($viewerRole, $targetRole, $isOwnProfile)) {
-			view('403');
+			view(403);
 			exit;
 		}
 
@@ -320,7 +320,7 @@ class EditUserController
 		$viewerRole = strtoupper($_SESSION['user_role'] ?? 'EMPLOYEE');
 		$targetRole = strtoupper($targetUser['role'] ?? 'EMPLOYEE');
 		if (!$this->canManageTarget($viewerRole, $targetRole)) {
-			view('403');
+			view(403);
 			exit;
 		}
 

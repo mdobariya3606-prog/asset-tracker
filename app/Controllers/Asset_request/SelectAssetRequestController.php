@@ -28,7 +28,7 @@ class SelectAssetRequestController
 		}
 
 		if ($_SESSION['user_role'] === 'HR' || $_SESSION['user_role'] === 'EMPLOYEE') {
-			view('403');
+			view(403);
 			exit;
 		}
 
@@ -49,7 +49,7 @@ class SelectAssetRequestController
 		$role = strtoupper($_SESSION['user_role'] ?? 'EMPLOYEE');
 
 		if ($role === 'EMPLOYEE' || $role === 'HR') {
-			view('403');
+			view(403);
 			exit;
 		}
 

@@ -23,7 +23,7 @@ class ManageRequestController
 		$role = $_SESSION['user_role'] ?? 'EMPLOYEE';
 
 		if ($role === 'EMPLOYEE' || $role === 'HR') {
-			view('403');
+			view(403);
 			exit;
 		}
 
@@ -31,7 +31,7 @@ class ManageRequestController
 
 		if ($assetRequest['status'] === 'RETURNED' || $assetRequest['status'] === 'CANCELLED') {
 			$message = "This asset/request has been $assetRequest[status]";
-			view('403', [
+			view(403, [
 				'message' => $message
 			]);
 			exit;
@@ -164,7 +164,7 @@ class ManageRequestController
 		$inputStatus = $input['status'];
 
 		switch ($assetStatus) {
-//				can approve/reject only
+			//				can approve/reject only
 			case 'PENDING':
 				switch ($inputStatus) {
 					case 'ISSUED':
@@ -174,7 +174,7 @@ class ManageRequestController
 				}
 				break;
 
-//				can issue only
+			//				can issue only
 			case 'APPROVED':
 				switch ($inputStatus) {
 					case 'PENDING':

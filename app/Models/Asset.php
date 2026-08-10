@@ -77,7 +77,7 @@ class Asset
 			$vendor_ids = $this->conn->query('select id from vendors')->fetchAll(PDO::FETCH_COLUMN);
 		} catch (Exception $e) {
 			logError($e);
-			view('500');
+			view(500);
 			exit();
 		}
 
@@ -295,7 +295,7 @@ class Asset
 	{
 		$asset = $this->find($id);
 		if ($asset === []) {
-			view('404');
+			view(404);
 		}
 		return $asset;
 	}
