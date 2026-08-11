@@ -2,6 +2,7 @@
 
 namespace App\Controllers\Email;
 
+use App\Models\AuditLog;
 use App\Models\ForgotPassword;
 use App\Models\User;
 use App\Services\ResetPasswordService;
@@ -11,11 +12,13 @@ use RuntimeException;
 
 class ResetPasswordController
 {
+    private PDO $conn;
     private ResetPasswordService $resetPasswordService;
     private ResetPasswordValidator $validator;
 
     public function __construct(PDO $conn)
     {
+        $this->conn = $conn;
         $userModel = new User($conn);
         $forgotPasswordModel = new ForgotPassword($conn);
 
@@ -92,6 +95,7 @@ class ResetPasswordController
         }
 
         $_SESSION['success'] = 'Password updated successfully.';
+        (new AuditLog($this->conn))->log('PASSWORD_CHANGE', null, $reset['user_id']);
 
         route(
             $_SESSION['user_id']

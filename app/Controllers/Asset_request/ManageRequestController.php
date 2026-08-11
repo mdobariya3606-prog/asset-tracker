@@ -4,6 +4,7 @@ namespace App\Controllers\Asset_request;
 
 use App\Models\Asset;
 use App\Models\AssetRequest;
+use App\Models\AuditLog;
 
 class ManageRequestController
 {
@@ -95,8 +96,13 @@ class ManageRequestController
 		$this->assetRequestModel->update($requestId, $inputAssetRequest, $assetRequest);
 
 		if ($inputAssetRequest['status'] === 'APPROVED') {
+
+			(new AuditLog($this->conn))->log('ASSET_ASSIGNMENT', $assetRequest['asset_id']);
 			(new Asset($this->conn))->updateStatus($assetRequest['asset_id'], 'ASSIGNED', $assetRequest['user_id']);
+
 		} elseif ($inputAssetRequest['status'] === 'RETURNED') {
+
+			(new AuditLog($this->conn))->log('ASSET_RETURN', $assetRequest['asset_id']);
 			(new Asset($this->conn))->updateStatus($assetRequest['asset_id'], 'AVAILABLE');
 		}
 		$_SESSION['success'] = 'Asset request updated successfully.';
