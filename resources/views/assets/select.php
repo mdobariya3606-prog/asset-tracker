@@ -371,9 +371,13 @@
                 });
         }
 
+        function addAsset() {
+            window.location.href = 'index.php?route=assets/create';
+        }
+
         function exportPDF() {
             downloadFileWithLoader(
-                'index.php?route=users/pdf',
+                'index.php?route=assets/pdf',
                 'Users_Report.pdf',
                 'Generating PDF document...'
             );
@@ -381,7 +385,7 @@
 
         function exportExcel() {
             downloadFileWithLoader(
-                'index.php?route=users/excel',
+                'index.php?route=assets/excel',
                 'Users_Report.xlsx',
                 'Preparing Excel spreadsheet...'
             );

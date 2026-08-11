@@ -312,4 +312,31 @@ class Asset
 		$stmt->execute([$id]);
 		return $stmt->fetch(PDO::FETCH_ASSOC) ?: [];
 	}
+
+	public function export($option = 'pdf')
+	{
+		$stmt = $this->conn->query("
+			SELECT a.*,
+				c.name as category_name, 
+				v.name as vendor_name
+			FROM assets a
+			LEFT JOIN categories c
+			ON a.category_id = c.id
+
+			LEFT JOIN vendors v
+			ON a.vendor_id = v.id
+
+			ORDER BY status
+			");
+		$assets = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+		$option = strtolower(trim($option));
+		if ($option === 'excel') {
+			view('assets.excel', ['assets' => $assets]);
+			exit;
+		}
+
+		view('assets.pdf', ['assets' => $assets]);
+		exit;
+	}
 }

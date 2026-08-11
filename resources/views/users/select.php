@@ -541,6 +541,10 @@ function getSortIndicator(string $column, string $currentSort, string $currentOr
                 });
         }
 
+        function registerUser() {
+            window.location.href = 'index.php?route=users/create';
+        }
+
         function exportPDF() {
             downloadFileWithLoader(
                 'index.php?route=users/pdf',

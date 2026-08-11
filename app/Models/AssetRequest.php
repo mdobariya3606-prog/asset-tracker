@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use PDO;
+
 class AssetRequest
 {
 	private \PDO $conn;
@@ -52,7 +54,8 @@ class AssetRequest
 
 	public function update(int $id, array $request, array $assetRequest)
 	{
-		$stmt = $this->conn->prepare("
+		$stmt = $this->conn->prepare(
+			"
 			UPDATE asset_requests 
 			SET status = :status,
 			
@@ -96,5 +99,19 @@ class AssetRequest
 	public function pendingRequests(): int
 	{
 		return $this->conn->query('select count(*) from asset_requests where status = "PENDING"')->fetchColumn();
+	}
+
+	public function export($option = 'pdf')
+	{
+		$stmt = $this->conn->query('select * from asset_requests order by status');
+		$requests = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+		if (strtolower(trim($option)) == 'excel') {
+			view('asset.requests.excel', ['requests' => $requests]);
+			exit;
+		}
+		
+		view('asset.requests.pdf', ['requests' => $requests]);
+		exit;
 	}
 }

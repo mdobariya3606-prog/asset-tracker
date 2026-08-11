@@ -2,6 +2,7 @@
 
 use App\Config\Mail;
 use App\Controllers\Email\ForgotPasswordEmail;
+use App\Models\User;
 
 //set_error_handler(function (
 //  int    $severity,
@@ -212,39 +213,19 @@ try {
 
 
 		case 'GET:assets/pdf':
-			$stmt = $conn->query('select * from assets order by status');
-			$assets = $stmt->fetchAll(\PDO::FETCH_ASSOC);
-			view('assets.pdf', ['assets' => $assets]);
+			(new Asset($conn))->export('pdf');
 			break;
 
 		case 'GET:assets/excel':
-			$stmt = $conn->query('
-			select a.*,
-				c.name as category_name, 
-				v.name as vendor_name
-			from assets a
-			left join categories c
-			on a.category_id = c.id
-
-			left join vendors v
-			on a.vendor_id = v.id
-
-			order by status
-			');
-			$assets = $stmt->fetchAll(\PDO::FETCH_ASSOC);
-			view('assets.excel', ['assets' => $assets]);
+			(new Asset($conn))->export('excel');
 			break;
 
 		case 'GET:assets/requests/pdf':
-			$stmt = $conn->query('select * from asset_requests order by status');
-			$requests = $stmt->fetchAll(\PDO::FETCH_ASSOC);
-			view('asset.requests.pdf', ['requests' => $requests]);
+			(new AssetRequest($conn))->export('pdf');
 			break;
 
 		case 'GET:assets/requests/excel':
-			$stmt = $conn->query('select * from asset_requests order by status');
-			$requests = $stmt->fetchAll(\PDO::FETCH_ASSOC);
-			view('asset.requests.excel', ['requests' => $requests]);
+			(new AssetRequest($conn))->export('excel');
 			break;
 
 		/* ------------------------------------------------------------------------
@@ -299,39 +280,19 @@ try {
 			break;
 
 		case 'GET:users/pdf':
-			$stmt = $conn->query('
-			select u.*, dep.name as department_name, des.name as designation_name
-			from users u
-			left join departments dep
-			on u.department_id = dep.id
-			
-			left join designations des
-			on u.designation_id = des.id
-
-			order by role');
-			$users = $stmt->fetchAll(\PDO::FETCH_ASSOC);
-			view('users.pdf', ['users' => $users]);
+			(new User($conn))->export('pdf');
 			break;
 
 		case 'GET:users/excel':
-			$stmt = $conn->query('
-			select u.*, dep.name as department_name, des.name as designation_name
-			from users u
-			left join departments dep
-			on u.department_id = dep.id
-			
-			left join designations des
-			on u.designation_id = des.id
-
-			order by role');
-			$users = $stmt->fetchAll(\PDO::FETCH_ASSOC);
-			view('users.excel', ['users' => $users]);
+			(new User($conn))->export('excel');
 			break;
 
 		case 'GET:users/employees/pdf':
-			$stmt = $conn->query('select * from users where role = "EMPLOYEE"');
-			$users = $stmt->fetchAll(\PDO::FETCH_ASSOC);
-			view('users.pdf', ['users' => $users]);
+			(new User($conn))->export('pdf', 'employee');
+			break;
+
+		case 'GET:users/employees/excel':
+			(new User($conn))->export('excel', 'employee');
 			break;
 
 		/* ------------------------------------------------------------------------

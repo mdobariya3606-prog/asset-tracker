@@ -225,15 +225,14 @@ class User
 	}
 
 	public function paginate(
-			int $page, 
-			int $perPage, 
-			string $search = '', 
-			string $sort = 'id', 
-			string $order = 'asc', 
-			?int $departmentId = null,
-			?int $designationId = null
-		): array
-	{
+		int $page,
+		int $perPage,
+		string $search = '',
+		string $sort = 'id',
+		string $order = 'asc',
+		?int $departmentId = null,
+		?int $designationId = null
+	): array {
 		$offset = ($page - 1) * $perPage;
 		$sortColumns = [
 			'id' => 'u.id',
@@ -341,5 +340,29 @@ class User
 		);
 		$stmt->execute([$id]);
 		return $stmt->fetchAll(PDO::FETCH_ASSOC);
+	}
+
+	public function export($option = 'pdf', $role = null)
+	{
+		$sql = "SELECT u.*, d.name AS department_name, des.name AS designation_name
+				FROM users u
+				LEFT JOIN departments d ON u.department_id = d.id
+				LEFT JOIN designations des ON u.designation_id = des.id";
+
+		if (strtolower(trim($role)) == 'employee') {
+			$sql .= ' WHERE role = "EMPLOYEE"';
+		}
+		$sql .= ' ORDER BY role';
+
+		$stmt = $this->conn->query($sql);
+
+		$users = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+		if (strtolower(trim($option)) == 'excel') {
+			view('users.excel', ['users' => $users]);
+			exit;
+		}
+		view('users.pdf', ['users' => $users]);
+		exit;
 	}
 }

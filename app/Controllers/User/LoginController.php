@@ -5,6 +5,7 @@ namespace App\Controllers\User;
 use App\Models\User;
 use App\Services\Cache;
 use App\Services\RateLimiter;
+use App\Models\AuditLog;
 use PDO;
 
 class LoginController
@@ -43,7 +44,8 @@ class LoginController
 		$result = $this->authenticate($postParams);
 
 		if ($result['success']) {
-			route('users');;
+			route('users');
+			(new AuditLog($this->conn))->log('LOGIN');
 			exit;
 		}
 
@@ -157,6 +159,7 @@ class LoginController
 
 	public function signout()
 	{
+		(new AuditLog($this->conn))->log('logout');
 		$this->logout();
 		route('login');
 		exit;

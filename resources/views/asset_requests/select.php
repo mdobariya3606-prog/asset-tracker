@@ -340,16 +340,16 @@
 
         function exportPDF() {
             downloadFileWithLoader(
-                'index.php?route=users/pdf',
-                'Users_Report.pdf',
+                'index.php?route=assets/requests/pdf',
+                'asset_requests.pdf',
                 'Generating PDF document...'
             );
         }
 
         function exportExcel() {
             downloadFileWithLoader(
-                'index.php?route=users/excel',
-                'Users_Report.xlsx',
+                'index.php?route=assets/requests/excel',
+                'asset_requests.xlsx',
                 'Preparing Excel spreadsheet...'
             );
         }
