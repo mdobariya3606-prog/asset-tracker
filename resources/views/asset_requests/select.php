@@ -246,9 +246,9 @@
         function exportPDF() {
             window.location.href = 'index.php?route=assets/requests/pdf';
         }
-
+        
         function exportExcel() {
-            alert('Exporting to Excel...');
+            window.location.href = 'index.php?route=assets/requests/excel';
         }
 
         function printTable() {

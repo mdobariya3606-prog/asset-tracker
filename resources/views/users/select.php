@@ -453,7 +453,7 @@ function getSortIndicator(string $column, string $currentSort, string $currentOr
         }
 
         function exportExcel() {
-            alert('Exporting to Excel...');
+            window.location.href = 'index.php?route=users/excel';
         }
 
         function printTable() {

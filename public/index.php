@@ -217,10 +217,34 @@ try {
 			view('assets.pdf', ['assets' => $assets]);
 			break;
 
+		case 'GET:assets/excel':
+			$stmt = $conn->query('
+			select a.*,
+				c.name as category_name, 
+				v.name as vendor_name
+			from assets a
+			left join categories c
+			on a.category_id = c.id
+
+			left join vendors v
+			on a.vendor_id = v.id
+
+			order by status
+			');
+			$assets = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+			view('assets.excel', ['assets' => $assets]);
+			break;
+
 		case 'GET:assets/requests/pdf':
 			$stmt = $conn->query('select * from asset_requests order by status');
 			$requests = $stmt->fetchAll(\PDO::FETCH_ASSOC);
 			view('asset.requests.pdf', ['requests' => $requests]);
+			break;
+
+		case 'GET:assets/requests/excel':
+			$stmt = $conn->query('select * from asset_requests order by status');
+			$requests = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+			view('asset.requests.excel', ['requests' => $requests]);
 			break;
 
 		/* ------------------------------------------------------------------------
@@ -287,6 +311,21 @@ try {
 			order by role');
 			$users = $stmt->fetchAll(\PDO::FETCH_ASSOC);
 			view('users.pdf', ['users' => $users]);
+			break;
+
+		case 'GET:users/excel':
+			$stmt = $conn->query('
+			select u.*, dep.name as department_name, des.name as designation_name
+			from users u
+			left join departments dep
+			on u.department_id = dep.id
+			
+			left join designations des
+			on u.designation_id = des.id
+
+			order by role');
+			$users = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+			view('users.excel', ['users' => $users]);
 			break;
 
 		case 'GET:users/employees/pdf':
@@ -420,6 +459,7 @@ function view(int|string $viewFile, array $vars = []): void
 		'users.reset-password' => $prefix .  '/users/reset-password.php',
 		'users.select' => $prefix .  '/users/select.php',
 		'users.pdf' => $prefix .  '/users/export-pdf.php',
+		'users.excel' => $prefix .  '/users/export-excel.php',
 
 		'departments.create' => $prefix .  '/departments/create.php',
 		'departments.select' => $prefix .  '/departments/select.php',
@@ -432,12 +472,14 @@ function view(int|string $viewFile, array $vars = []): void
 		'assets.select' => $prefix .  '/assets/select.php',
 		'assets.show' => $prefix .  '/assets/show.php',
 		'assets.pdf' => $prefix .  '/assets/export-pdf.php',
+		'assets.excel' => $prefix .  '/assets/export-excel.php',
 
 		'asset.requests.create' => $prefix .  '/asset_requests/create.php',
 		'asset.requests.select' => $prefix .  '/asset_requests/select.php',
 		'asset.requests.manage' => $prefix .  '/asset_requests/manage.php',
 		'asset.requests.show' => $prefix .  '/asset_requests/show.php',
 		'asset.requests.pdf' => $prefix . '/asset_requests/export-pdf.php',
+		'asset.requests.excel' => $prefix . '/asset_requests/export-excel.php',
 
 		'reset-password' => $prefix .  '/auth/reset_password.php',
 		'fp-mail' => $prefix .  '/auth/fp_mail.php',
