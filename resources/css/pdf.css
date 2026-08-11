@@ -1,0 +1,125 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    /* Using clean, universally supported fallback fonts */
+    font-family: Arial, Helvetica, "Segoe UI", sans-serif;
+    font-size: 11px;
+    line-height: 1.5;
+    color: #1e293b;
+    background-color: #ffffff;
+    padding: 32px 36px;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+}
+
+/* ── Header ── */
+
+.header-container {
+    margin-bottom: 20px;
+}
+
+h1 {
+    font-size: 18px;
+    font-weight: 700;
+    color: #0f172a;
+    margin-bottom: 4px;
+}
+
+.subtitle {
+    font-size: 11px;
+    color: #64748b;
+}
+
+/* ── Table Design ── */
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+    margin-top: 12px;
+}
+
+th, td {
+    padding: 10px 12px;
+    text-align: left;
+}
+
+/* Clean table headers */
+th {
+    background-color: #f8fafc;
+    color: #475569;
+    font-weight: 700;
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 2px solid #cbd5e1;
+}
+
+/* Subtle row dividers and zebra striping */
+tbody tr {
+    border-bottom: 1px solid #e2e8f0;
+}
+
+tbody tr:nth-child(even) {
+    background-color: #fdfdfd;
+}
+
+td {
+    color: #334155;
+    font-size: 11px;
+}
+
+/* Monospace font for IDs and Timestamps to make them sharp */
+td.id-cell, td.date-cell {
+    font-family: "Courier New", Courier, monospace;
+    font-weight: 600;
+    color: #64748b;
+}
+
+/* ── Status Badges ── */
+
+.badge {
+    display: inline-block;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    text-align: left;
+}
+
+/* Specific Badge Colors */
+.badge-issued, .badge-approved {
+    background-color: #dcfce7;
+    color: #15803d;
+}
+
+.badge-returned {
+    background-color: #e0f2fe;
+    color: #0369a1;
+}
+
+.badge-rejected {
+    background-color: #fee2e2;
+    color: #b91c1c;
+}
+
+.badge-pending {
+    background-color: #fef3c7;
+    color: #b45309;
+}
+
+/* ── Footer ── */
+
+.footer {
+    margin-top: 24px;
+    padding-top: 10px;
+    border-top: 1px solid #e2e8f0;
+    font-size: 9px;
+    color: #94a3b8;
+    text-align: right;
+}
