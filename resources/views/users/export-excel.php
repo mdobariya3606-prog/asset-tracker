@@ -22,6 +22,8 @@ $sheet->fromArray([
 
 $row = 2;
 
+/** @var array $users */
+
 foreach ($users as $user) {
     $sheet->fromArray([
         $user['id'] ?? '',

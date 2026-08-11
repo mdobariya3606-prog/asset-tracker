@@ -26,6 +26,7 @@ $sheet->fromArray([
 ], null, 'A1');
 
 $row = 2;
+/** @var array $assets */
 
 foreach ($assets as $asset) {
 

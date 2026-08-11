@@ -34,6 +34,49 @@ function getSortIndicator(string $column, string $currentSort, string $currentOr
     <link rel="stylesheet" href="../resources/css/user.css">
 
     <style>
+        /* Export Loading Overlay */
+        .export-loader-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(15, 23, 42, 0.4);
+            backdrop-filter: blur(4px);
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #ffffff;
+            font-family: inherit;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.25s ease, visibility 0.25s ease;
+        }
+
+        .export-loader-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .export-spinner {
+            width: 44px;
+            height: 44px;
+            border: 4px solid rgba(255, 255, 255, 0.25);
+            border-top-color: #ffffff;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-bottom: 12px;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+
         .page-header-actions {
             display: flex;
             align-items: center;
@@ -436,28 +479,82 @@ function getSortIndicator(string $column, string $currentSort, string $currentOr
                 .toggle('active');
         }
 
-        window.addEventListener('click', function(event) {
-            const dropdown = document.getElementById('exportDropdown');
+        function showExportLoader(message) {
+            const loader = document.getElementById('exportLoader');
+            const loaderText = document.getElementById('exportLoaderText');
+            if (loaderText) loaderText.textContent = message;
+            if (loader) loader.classList.add('active');
+        }
 
-            if (dropdown && !dropdown.contains(event.target)) {
-                dropdown.classList.remove('active');
-            }
-        });
+        function hideExportLoader() {
+            const loader = document.getElementById('exportLoader');
+            if (loader) loader.classList.remove('active');
+        }
 
-        function registerUser() {
-            window.location.href = 'index.php?route=users/create';
+        function downloadFileWithLoader(url, defaultFilename, loaderText) {
+            showExportLoader(loaderText);
+
+            fetch(url)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+
+                    // Extract filename from Header if present
+                    const disposition = response.headers.get('Content-Disposition');
+                    let filename = defaultFilename;
+                    if (disposition && disposition.includes('filename=')) {
+                        const matches = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/.exec(disposition);
+                        if (matches != null && matches[1]) {
+                            filename = matches[1].replace(/['"]/g, '');
+                        }
+                    }
+
+                    return response.blob().then(blob => ({
+                        blob,
+                        filename
+                    }));
+                })
+                .then(({
+                    blob,
+                    filename
+                }) => {
+                    // Create dynamic download link
+                    const downloadUrl = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.style.display = 'none';
+                    a.href = downloadUrl;
+                    a.download = filename;
+                    document.body.appendChild(a);
+                    a.click();
+
+                    // Cleanup
+                    window.URL.revokeObjectURL(downloadUrl);
+                    a.remove();
+                })
+                .catch(err => {
+                    console.error('Export failed:', err);
+                    alert('Failed to generate export file. Please try again.');
+                })
+                .finally(() => {
+                    hideExportLoader();
+                });
         }
 
         function exportPDF() {
-            window.location.href = 'index.php?route=users/pdf';
+            downloadFileWithLoader(
+                'index.php?route=users/pdf',
+                'Users_Report.pdf',
+                'Generating PDF document...'
+            );
         }
 
         function exportExcel() {
-            window.location.href = 'index.php?route=users/excel';
-        }
-
-        function printTable() {
-            window.print();
+            downloadFileWithLoader(
+                'index.php?route=users/excel',
+                'Users_Report.xlsx',
+                'Preparing Excel spreadsheet...'
+            );
         }
 
         document.addEventListener('DOMContentLoaded', function() {
@@ -549,6 +646,12 @@ function getSortIndicator(string $column, string $currentSort, string $currentOr
             }
         });
     </script>
+
+    <!-- Exporting Overlay -->
+    <div id="exportLoader" class="export-loader-overlay">
+        <div class="export-spinner"></div>
+        <div id="exportLoaderText" style="font-size: 14px; font-weight: 600;">Generating report...</div>
+    </div>
 
 </body>
 
