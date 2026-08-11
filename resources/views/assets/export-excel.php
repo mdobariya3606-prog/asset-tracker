@@ -57,7 +57,7 @@ foreach ($assets as $asset) {
 $sheet->getStyle('A1:K1')->getFont()->setBold(true);
 
 // Auto-size columns
-foreach (range('A', 'C') as $column) {
+foreach (range('A', 'K') as $column) {
     $sheet->getColumnDimension($column)->setAutoSize(true);
 }
 
