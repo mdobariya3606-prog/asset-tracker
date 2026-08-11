@@ -312,7 +312,7 @@ try {
 			break;
 
 		// GET:logout - Ends the user session and redirects to login
-		case 'GET:logout':
+		case 'POST:logout':
 			(new LoginController($conn))->signout();
 			break;
 

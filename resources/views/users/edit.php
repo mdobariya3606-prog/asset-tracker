@@ -72,7 +72,7 @@
             </div>
         <?php endif; ?>
 
-        <form action="index.php?route=users/edit&id=<?php echo $_SESSION['user_id']; ?>" method="post"
+        <form action="index.php?route=users/edit&id=<?= $user_id ?> ?>" method="post"
               enctype="multipart/form-data" novalidate id="editForm">
             <div class="form-grid">
                 <!-- Name -->

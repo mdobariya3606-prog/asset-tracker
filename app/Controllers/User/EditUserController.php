@@ -50,6 +50,7 @@ class EditUserController
 		$old = [];
 
 		view('users.edit', [
+			'user_id' => $user['id'],
 			'formData' => $formData,
 			'isOwnProfile' => $isOwnProfile,
 			'targetRole' => $targetRole,
@@ -204,6 +205,7 @@ class EditUserController
 		$old = $result['old'];
 
 		view('users.edit', [
+			'user_id' => $user['id'],
 			'formData' => $formData,
 			'isOwnProfile' => $isOwnProfile,
 			'targetRole' => $targetRole,

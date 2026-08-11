@@ -197,7 +197,7 @@ class User
 	{
 		$sql = 'SELECT COUNT(*) FROM users WHERE mobile = ?';
 		$params = [trim($mobile)];
-		if ($excludeId !== null) {
+		if ($excludeId) {
 			$sql .= ' AND id != ?';
 			$params[] = $excludeId;
 		}
