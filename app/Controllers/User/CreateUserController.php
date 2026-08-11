@@ -2,6 +2,7 @@
 
 namespace App\Controllers\User;
 
+use App\Models\AuditLog;
 use App\Models\User;
 use Exception;
 use PDO;
@@ -63,6 +64,8 @@ class CreateUserController
 				}
 				if ($result['success']) {
 					$_SESSION['success'] = 'User registered successfully!';
+
+					(new AuditLog($this->conn))->log('USER_CREATION', null, $userId);
 					route('users');
 					exit;
 				}

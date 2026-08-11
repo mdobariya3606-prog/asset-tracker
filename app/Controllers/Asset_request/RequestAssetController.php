@@ -18,6 +18,8 @@ class RequestAssetController
 
 	public function store($asset_id, $assetRequest)
 	{
+		$this->validateRequest();
+
 		$asset = (new Asset($this->conn))->find($asset_id);
 		if (empty($asset)) {
 			$errors['reason'] = "Asset does not exists";
@@ -43,4 +45,12 @@ class RequestAssetController
 		exit;
 	}
 
+	private function validateRequest() {
+		$asset = (new Asset($this->conn))->find((int)($_GET['id'] ?? 0));
+		if (empty($asset) || strtoupper((string)($asset['status'] ?? '')) !== 'AVAILABLE') {
+			$_SESSION['general'] = 'Asset #' . $asset['id'] . ' is not available for request.';
+			route('assets');
+			exit;
+		}
+	}
 }
