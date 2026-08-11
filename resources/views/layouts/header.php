@@ -8,7 +8,7 @@
         border: 1px solid var(--slate-200);
         border-radius: var(--radius-md);
         padding: 16px 24px;
-        box-shadow: var(--shadow-sm);
+        box-shadow: var(--shadow-md);
         margin-bottom: 32px;
     }
 
