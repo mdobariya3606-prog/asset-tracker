@@ -75,7 +75,7 @@ class SelectAssetRequestController
 	}
 
 	public function myRequests(): array {
-		$stmt = $this->conn->prepare('select * from asset_requests where user_id = ?');
+		$stmt = $this->conn->prepare('select * from asset_requests where user_id = ? order by status');
 		$stmt->execute([
 			$_SESSION['user_id'],
 		]);

@@ -29,6 +29,9 @@ switch ("$method:$route") {
     case 'POST:assets/request':
         (new RequestAssetController($conn))->store($_GET['id'], $_POST);
         return true;
+
+    case 'GET:assets/requests/cancel':
+        (new ManageRequestController($conn))->cancel($_GET['id']);
 }
 
 return false;

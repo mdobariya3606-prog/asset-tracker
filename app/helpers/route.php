@@ -6,6 +6,7 @@ function route(string $route, $params = ''): void
         'login',
         'assets',
         'assets/requests',
+        'assets/requests/cancel',
         'departments',
         'designations',
         'users',

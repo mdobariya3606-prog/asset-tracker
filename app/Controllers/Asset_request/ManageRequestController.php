@@ -96,7 +96,6 @@ class ManageRequestController
 
 			(new AuditLog($this->conn))->log('ASSET_ASSIGNMENT', $assetRequest['asset_id']);
 			(new Asset($this->conn))->updateStatus($assetRequest['asset_id'], 'ASSIGNED', $assetRequest['user_id']);
-
 		} elseif ($inputAssetRequest['status'] === 'RETURNED') {
 
 			(new AuditLog($this->conn))->log('ASSET_RETURN', $assetRequest['asset_id']);
@@ -104,6 +103,51 @@ class ManageRequestController
 		}
 		$_SESSION['success'] = 'Asset request updated successfully.';
 		route('assets/requests');
+	}
+
+	public function cancel($id)
+	{
+		require_once __DIR__ . '/../../Middleware/auth.php';
+		
+		if (empty($id) || !isset($id)) {
+			view(404);
+			exit;
+		}
+
+		$assetRequest = $this->assetRequestModel->findOrFail($id);
+
+		require_once __DIR__ . '/../../Middleware/assetOwner.php';
+
+		$asset = $this->assetModel->findOrFail($assetRequest['asset_id']);
+
+		$requestStatus = $assetRequest['status'];
+
+		if (
+			$requestStatus === 'CANCELLED'
+			|| $requestStatus === 'REJECTED'
+			|| $requestStatus === 'ISSUED'
+			|| $requestStatus === 'RETURNED'
+		) {
+			view(404);
+			exit;
+		}
+
+		$updatedAssetRequest['status'] = 'CANCELLED';
+		$this->assetRequestModel->update(
+			$assetRequest['id'],
+			$updatedAssetRequest,
+			$assetRequest
+		);
+
+		if ($requestStatus === 'APPROVED') {
+
+			$asset['status'] = 'AVAILABLE';
+			$this->assetModel->update($asset['id'], $asset);
+		}
+
+		$_SESSION['success'] = 'Request cancelled successfully';
+		route('assets/requests');
+		exit;
 	}
 
 	private function validate(array $assetRequest): array
