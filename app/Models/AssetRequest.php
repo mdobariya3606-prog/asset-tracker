@@ -33,7 +33,7 @@ class AssetRequest
 		$stmt->execute(['id' => $id]);
 		$assetRequest = $stmt->fetch();
 		if (empty($assetRequest)) {
-			require '../resources/views/errors/404.php';
+			view(404);
 			exit;
 		}
 		return $assetRequest;
@@ -52,58 +52,65 @@ class AssetRequest
 		return $errors;
 	}
 
-	public function update(int $id, array $request, array $assetRequest)
+	public function update(int $id, array $updatedAssetRequest, array $assetRequest)
 	{
-		$stmt = $this->conn->prepare(
-			"
-			UPDATE asset_requests 
-			SET status = :status,
-			
-			    approved_at = :approved_at,
-			    approved_by = :approved_by, 
-			    
-			    rejected_at = :rejected_at,
-			    rejected_by = :rejected_by,
-			    
-			    rejection_reason = :rejection_reason,
-			    
-			    issued_at = :issued_at,
-			    issued_by = :issued_by, 
-			    
-			    remark = :remark,
-			    returned_at = :returned_at
-			    
-			WHERE id = :id"
-		);
+		$value = fn($key) => $assetRequest[$key] ?? $updatedAssetRequest[$key] ?? null;
+
+		$stmt = $this->conn->prepare("
+        UPDATE asset_requests
+        SET
+            status = :status,
+            approved_at = :approved_at,
+            approved_by = :approved_by,
+            rejected_at = :rejected_at,
+            rejected_by = :rejected_by,
+            rejection_reason = :rejection_reason,
+            issued_at = :issued_at,
+            issued_by = :issued_by,
+            remark = :remark,
+            returned_at = :returned_at
+        WHERE id = :id
+    ");
+
 		$stmt->execute([
-			'status' => $request['status'],
-
-			'approved_at' => $assetRequest['approved_at'] ?? $request['approved_at'],
-			'approved_by' => $assetRequest['approved_by'] ?? $request['approved_by'],
-
-			'rejected_at' => $assetRequest['rejected_at'] ?? $request['rejected_at'],
-			'rejected_by' => $assetRequest['rejected_by'] ?? $request['rejected_by'],
-
-			'rejection_reason' => $request['rejection_reason'],
-
-			'issued_at' => $assetRequest['issued_at'] ?? $request['issued_at'],
-			'issued_by' => $assetRequest['issued_by'] ?? $request['issued_by'],
-
-			'remark' => $request['remark'],
-			'returned_at' => $assetRequest['returned_at'] ?? $request['returned_at'],
-
+			'status' => $updatedAssetRequest['status'],
+			'approved_at' => $value('approved_at'),
+			'approved_by' => $value('approved_by'),
+			'rejected_at' => $value('rejected_at'),
+			'rejected_by' => $value('rejected_by'),
+			'rejection_reason' => $updatedAssetRequest['rejection_reason'],
+			'issued_at' => $value('issued_at'),
+			'issued_by' => $value('issued_by'),
+			'remark' => $updatedAssetRequest['remark'],
+			'returned_at' => $value('returned_at'),
 			'id' => $id,
 		]);
 	}
 
 	public function pendingRequests(): int
 	{
-		return $this->conn->query('select count(*) from asset_requests where status = "PENDING"')->fetchColumn();
+		$sql = 'select count(*) from asset_requests where status = "PENDING"';
+
+		$role = $_SESSION['user_role'];
+
+		if ($role === 'HR' || $role === 'EMPLOYEE') {
+			$sql .= ' AND user_id = ' . $_SESSION['user_id'];
+		}
+
+		return $this->conn->query($sql)->fetchColumn();
 	}
 
 	public function export($option = 'pdf')
 	{
 		$stmt = $this->conn->query('select * from asset_requests order by status');
+		
+		$role = $_SESSION['user_role'];
+		
+		if ($role === 'HR' || $role === 'EMPLOYEE') {
+			$stmt = $this->conn->prepare('select * from asset_requests where user_id = ? order by status');
+			$stmt->execute([$_SESSION['user_id']]);
+		}
+
 		$requests = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 		if (strtolower(trim($option)) == 'excel') {

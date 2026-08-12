@@ -19,11 +19,7 @@ class SelectAssetController
 
 	public function index(): void
 	{
-		if (empty($_SESSION['user_id'])) {
-			$_SESSION['login_error'] = 'Please sign in to view assets.';
-			route('login');
-			exit;
-		}
+		require_once __DIR__ . '/../../Middleware/auth.php';
 
 		// Render dashboard identity and access controls from the latest database
 		// record instead of relying on values saved at sign-in.
@@ -43,11 +39,7 @@ class SelectAssetController
 
 	public function show(int $id): void
 	{
-		if (empty($_SESSION['user_id'])) {
-			$_SESSION['login_error'] = 'Please sign in to view asset details.';
-			route('login');
-			exit;
-		}
+		require_once __DIR__ . '/../../Middleware/auth.php';
 
 		$role = strtoupper($_SESSION['user_role'] ?? 'EMPLOYEE');
 		$dashboardUserRole = $role;
