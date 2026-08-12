@@ -95,7 +95,9 @@
         box-sizing: border-box;
     }
 </style>
+<?php
 
+ $conn = (new App\Config\Database())->getConnection(); ?>
 <!-- Navbar -->
 <header class="navbar">
     <div class="logo-section">
@@ -162,19 +164,17 @@
     <a href="index.php?route=assets" class="tab-link <?= $route === 'assets' ? 'active' : '' ?>">Assets</a>
 
     <?php
-    if ($_SESSION['user_role'] === 'ADMIN' || $_SESSION['user_role'] === 'MANAGER') {
-        $pendingRequests = (new AssetRequest((new Database())->getConnection()))->pendingRequests();
+    $pendingRequests = (new AssetRequest($conn))->pendingRequests();
     ?>
-        <a href="index.php?route=assets/requests"
-            class="tab-link <?= $route === 'assets/requests' ? 'active' : '' ?>">
-            <span class="tab-label">
-                Requests
-                <?php if ($pendingRequests > 0): ?>
-                    <span class="notification-badge">
-                        <?= $pendingRequests > 99 ? '99+' : $pendingRequests ?>
-                    </span>
-                <?php endif; ?>
-            </span>
-        </a>
-    <?php } ?>
+    <a href="index.php?route=assets/requests"
+        class="tab-link <?= $route === 'assets/requests' ? 'active' : '' ?>">
+        <span class="tab-label">
+            Requests
+            <?php if ($pendingRequests > 0): ?>
+                <span class="notification-badge">
+                    <?= $pendingRequests > 99 ? '99+' : $pendingRequests ?>
+                </span>
+            <?php endif; ?>
+        </span>
+    </a>
 </nav>

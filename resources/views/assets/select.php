@@ -253,6 +253,7 @@
                     <tr>
                         <th>Asset ID</th>
                         <th>Asset Name</th>
+                        <th>Serial Number</th>
                         <th>Status</th>
                     </tr>
                 </thead>
@@ -281,6 +282,10 @@
                                     <a class="asset-name-link" href="index.php?route=assets/show&id=<?= (int)($asset['id'] ?? 0) ?>">
                                         <?= htmlspecialchars($asset['name'] ?? '') ?>
                                     </a>
+                                </td>
+
+                                <td style="color: var(--slate-700); font-weight: 600;">
+                                    <?= htmlspecialchars($asset['serial_number'] ?? '') ?>
                                 </td>
 
                                 <td>

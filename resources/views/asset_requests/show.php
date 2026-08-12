@@ -1,12 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= htmlspecialchars($assetRequest['asset_name'] ?? 'Asset') ?> - Asset Details</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        *, *::before, *::after {
+        *,
+        *::before,
+        *::after {
             box-sizing: border-box;
         }
 
@@ -68,42 +71,6 @@
             font-size: 14px;
         }
 
-        .status-badge {
-            display: inline-block;
-            margin-top: 12px;
-            padding: 5px 12px;
-            border-radius: 999px;
-            font-size: 12px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: .04em;
-        }
-
-        .status-available {
-            background: #ecfdf3;
-            color: #047857;
-        }
-
-        .status-assigned {
-            background: #eff6ff;
-            color: #2563eb;
-        }
-
-        .status-repair {
-            background: #fff7ed;
-            color: #c2410c;
-        }
-
-        .status-lost {
-            background: #fef2f2;
-            color: #dc2626;
-        }
-
-        .status-scrap {
-            background: #f5f3ff;
-            color: #7c3aed;
-        }
-
         .details {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -145,7 +112,8 @@
             text-decoration: none;
         }
 
-        .edit {
+        .edit,
+        .cancel {
             color: #fff;
             background: #133458;
         }
@@ -173,7 +141,8 @@
                 grid-template-columns: 1fr;
             }
 
-            .hero, .details {
+            .hero,
+            .details {
                 padding-left: 24px;
                 padding-right: 24px;
             }
@@ -194,153 +163,131 @@
             font-weight: 500;
         }
 
-
-        .user-department .badge, .user-designation .badge {
-            white-space: nowrap;
-        }
-
-        .badge-role-admin, .badge-pending {
-            background: #fef2f2;
-            color: #991b1b;
-            border: 1px solid #fecaca;
-        }
-
-        .badge-role-hr {
-            background: #fdf2f8;
-            color: #9d174d;
-            border: 1px solid #fbcfe8;
-        }
-
-        .badge-role-manager, .badge-rejected, .badge-cancelled {
-            background: #fff7ed;
-            color: #9a3412;
-            border: 1px solid #ffedd5;
-        }
-
-        .badge-role-employee, .badge-approved {
-            background: #f0fdf4;
-            color: #168741;
-            border: 1px solid #bbf7d0;
-        }
-
         .badge-issued {
             background: #f0fdf4;
             color: #0b2716;
             border: 1px solid #bbf7d0;
         }
     </style>
+    <link rel="stylesheet" href="../resources/css/style.css">
 </head>
+
 <body>
 
-<main class="card">
-    <section class="hero">
-        <div class="hero-icon">
-            <?= strtoupper(substr($assetRequest['asset_name'], 0, 1)) ?>
-        </div>
-        <h1><?= htmlspecialchars($assetRequest['asset_name'] ?? '') ?></h1>
-        <p>Asset Request ID: <?= htmlspecialchars($assetRequest['id'] ?? '') ?></p>
+    <main class="card">
+        <section class="hero">
+            <div class="hero-icon">
+                <?= strtoupper(substr($assetRequest['asset_name'], 0, 1)) ?>
+            </div>
+            <h1><?= htmlspecialchars($assetRequest['asset_name'] ?? '') ?></h1>
+            <p>Asset Request ID: <?= htmlspecialchars($assetRequest['id'] ?? '') ?></p>
 
-        <?php $status = strtolower((string)($assetRequest['status'] ?? '')); ?>
-        <span class="badge badge-<?= strtolower($assetRequest['status']) ?>">
-            <?= htmlspecialchars($assetRequest['status'] ?? '') ?>
-        </span>
-    </section>
+            <?php $status = strtolower((string)($assetRequest['status'] ?? '')); ?>
+            <span class="badge badge-<?= strtolower($assetRequest['status']) ?>">
+                <?= htmlspecialchars($assetRequest['status'] ?? '') ?>
+            </span>
+        </section>
 
-    <section class="details">
-        <!--User Id-->
-        <div class="detail">
-            <label>User Id</label>
-            <span><?= htmlspecialchars($assetRequest['user_id'] ?? 'N/A') ?></span>
-        </div>
+        <section class="details">
+            <!--User Id-->
+            <div class="detail">
+                <label>User Id</label>
+                <span><?= htmlspecialchars($assetRequest['user_id'] ?? 'N/A') ?></span>
+            </div>
 
-        <!--Asset Id-->
-        <div class="detail">
-            <label>Asset Id</label>
-            <span><?= htmlspecialchars($assetRequest['asset_id'] ?? 'N/A') ?></span>
-        </div>
+            <!--Asset Id-->
+            <div class="detail">
+                <label>Asset Id</label>
+                <span><?= htmlspecialchars($assetRequest['asset_id'] ?? 'N/A') ?></span>
+            </div>
 
-        <!--Request at-->
-        <div class="detail">
-            <label>Request at</label>
-            <span><?= htmlspecialchars($assetRequest['requested_at'] ?? 'N/A') ?></span>
-        </div>
+            <!--Request at-->
+            <div class="detail">
+                <label>Request at</label>
+                <span><?= htmlspecialchars($assetRequest['requested_at'] ?? 'N/A') ?></span>
+            </div>
 
-        <!--Reason-->
-        <div class="detail">
-            <label>Reason</label>
-            <span style="color: #1b4e88"><?= htmlspecialchars($assetRequest['reason'] ?? 'N/A') ?></span>
-        </div>
+            <!--Reason-->
+            <div class="detail">
+                <label>Reason</label>
+                <span style="color: #1b4e88"><?= htmlspecialchars($assetRequest['reason'] ?? 'N/A') ?></span>
+            </div>
 
-        <!--Approved By-->
-        <div class="detail">
-            <label>Approved By</label>
-            <span><?= htmlspecialchars($assetRequest['approved_by'] ?? 'N/A') ?></span>
-        </div>
+            <!--Approved By-->
+            <div class="detail">
+                <label>Approved By</label>
+                <span><?= htmlspecialchars($assetRequest['approved_by'] ?? 'N/A') ?></span>
+            </div>
 
-        <!--Approved at-->
-        <div class="detail">
-            <label>Approved at</label>
-            <span><?= htmlspecialchars($assetRequest['approved_at'] ?? 'N/A') ?></span>
-        </div>
+            <!--Approved at-->
+            <div class="detail">
+                <label>Approved at</label>
+                <span><?= htmlspecialchars($assetRequest['approved_at'] ?? 'N/A') ?></span>
+            </div>
 
-        <!--Rejected By-->
-        <div class="detail">
-            <label>Rejected By</label>
-            <span><?= htmlspecialchars($assetRequest['rejected_by'] ?? 'N/A') ?></span>
-        </div>
+            <!--Rejected By-->
+            <div class="detail">
+                <label>Rejected By</label>
+                <span><?= htmlspecialchars($assetRequest['rejected_by'] ?? 'N/A') ?></span>
+            </div>
 
-        <!--Rejected at-->
-        <div class="detail">
-            <label>Rejected at</label>
-            <span><?= htmlspecialchars($assetRequest['rejected_at'] ?? 'N/A') ?></span>
-        </div>
+            <!--Rejected at-->
+            <div class="detail">
+                <label>Rejected at</label>
+                <span><?= htmlspecialchars($assetRequest['rejected_at'] ?? 'N/A') ?></span>
+            </div>
 
-        <!--Issued By-->
-        <div class="detail">
-            <label>Issued By</label>
-            <span><?= htmlspecialchars($assetRequest['issued_by'] ?? 'N/A') ?></span>
-        </div>
+            <!--Issued By-->
+            <div class="detail">
+                <label>Issued By</label>
+                <span><?= htmlspecialchars($assetRequest['issued_by'] ?? 'N/A') ?></span>
+            </div>
 
-        <!--Issued at-->
-        <div class="detail">
-            <label>Issued at</label>
-            <span><?= htmlspecialchars($assetRequest['issued_at'] ?? 'N/A') ?></span>
-        </div>
+            <!--Issued at-->
+            <div class="detail">
+                <label>Issued at</label>
+                <span><?= htmlspecialchars($assetRequest['issued_at'] ?? 'N/A') ?></span>
+            </div>
 
-        <!--Remarks-->
-        <div class="detail">
-            <label>Remarks</label>
-            <span><?= htmlspecialchars($assetRequest['remarks'] ?? 'N/A') ?></span>
-        </div>
+            <!--Remarks-->
+            <div class="detail">
+                <label>Remarks</label>
+                <span><?= htmlspecialchars($assetRequest['remarks'] ?? 'N/A') ?></span>
+            </div>
 
-        <!--Rejection reason-->
-        <div class="detail">
-            <label>Rejection reason</label>
-            <span><?= htmlspecialchars($assetRequest['rejection_reason'] ?? 'N/A') ?></span>
-        </div>
+            <!--Rejection reason-->
+            <div class="detail">
+                <label>Rejection reason</label>
+                <span><?= htmlspecialchars($assetRequest['rejection_reason'] ?? 'N/A') ?></span>
+            </div>
 
-        <!--Returned at-->
-        <div class="detail">
-            <label>Returned at</label>
-            <span><?= htmlspecialchars($assetRequest['returned_at'] ?? 'N/A') ?></span>
-        </div>
+            <!--Returned at-->
+            <div class="detail">
+                <label>Returned at</label>
+                <span><?= htmlspecialchars($assetRequest['returned_at'] ?? 'N/A') ?></span>
+            </div>
 
-    </section>
-    <nav class="actions">
-        <a class="back" href="<?php
-        if (isset($_SESSION['back'])) {
-            echo $_SESSION['back'];
-            unset($_SESSION['back']);
-        } else {
-            echo "index.php?route=assets/requests";
-        }
-        ?>">Back</a>
+        </section>
+        <nav class="actions">
+            <a class="back" href="<?php
+                                    if (isset($_SESSION['back'])) {
+                                        echo $_SESSION['back'];
+                                        unset($_SESSION['back']);
+                                    } else {
+                                        echo "index.php?route=assets/requests";
+                                    }
+                                    ?>">Back</a>
 
-        <?php if ($canManageRequest) { ?>
-            <a class="edit" href="index.php?route=assets/requests/manage&id=<?= (int)$assetRequest['id'] ?>">Manage
-                Request</a>
-        <?php } ?>
-    </nav>
-</main>
+            <?php
+            if ($canManageRequest) { ?>
+                <a class="edit" href="index.php?route=assets/requests/manage&id=<?= (int)$assetRequest['id'] ?>">Manage
+                    Request</a>
+            <?php } else if ($canCancelRequest) { ?>
+                <a class="cancel" href="index.php?route=assets/requests/cancel&id=<?= (int)$assetRequest['id'] ?>">Cancel
+                    Request</a>
+            <?php } ?>
+        </nav>
+    </main>
 </body>
+
 </html>
