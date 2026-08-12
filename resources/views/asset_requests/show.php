@@ -282,12 +282,25 @@
             if ($canManageRequest) { ?>
                 <a class="edit" href="index.php?route=assets/requests/manage&id=<?= (int)$assetRequest['id'] ?>">Manage
                     Request</a>
-            <?php } else if ($canCancelRequest) { ?>
-                <a class="cancel" href="index.php?route=assets/requests/cancel&id=<?= (int)$assetRequest['id'] ?>">Cancel
-                    Request</a>
+            <?php } else if (
+                $canCancelRequest
+                && ($assetRequest['status'] === 'PENDING'
+                    || $assetRequest['status'] === 'APPROVED')
+            ) { ?>
+                <a
+                    class="cancel"
+                    href="index.php?route=assets/requests/cancel&id=<?= (int)$assetRequest['id'] ?>"
+                    onclick="return confirm('Are you sure you want to cancel this request?');">
+                    Cancel Request
+                </a>
             <?php } ?>
         </nav>
     </main>
 </body>
+<script>
+    function confirmCancel() {
+        return confirm('Are you sure to cancel this request, after that it cannot be revert.')
+    }
+</script>
 
 </html>

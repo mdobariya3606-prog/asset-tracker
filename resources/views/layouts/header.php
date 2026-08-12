@@ -154,7 +154,7 @@
     </div>
 </header>
 
-<!-- Admin Navigation Tabs -->
+<!-- Navigation Tabs -->
 <?php $route = $_GET['route']; ?>
 <nav class="admin-tabs">
     <a href="index.php?route=users" class="tab-link <?= $route === 'users' ? 'active' : '' ?>">Users</a>
