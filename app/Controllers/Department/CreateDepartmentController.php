@@ -18,15 +18,8 @@ class CreateDepartmentController
 
 	public function store(array $department)
 	{
-		if (empty($_SESSION['user_id'])) {
-			$_SESSION['login_error'] = 'Please sign in.';
-			route('login');
-			exit;
-		}
-		if (empty($_SESSION['user_role']) || $_SESSION['user_role'] !== 'ADMIN') {
-			view(403);
-			exit;
-		}
+		require_once __DIR__ . '/../../Middleware/auth.php';
+		require_once __DIR__ . '/../../Middleware/admin.php';
 
 		$errors = $this->department->validate($department);
 		if (empty($errors)) {
@@ -42,15 +35,9 @@ class CreateDepartmentController
 
 	public function create()
 	{
-		if (empty($_SESSION['user_id'])) {
-			$_SESSION['login_error'] = 'Please sign in to add a department.';
-			route('login');
-			exit;
-		}
-		if (empty($_SESSION['user_role']) || $_SESSION['user_role'] !== 'ADMIN') {
-			view(403);
-			exit;
-		}
+		require_once __DIR__ . '/../../Middleware/auth.php';
+		require_once __DIR__ . '/../../Middleware/admin.php';
+		
 		view('departments.create');
 	}
 }

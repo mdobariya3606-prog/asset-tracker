@@ -5,6 +5,7 @@ namespace App\Controllers\Asset_request;
 use App\Models\Asset;
 use App\Models\AssetRequest;
 use App\Models\User;
+use PDO;
 
 class SelectAssetRequestController
 {
@@ -28,30 +29,23 @@ class SelectAssetRequestController
 		}
 
 		if ($_SESSION['user_role'] === 'HR' || $_SESSION['user_role'] === 'EMPLOYEE') {
-			view(403);
+			$requests = $this->myRequests();
+			view('asset.requests.select', ['requests' => $requests]);
 			exit;
 		}
 
 		$stmt = $this->conn->query('select * from asset_requests order by status');
-		$requests = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+		$requests = $stmt->fetchAll(PDO::FETCH_ASSOC);
 		view('asset.requests.select', ['requests' => $requests]);
 		exit;
 	}
 
 	public function show(int $id)
 	{
-		if (empty($_SESSION['user_id'])) {
-			$_SESSION['login_error'] = 'Please sign in to view asset request details.';
-			route('login');
-			exit;
-		}
-
+		require_once __DIR__ . '/../../middleware/auth.php';
 		$role = strtoupper($_SESSION['user_role'] ?? 'EMPLOYEE');
-
-		if ($role === 'EMPLOYEE' || $role === 'HR') {
-			view(403);
-			exit;
-		}
+		
+		require_once __DIR__ . '/../../middleware/asset.php';
 
 		$dashboardUserRole = $role;
 
@@ -65,17 +59,27 @@ class SelectAssetRequestController
 		$assetRequest['rejected_by'] = $rejected_by[0]['name'] ?? $assetRequest['rejected_by'];
 		$assetRequest['issued_by'] = $issued_by[0]['name'] ?? $assetRequest['issued_by'];
 
-		if (empty($assetRequest)) {
-			$_SESSION['login_error'] = 'Request not found.';
-			route('assets/requests');
-			exit;
-		}
+		$canManageRequest = (
+			($dashboardUserRole === 'ADMIN'
+			|| $dashboardUserRole === 'MANAGER')
+			&& $assetRequest['status'] !== 'RETURNED' 
+			&& $assetRequest['status'] !== 'CANCELLED');
 
-		$canManageRequest = ($assetRequest['status'] !== 'RETURNED' && $assetRequest['status'] !== 'CANCELLED');
+		$canCancelRequest = $assetRequest['user_id'] === $_SESSION['user_id'];
 
 		view('asset.requests.show', [
 			'assetRequest' => $assetRequest,
-			'canManageRequest' => $canManageRequest
+			'canManageRequest' => $canManageRequest,
+			'canCancelRequest' => $canCancelRequest,
 		]);
+	}
+
+	public function myRequests(): array {
+		$stmt = $this->conn->prepare('select * from asset_requests where user_id = ?');
+		$stmt->execute([
+			$_SESSION['user_id'],
+		]);
+
+		return $stmt->fetchAll(PDO::FETCH_ASSOC);
 	}
 }

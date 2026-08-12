@@ -23,10 +23,7 @@ class ManageRequestController
 	{
 		$role = $_SESSION['user_role'] ?? 'EMPLOYEE';
 
-		if ($role === 'EMPLOYEE' || $role === 'HR') {
-			view(403);
-			exit;
-		}
+		require_once '../app/middleware/manager.php';
 
 		$assetRequest = $this->assetRequestModel->findOrFail($assetRequestId);
 

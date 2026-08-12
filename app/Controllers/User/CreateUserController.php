@@ -21,15 +21,8 @@ class CreateUserController
 	public function store(array $postData): void
 	{
 		try {
-			if (empty($_SESSION['user_id'])) {
-				$_SESSION['login_error'] = 'Please sign in to add users.';
-				route('login');
-				exit;
-			}
-			if (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'EMPLOYEE') {
-				view(403);
-				exit;
-			}
+			require_once __DIR__ . '/../../Middleware/auth.php';
+			require_once __DIR__ . '/../../Middleware/admin.php';
 
 			// Separate file data from post data
 			$file = $_FILES['profile_image'] ?? null;
@@ -166,15 +159,9 @@ class CreateUserController
 
 	public function create(): void
 	{
-		if (empty($_SESSION['user_id'])) {
-			$_SESSION['login_error'] = 'Please sign in to add users.';
-			route('login');
-			exit;
-		}
-		if (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'EMPLOYEE') {
-			view(403);
-			exit;
-		}
+		require_once __DIR__ . '/../../Middleware/auth.php';
+		require_once __DIR__ . '/../../Middleware/admin.php';
+		
 		$formData = $this->showForm();
 
 		view('users.register', [

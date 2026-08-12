@@ -18,15 +18,9 @@ class CreateDesignationController
 
 	public function store(array $designation)
 	{
-		if (empty($_SESSION['user_id'])) {
-			$_SESSION['login_error'] = 'Please sign in.';
-			route('login');
-			exit;
-		}
-		if (empty($_SESSION['user_role']) || $_SESSION['user_role'] !== 'ADMIN') {
-			view(403);
-			exit;
-		}
+		require_once __DIR__ . '/../../Middleware/auth.php';
+		require_once __DIR__ . '/../../Middleware/admin.php';
+
 		$errors = $this->designation->validate($designation);
 
 		if (!empty($errors)) {
@@ -41,15 +35,8 @@ class CreateDesignationController
 
 	public function create()
 	{
-		if (empty($_SESSION['user_id'])) {
-			$_SESSION['login_error'] = 'Please sign in to add a designation.';
-			route('login');
-			exit;
-		}
-		if (empty($_SESSION['user_role']) || $_SESSION['user_role'] !== 'ADMIN') {
-			view(403);
-			exit;
-		}
+		require_once __DIR__ . '/../../Middleware/auth.php';
+		require_once __DIR__ . '/../../Middleware/admin.php';
 
 		view('designations.create');
 		exit;

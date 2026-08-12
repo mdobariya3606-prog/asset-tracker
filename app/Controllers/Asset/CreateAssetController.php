@@ -21,17 +21,8 @@ class CreateAssetController
 
 	public function store(array $data): void
 	{
-		if (empty($_SESSION['user_id'])) {
-			$_SESSION['login_error'] = 'Please sign in to add an asset.';
-			route('login');
-			exit;
-		}
-
-		$role = strtoupper($_SESSION['user_role'] ?? 'EMPLOYEE');
-		if (!$this->asset->canManageAssets($role)) {
-			view(403);
-			exit;
-		}
+		require_once __DIR__ . '/../../Middleware/auth.php';
+		require_once __DIR__ . '/../../Middleware/manager.php';
 
 		// Step 1: Validate input fields first before creating
 		$errors = $this->asset->validate($data);
@@ -40,8 +31,15 @@ class CreateAssetController
 			$categories = (new Category($this->conn))->all();
 			$vendors = (new Vendor($this->conn))->all();
 			$statusEnum = $this->asset->statusEnum();
-			require '../resources/views/assets/create.php';
-			return;
+
+			view('assets.create', [
+				'errors' => $errors,
+				'assetData' => $assetData,
+				'categories' => $categories,
+				'vendors' => $vendors,
+				'statusEnum' => $statusEnum,
+			]);
+			exit;
 		}
 
 		// Step 2: Create asset in database to get ID
@@ -53,8 +51,15 @@ class CreateAssetController
 			$categories = (new Category($this->conn))->all();
 			$vendors = (new Vendor($this->conn))->all();
 			$statusEnum = $this->asset->statusEnum();
-			require '../resources/views/assets/create.php';
-			return;
+
+			view('assets.create', [
+				'errors' => $errors,
+				'assetData' => $assetData,
+				'categories' => $categories,
+				'vendors' => $vendors,
+				'statusEnum' => $statusEnum,
+			]);
+			exit;
 		}
 
 		// Step 3: Handle image upload using generated asset ID
@@ -75,17 +80,8 @@ class CreateAssetController
 
 	public function create(): void
 	{
-		if (empty($_SESSION['user_id'])) {
-			$_SESSION['login_error'] = 'Please sign in to add an asset.';
-			route('login');
-			exit;
-		}
-
-		$role = strtoupper($_SESSION['user_role'] ?? 'EMPLOYEE');
-		if (!$this->asset->canManageAssets($role)) {
-			view(403);
-			exit;
-		}
+		require_once __DIR__ . '/../../Middleware/auth.php';
+		require_once __DIR__ . '/../../Middleware/manager.php';
 
 		$errors = [];
 		$assetData = [];
@@ -166,17 +162,8 @@ class CreateAssetController
 
 	public function edit(int $id): void
 	{
-		if (empty($_SESSION['user_id'])) {
-			$_SESSION['login_error'] = 'Please sign in to edit an asset.';
-			route('login');
-			exit;
-		}
-
-		$role = strtoupper($_SESSION['user_role'] ?? 'EMPLOYEE');
-		if (!$this->asset->canManageAssets($role)) {
-			view(403);
-			exit;
-		}
+		require_once __DIR__ . '/../../Middleware/auth.php';
+		require_once __DIR__ . '/../../Middleware/manager.php';
 
 		$asset = $this->asset->find($id);
 		if (empty($asset)) {
@@ -195,17 +182,8 @@ class CreateAssetController
 
 	public function update(int $id, array $inputData): void
 	{
-		if (empty($_SESSION['user_id'])) {
-			$_SESSION['login_error'] = 'Please sign in to edit an asset.';
-			route('login');
-			exit;
-		}
-
-		$role = strtoupper($_SESSION['user_role'] ?? 'EMPLOYEE');
-		if (!$this->asset->canManageAssets($role)) {
-			view(403);
-			exit;
-		}
+		require_once __DIR__ . '/../../Middleware/auth.php';
+		require_once __DIR__ . '/../../Middleware/manager.php';
 
 		$existingAsset = $this->asset->find($id);
 		if (empty($existingAsset)) {
@@ -290,17 +268,8 @@ class CreateAssetController
 
 	public function delete(int $id): void
 	{
-		if (empty($_SESSION['user_id'])) {
-			$_SESSION['login_error'] = 'Please sign in to delete an asset.';
-			route('login');
-			exit;
-		}
-
-		$role = strtoupper($_SESSION['user_role'] ?? 'EMPLOYEE');
-		if (!$this->asset->canManageAssets($role)) {
-			view(403);
-			exit;
-		}
+		require_once __DIR__ . '/../../Middleware/auth.php';
+		require_once __DIR__ . '/../../Middleware/manager.php';
 
 		$storageDir = '../storage/asset_images';
 		foreach (glob($storageDir . '/asset_' . $id . '.*') as $existingFile) {
