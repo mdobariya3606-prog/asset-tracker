@@ -141,7 +141,7 @@ class EditUserController
 		$currentUser = $this->user->find($id)[0] ?? null;
 		if (!$currentUser) {
 			$_SESSION['login_error'] = 'User not found.';
-			route('users');;
+			route('users');
 			exit;
 		}
 
@@ -154,6 +154,7 @@ class EditUserController
 		// Password changes are handled outside the profile edit form.
 		unset($postParams['password'], $postParams['confirm_password']);
 
+		// Apply role-based parameter restrictions
 		if ($viewerRole === 'HR') {
 			$postParams['role'] = $currentUser['role'];
 			$postParams['designation_id'] = $currentUser['designation_id'];
@@ -165,56 +166,47 @@ class EditUserController
 			$postParams['role'] = $currentUser['role'];
 		}
 
-		$result = $this->update($id, $postParams);
+		// Grab file from global $_FILES array
+		$file = $_FILES['profile_image'] ?? null;
 
-		if ($result['success']) {
-			$file = $_FILES['profile_image'] ?? null;
-			if ($file && ($file['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_NO_FILE) {
-
-				$imageResult = $this->handleProfileImageUpload($id, $file);
-				if (!$imageResult['success']) {
-					$result['success'] = false;
-					$result['errors'] = array_merge($result['errors'], $imageResult['errors']);
-					$result['old'] = $postParams;
-					logError('Profile image upload failed for user #' . $id . ': ' . json_encode($imageResult['errors']));
-				}
-			}
-		}
+		// Execute update pipeline (handles validation, file moving, and DB update atomically)
+		$result = $this->update($id, $postParams, $file);
 
 		if ($result['success']) {
 			if ($isOwnProfile) {
 				$_SESSION['user_name'] = trim($postParams['name']);
 				$_SESSION['user_email'] = strtolower(trim($postParams['email']));
+
+				// Sync session avatar if image updated or removed
+				if (array_key_exists('profile_image', $postParams)) {
+					$_SESSION['user_profile_image'] = $postParams['profile_image'];
+				}
 			}
+
 			$_SESSION['success'] = 'User details updated successfully!';
-			route('users');;
+			route('users');
 			exit;
 		}
 
+		// On failure: fetch form data and re-render edit view with errors & old input
 		$formData = $this->showForm($id);
 		if (!$formData) {
 			$_SESSION['login_error'] = 'User not found.';
-			route('users');;
+			route('users');
 			exit;
 		}
 
-		$user = $formData['user'];
-		$departments = $formData['departments'];
-		$designations = $formData['designations'];
-		$errors = $result['errors'];
-		$old = $result['old'];
-
 		view('users.edit', [
-			'user_id' => $user['id'],
-			'formData' => $formData,
+			'user_id'      => $formData['user']['id'],
+			'formData'     => $formData,
 			'isOwnProfile' => $isOwnProfile,
-			'targetRole' => $targetRole,
-			'viewerRole' => $viewerRole,
-			'user' => $user,
-			'departments' => $departments,
-			'designations' => $designations,
-			'errors' => $errors,
-			'old' => $old,
+			'targetRole'   => $targetRole,
+			'viewerRole'   => $viewerRole,
+			'user'         => $formData['user'],
+			'departments'  => $formData['departments'],
+			'designations' => $formData['designations'],
+			'errors'       => $result['errors'],
+			'old'          => $result['old'] ?? $postParams,
 		]);
 	}
 
@@ -225,23 +217,59 @@ class EditUserController
 	 * @param array $data
 	 * @return array
 	 */
-	public function update(int $id, array $data): array
+	public function update(int $id, array $data, ?array $file = null): array
 	{
-		$errors = $this->user->validate($data, true, $id);
+		// 1. Pass the file to validate()
+		$errors = $this->user->validate($data, true, $id, $file);
 
 		if (!empty($errors)) {
 			return [
 				'success' => false,
-				'errors' => $errors,
-				'old' => $data,
+				'errors'  => $errors,
+				'old'     => $data,
 			];
 		}
 
+		// 2. Handle image deletion request (if user checked "remove profile picture")
+		if (!empty($data['remove_profile_image'])) {
+			$data['profile_image'] = null;
+			// Optional: delete old file from disk here
+		}
+
+		// 3. Handle new image upload
+		if (!empty($file) && isset($file['error']) && $file['error'] === UPLOAD_ERR_OK) {
+			$uploadDir = __DIR__ . '/../../../storage/profile_images/';
+
+			// Ensure directory exists
+			if (!is_dir($uploadDir)) {
+				mkdir($uploadDir, 0755, true);
+			}
+
+			// Generate unique filename to prevent collisions/caching issues
+			$extension = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+			$filename = 'profile_' . $id . '.' . $extension;
+			$targetPath = $uploadDir . $filename;
+
+			if (move_uploaded_file($file['tmp_name'], $targetPath)) {
+				// Store relative path or filename in data array
+				$data['profile_image'] = $filename;
+
+				// Optional: delete previous image file from disk here
+			} else {
+				return [
+					'success' => false,
+					'errors'  => ['profile_image' => 'Failed to save the uploaded file.'],
+					'old'     => $data,
+				];
+			}
+		}
+
+		// 4. Perform database update
 		$success = $this->user->update($id, $data);
 
 		return [
 			'success' => $success,
-			'errors' => $success ? [] : ['general' => 'Failed to update user in the database.'],
+			'errors'  => $success ? [] : ['general' => 'Failed to update user in the database.'],
 		];
 	}
 
