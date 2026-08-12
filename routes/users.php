@@ -42,6 +42,11 @@ switch ("$method:$route") {
     case 'GET:users/delete':
         (new EditUserController($conn))->destroy($_GET);
         return true;
+
+    case 'GET:chart':
+        // require_once __DIR__ . '/../app/Middleware/manager.php';
+        require_once __DIR__ . '/../public/testing/chart.php';
+        exit;
 }
 
 return false;

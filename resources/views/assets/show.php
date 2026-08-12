@@ -1,12 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= htmlspecialchars($asset['name'] ?? 'Asset') ?> - Asset Details</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        *, *::before, *::after {
+        *,
+        *::before,
+        *::after {
             box-sizing: border-box;
         }
 
@@ -143,7 +146,8 @@
             padding: 0 34px 30px;
         }
 
-        .actions a {
+        .actions a,
+        .actions .disabled {
             flex: 1 1 140px;
             padding: 12px 16px;
             border-radius: 10px;
@@ -176,12 +180,23 @@
             border: 1px solid #cbd5e1;
         }
 
+        /* Disabled state for "Already Requested" */
+        .actions .disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            pointer-events: none;
+            background: #e2e8f0;
+            color: #64748b;
+            border-color: #cbd5e1;
+        }
+
         @media (max-width: 560px) {
             .details {
                 grid-template-columns: 1fr;
             }
 
-            .hero, .details {
+            .hero,
+            .details {
                 padding-left: 24px;
                 padding-right: 24px;
             }
@@ -193,83 +208,89 @@
         }
     </style>
 </head>
+
 <body>
 
-<main class="card">
-    <section class="hero">
-        <div class="avatar">
-            <?php if (!empty($asset['image'])): ?>
-                <img class="avatar-image"
-                     src="../<?= htmlspecialchars($asset['image']) ?>"
-                     alt="<?= htmlspecialchars($asset['name'] ?? 'Asset image') ?>">
-            <?php else: ?>
-                <?= strtoupper(substr($asset['name'] ?? 'A', 0, 1)) ?>
-            <?php endif; ?>
-        </div>
-        <h1><?= htmlspecialchars($asset['name'] ?? '') ?></h1>
-        <p>Asset ID: <?= htmlspecialchars($asset['id'] ?? '') ?></p>
-        <?php $status = strtolower((string)($asset['status'] ?? '')); ?>
-        <span class="status-badge status-<?= htmlspecialchars($status === '' ? 'available' : $status) ?>"><?= htmlspecialchars($asset['status'] ?? '') ?></span>
-    </section>
-    <section class="details">
-        <div class="detail">
-            <label>Category</label>
-            <span><?= htmlspecialchars($asset['category_name'] ?? 'N/A') ?></span>
-        </div>
-        <div class="detail">
-            <label>Brand</label>
-            <span><?= htmlspecialchars($asset['brand'] ?? 'N/A') ?></span>
-        </div>
-        <div class="detail">
-            <label>Model</label>
-            <span><?= htmlspecialchars($asset['model'] ?? 'N/A') ?></span>
-        </div>
-        <div class="detail">
-            <label>Serial Number</label>
-            <span><?= htmlspecialchars($asset['serial_number'] ?? 'N/A') ?></span>
-        </div>
-        <div class="detail">
-            <label>Purchase Date</label>
-            <span><?= htmlspecialchars($asset['purchase_date'] ?? 'N/A') ?></span>
-        </div>
-        <div class="detail">
-            <label>Warranty Date</label>
-            <span><?= htmlspecialchars($asset['warranty_date'] ?? 'N/A') ?></span>
-        </div>
-        <div class="detail">
-            <label>Vendor</label>
-            <span><?= htmlspecialchars($asset['vendor_name'] ?? 'N/A') ?></span>
-        </div>
-        <div class="detail">
-            <label>Cost</label>
-            <span><?= htmlspecialchars($asset['cost'] ?? 'N/A') ?></span>
-        </div>
-        <div class="detail">
-            <label>Assignee</label>
-            <span>
-                <?php if (!empty($asset['assignee_id'])): ?>
-                    <a href="index.php?route=users/profile&id=<?= $asset['assignee_id']; ?>"
-                       style="color: #1e293b; font-weight: 500;"
-                       onclick="<?php $_SESSION['back'] = 'index.php?route=assets/show&id=' . $asset['id']; ?>">
-                        #<?= htmlspecialchars($asset['assignee_id']) ?>
-                    </a>
+    <main class="card">
+        <section class="hero">
+            <div class="avatar">
+                <?php if (!empty($asset['image'])): ?>
+                    <img class="avatar-image"
+                        src="../<?= htmlspecialchars($asset['image']) ?>"
+                        alt="<?= htmlspecialchars($asset['name'] ?? 'Asset image') ?>">
                 <?php else: ?>
-                    N/A
+                    <?= strtoupper(substr($asset['name'] ?? 'A', 0, 1)) ?>
                 <?php endif; ?>
-            </span>
-        </div>
-    </section>
-    <nav class="actions">
-        <a class="back" href="index.php?route=assets">Back</a>
+            </div>
+            <h1><?= htmlspecialchars($asset['name'] ?? '') ?></h1>
+            <p>Asset ID: <?= htmlspecialchars($asset['id'] ?? '') ?></p>
+            <?php $status = strtolower((string)($asset['status'] ?? '')); ?>
+            <span class="status-badge status-<?= htmlspecialchars($status === '' ? 'available' : $status) ?>"><?= htmlspecialchars($asset['status'] ?? '') ?></span>
+        </section>
+        <section class="details">
+            <div class="detail">
+                <label>Category</label>
+                <span><?= htmlspecialchars($asset['category_name'] ?? 'N/A') ?></span>
+            </div>
+            <div class="detail">
+                <label>Brand</label>
+                <span><?= htmlspecialchars($asset['brand'] ?? 'N/A') ?></span>
+            </div>
+            <div class="detail">
+                <label>Model</label>
+                <span><?= htmlspecialchars($asset['model'] ?? 'N/A') ?></span>
+            </div>
+            <div class="detail">
+                <label>Serial Number</label>
+                <span><?= htmlspecialchars($asset['serial_number'] ?? 'N/A') ?></span>
+            </div>
+            <div class="detail">
+                <label>Purchase Date</label>
+                <span><?= htmlspecialchars($asset['purchase_date'] ?? 'N/A') ?></span>
+            </div>
+            <div class="detail">
+                <label>Warranty Date</label>
+                <span><?= htmlspecialchars($asset['warranty_date'] ?? 'N/A') ?></span>
+            </div>
+            <div class="detail">
+                <label>Vendor</label>
+                <span><?= htmlspecialchars($asset['vendor_name'] ?? 'N/A') ?></span>
+            </div>
+            <div class="detail">
+                <label>Cost</label>
+                <span><?= htmlspecialchars($asset['cost'] ?? 'N/A') ?></span>
+            </div>
+            <div class="detail">
+                <label>Assignee</label>
+                <span>
+                    <?php if (!empty($asset['assignee_id'])): ?>
+                        <a href="index.php?route=users/profile&id=<?= $asset['assignee_id']; ?>"
+                            style="color: #1e293b; font-weight: 500;"
+                            onclick="<?php $_SESSION['back'] = 'index.php?route=assets/show&id=' . $asset['id']; ?>">
+                            #<?= htmlspecialchars($asset['assignee_id']) ?>
+                        </a>
+                    <?php else: ?>
+                        N/A
+                    <?php endif; ?>
+                </span>
+            </div>
+        </section>
+        <nav class="actions">
+            <a class="back" href="index.php?route=assets">Back</a>
 
-        <?php if ($canManageAssets): ?>
-            <a class="edit" href="index.php?route=assets/edit&id=<?= (int)$asset['id'] ?>">Edit Asset</a>
-            <a class="delete" href="index.php?route=assets/delete&id=<?= (int)$asset['id'] ?>"
-               onclick="return confirm('Are you sure you want to delete this asset?');">Delete Asset</a>
-        <?php elseif ($canRequestAsset && $isAvailable): ?>
-            <a class="request" href="index.php?route=assets/request&id=<?= (int)$asset['id'] ?>">Request Asset</a>
-        <?php endif; ?>
-    </nav>
-</main>
+            <?php if ($canManageAssets): ?>
+                <a class="edit" href="index.php?route=assets/edit&id=<?= (int)$asset['id'] ?>">Edit Asset</a>
+                <a class="delete" href="index.php?route=assets/delete&id=<?= (int)$asset['id'] ?>"
+                    onclick="return confirm('Are you sure you want to delete this asset?');">Delete Asset</a>
+            <?php elseif ($canRequestAsset && $isAvailable): ?>
+                <?php if ($isAlreadyRequested): ?>
+                    <span class="disabled">Already Requested</span>
+                <?php else: ?>
+                    <a class="request" href="index.php?route=assets/request&id=<?= (int)$asset['id'] ?>">Request Asset</a>
+                <?php endif; ?>
+            <?php endif; ?>
+        </nav>
+    </main>
 </body>
+
 </html>

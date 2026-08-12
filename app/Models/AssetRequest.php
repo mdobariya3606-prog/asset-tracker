@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Controllers\Asset\SelectAssetController;
 use PDO;
 
 class AssetRequest
@@ -17,6 +18,12 @@ class AssetRequest
 
 	public function create($id)
 	{
+		$isAlreadyRequested = (new SelectAssetController($this->conn))->isAlreadyRequested();
+		if ($isAlreadyRequested) {
+			view(403);
+			exit;
+		}
+
 		$asset = $this->assetModel->find($id);
 		if (empty($asset) || strtoupper((string)($asset['status'] ?? '')) !== 'AVAILABLE') {
 			$_SESSION['general'] = 'Asset #' . $asset['id'] . ' is not available for request.';

@@ -28,8 +28,7 @@ class RequestAssetController
 		$errors = $this->assetRequestModel->validate($assetRequest);
 
 		if (empty($errors)) {
-			$stmt = $this->conn->prepare("INSERT INTO asset_requests (user_id, asset_id, asset_name, reason) 
-												VALUES (:user_id, :asset_id, :asset_name, :reason)");
+			$stmt = $this->conn->prepare("INSERT INTO asset_requests (user_id, asset_id, asset_name, reason) VALUES (:user_id, :asset_id, :asset_name, :reason)");
 			$stmt->execute([
 				'user_id' => $_SESSION['user_id'],
 				'asset_id' => $asset_id,
@@ -45,11 +44,22 @@ class RequestAssetController
 		exit;
 	}
 
-	private function validateRequest() {
+	private function validateRequest()
+	{
 		$asset = (new Asset($this->conn))->find((int)($_GET['id'] ?? 0));
 		if (empty($asset) || strtoupper((string)($asset['status'] ?? '')) !== 'AVAILABLE') {
 			$_SESSION['general'] = 'Asset #' . $asset['id'] . ' is not available for request.';
 			route('assets');
+			exit;
+		}
+
+		$stmt = $this->conn->prepare('select id from asset_requests where user_id = ? and asset_id = ?');
+
+		$stmt->execute([$_SESSION['user_id'], $_GET['id']]);
+
+		if ($stmt->rowCount() > 0) {
+			$_SESSION['success'] = 'Request already sent.';
+			route('assets/requests');
 			exit;
 		}
 	}

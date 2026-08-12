@@ -55,6 +55,7 @@ class SelectAssetController
 		$canManageAssets = $this->asset->canManageAssets($role);
 		$canRequestAsset = $this->asset->canRequestAsset($role);
 		$isAvailable = strtoupper((string)($asset['status'] ?? '')) === 'AVAILABLE';
+		$isAlreadyRequested = $this->isAlreadyRequested();
 
 		view('assets.show', [
 			'dashboardUserRole' => $dashboardUserRole,
@@ -62,6 +63,16 @@ class SelectAssetController
 			'canManageAssets' => $canManageAssets,
 			'canRequestAsset' => $canRequestAsset,
 			'isAvailable' => $isAvailable,
+			'isAlreadyRequested' => $isAlreadyRequested,
 		]);
+	}
+
+	public function isAlreadyRequested()
+	{
+		$stmt = $this->conn->prepare('select id from asset_requests where user_id = ? and asset_id = ?');
+
+		$stmt->execute([$_SESSION['user_id'], $_GET['id']]);
+
+		return $stmt->rowCount() !== 0;
 	}
 }

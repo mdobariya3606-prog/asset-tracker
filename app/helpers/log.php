@@ -14,7 +14,7 @@ function logError(Throwable|string $error, string $file = 'errors'): void
         $message = $error;
     }
 
-    $logDir = __DIR__ . '/../logs';
+    $logDir = __DIR__ . '/../../logs/';
 
     if (!is_dir($logDir)) {
         mkdir($logDir, 0777, true);
