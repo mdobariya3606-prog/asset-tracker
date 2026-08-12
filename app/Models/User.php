@@ -35,7 +35,6 @@ class User
 		$params = ['id' => $id];
 		$setClauses = [];
 
-		// Full-field update (name, email, mobile, etc.) only when name is present
 		if (isset($user['name'])) {
 			$setClauses[] = 'name = :name';
 			$params['name'] = trim($user['name']);
@@ -60,11 +59,13 @@ class User
 			$setClauses[] = 'role = :role';
 			$params['role'] = strtoupper(trim($user['role']));
 		}
-		// profile_image: support explicit null (remove) or a filename
+
+		// profile_image: supports filename (string) or explicit null (when deleted)
 		if (array_key_exists('profile_image', $user)) {
 			$setClauses[] = 'profile_image = :profile_image';
 			$params['profile_image'] = $user['profile_image'];
 		}
+
 		if (!empty($user['password'])) {
 			$setClauses[] = 'password = :password';
 			$params['password'] = password_hash($user['password'], PASSWORD_DEFAULT);
@@ -95,7 +96,7 @@ class User
 		]);
 	}
 
-	public function validate(array $user, bool $isEdit = false, ?int $excludeId = null): array
+	public function validate(array $user, bool $isEdit = false, ?int $excludeId = null, ?array $file = null): array
 	{
 		$this->errors = [];
 		$name = trim($user['name'] ?? '');
@@ -109,6 +110,7 @@ class User
 		}
 		$password = $user['password'] ?? '';
 		$confirm_password = $user['confirm_password'] ?? '';
+
 		// Name validation
 		if (empty($name)) {
 			$this->errors['name'] = 'Name is required.';
@@ -117,6 +119,7 @@ class User
 		} elseif (!preg_match('/^[a-zA-Z\s]+$/', $name)) {
 			$this->errors['name'] = 'Name can only contain letters and spaces.';
 		}
+
 		// Email validation
 		if (empty($email)) {
 			$this->errors['email'] = 'Email is required.';
@@ -125,6 +128,7 @@ class User
 		} elseif ($this->emailExists($email, $excludeId)) {
 			$this->errors['email'] = 'Email is already in use.';
 		}
+
 		// Mobile validation
 		if (empty($mobile)) {
 			$this->errors['mobile'] = 'Mobile number is required.';
@@ -133,24 +137,28 @@ class User
 		} elseif ($this->mobileExists($mobile, $excludeId)) {
 			$this->errors['mobile'] = 'Mobile number is already in use.';
 		}
+
 		// Department validation
 		if (empty($department_id)) {
 			$this->errors['department_id'] = 'Department is required.';
 		} elseif (!is_numeric($department_id)) {
 			$this->errors['department_id'] = 'Please select a department.';
 		}
+
 		// Designation validation
 		if (empty($designation_id)) {
 			$this->errors['designation_id'] = 'Designation is required.';
 		} elseif (!is_numeric($designation_id)) {
 			$this->errors['designation_id'] = 'Please select a designation.';
 		}
+
 		// Role validation
 		if (empty($role)) {
 			$this->errors['role'] = 'Role is required.';
 		} elseif (!in_array(strtoupper($role), ['ADMIN', 'HR', 'MANAGER', 'EMPLOYEE'])) {
 			$this->errors['role'] = 'Please select a valid role.';
 		}
+
 		// Password & Confirm password validation
 		if ($isEdit) {
 			if (!empty($password) || !empty($confirm_password)) {
@@ -177,6 +185,37 @@ class User
 				$this->errors['confirm_password'] = 'Passwords do not match.';
 			}
 		}
+
+		// Profile Image Validation (if a file was uploaded)
+		if (!empty($file) && isset($file['error']) && $file['error'] === UPLOAD_ERR_OK) {
+			$allowedExtensions = ['jpg', 'jpeg', 'png', 'webp'];
+			$allowedMimeTypes = ['image/jpeg', 'image/png', 'image/webp'];
+			$maxFileSize = 2 * 1024 * 1024; // 2 MB
+
+			$fileExtension = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+
+			// Validate File Extension
+			if (!in_array($fileExtension, $allowedExtensions)) {
+				$this->errors['profile_image'] = 'Only JPG, JPEG, PNG, and WEBP formats are allowed.';
+			}
+			// Validate File Size
+			elseif ($file['size'] > $maxFileSize) {
+				$this->errors['profile_image'] = 'Profile image size must not exceed 2MB.';
+			}
+			// Validate MIME Type
+			elseif (function_exists('finfo_open')) {
+				$finfo = finfo_open(FILEINFO_MIME_TYPE);
+				$mimeType = finfo_file($finfo, $file['tmp_name']);
+				finfo_close($finfo);
+
+				if (!in_array($mimeType, $allowedMimeTypes)) {
+					$this->errors['profile_image'] = 'Invalid image file format.';
+				}
+			}
+		} elseif (!empty($file) && isset($file['error']) && $file['error'] !== UPLOAD_ERR_NO_FILE) {
+			$this->errors['profile_image'] = 'An error occurred while uploading the profile image.';
+		}
+
 		return $this->errors;
 	}
 
@@ -340,6 +379,23 @@ class User
 		);
 		$stmt->execute([$id]);
 		return $stmt->fetchAll(PDO::FETCH_ASSOC);
+	}
+	
+	public function saveRememberToken($userId, $token) {
+		$stmt = $this->conn->prepare('update users set remember_token = ? where id = ?');
+		$stmt->execute([$token, $userId]);
+	}
+
+	public function removeRememberToken($token) {
+		$stmt = $this->conn->prepare('update users set remember_token = null where remember_token = ?');
+		$stmt->execute([hash('sha256', $token)]);
+	}
+
+	public function findByRememberToken($tokenHash) {
+		$stmt = $this->conn->prepare('select * from users where remember_token = ? limit 1');
+		$stmt->execute([$tokenHash]);
+
+		return $stmt->fetch(PDO::FETCH_ASSOC);
 	}
 
 	public function export($option = 'pdf', $role = null)

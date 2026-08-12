@@ -23,6 +23,26 @@ class LoginController
 
 	public function showLoginForm()
 	{
+		if (!isset($_SESSION['user_id']) && isset($_COOKIE['remember_token'])) {
+			$tokenHash = hash('sha256', $_COOKIE['remember_token']);
+			$user = $this->user->findByRememberToken($tokenHash);
+
+			if ($user) {
+				session_regenerate_id();
+				$_SESSION['user_id'] = $user['id'];
+				$_SESSION['user_name'] = $user['name'];
+				$_SESSION['user_email'] = $user['email'];
+				$_SESSION['user_role'] = $user['role'];
+				$_SESSION['profile_image'] = $user['profile_image'];
+
+				(new AuditLog($this->conn))->log('LOGIN');
+				route('users');
+				exit;
+			} 
+
+			setcookie('remember_token', '', time() - 3600, '/');
+		}
+
 		$errors = [];
 		if (isset($_SESSION['login_error'])) {
 			$errors['general'] = $_SESSION['login_error'];
@@ -44,8 +64,8 @@ class LoginController
 		$result = $this->authenticate($postParams);
 
 		if ($result['success']) {
-			route('users');
 			(new AuditLog($this->conn))->log('LOGIN');
+			route('users');
 			exit;
 		}
 
@@ -122,6 +142,24 @@ class LoginController
 		$this->limiter->clear($throttleComboKey);
 		$this->limiter->clear($throttleIpKey);
 
+		if ($data['remember'] === 'on') {
+			$token = bin2hex(random_bytes(32));
+
+			setcookie(
+				'remember_token',
+				$token,
+				[
+					'expires' => time() + (30 * 24 * 60 * 60),
+					'path' => '/',
+					'secure' => isset($_SERVER['HTTPS']),
+					'httponly' => true,
+					'samesite' => 'Lax',
+				]
+			);
+
+			(new User($this->conn))->saveRememberToken($user['id'], hash('sha256', $token));
+		}
+
 		$_SESSION['user_id'] = $user['id'];
 		$_SESSION['user_name'] = $user['name'];
 		$_SESSION['user_email'] = $user['email'];
@@ -170,6 +208,12 @@ class LoginController
 	 */
 	public function logout(): void
 	{
+		if (isset($_COOKIE['remember_token'])) {
+			$this->user->removeRememberToken($_COOKIE['remember_token']);
+
+			setcookie('remember_token', '', time() - 3600, '/');
+		}
+
 		$_SESSION = [];
 		if (ini_get('session.use_cookies')) {
 			$params = session_get_cookie_params();
