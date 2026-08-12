@@ -162,7 +162,7 @@
         <div class="page-header">
             <div>
                 <h2>Assets</h2>
-                <p>Manage office assets, availability, and requests from one place.</p>
+                <p>Manage asset requests and approvals efficiently from one place.</p>
             </div>
 
             <div class="page-header-actions">
@@ -216,7 +216,13 @@
                 <thead>
                     <tr>
                         <th>Request ID</th>
-                        <th>User Id</th>
+                        <?php
+                        $role = $_SESSION['user_role'];
+                        $canAccess = $role === 'ADMIN' || $role === 'MANAGER';
+                        if ($canAccess) {
+                        ?>
+                            <th>User Id</th>
+                        <?php } ?>
                         <th>Asset Id</th>
                         <th>Status</th>
                         <th>Requested At</th>
@@ -237,13 +243,15 @@
                                         #<?= htmlspecialchars($request['id'] ?? '') ?>
                                     </a>
                                 </td>
-                                <td>
-                                    <a href="index.php?route=users/profile&id=<?= $request['user_id'] ?>"
-                                        style="color: var(--slate-500); font-weight: 600;"
-                                        onclick="<?php $_SESSION['back'] = 'index.php?route=assets/requests'; ?>">
-                                        #<?= htmlspecialchars($request['user_id'] ?? '') ?>
-                                    </a>
-                                </td>
+                                <?php if ($canAccess) { ?>
+                                    <td>
+                                        <a href="index.php?route=users/profile&id=<?= $request['user_id'] ?>"
+                                            style="color: var(--slate-500); font-weight: 600;"
+                                            onclick="<?php $_SESSION['back'] = 'index.php?route=assets/requests'; ?>">
+                                            #<?= htmlspecialchars($request['user_id'] ?? '') ?>
+                                        </a>
+                                    </td>
+                                <?php } ?>
 
                                 <td>
                                     <a href="index.php?route=assets/show&id=<?= $request['asset_id'] ?>"
