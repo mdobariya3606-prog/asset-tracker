@@ -227,6 +227,7 @@
                         <th>Asset Id</th>
                         <th>Status</th>
                         <th>Requested At</th>
+                        <th>Due Date</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -270,6 +271,10 @@
 
                                 <td style="color: var(--slate-500); font-weight: 600;">
                                     <?= htmlspecialchars($request['requested_at'] ?? '') ?>
+                                </td>
+
+                                <td style="color: var(--slate-500); font-weight: 600;">
+                                    <?= htmlspecialchars($request['due_date'] ?? '---') ?>
                                 </td>
                             </tr>
                         <?php endforeach; ?>

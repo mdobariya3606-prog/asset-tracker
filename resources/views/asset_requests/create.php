@@ -93,7 +93,7 @@
                         <div class="input-wrapper">
                             <textarea name="reason" id="reason" rows="4"
                                 placeholder="ex. Existing asset has reached end of life and requires replacement."
-                                autofocus><?php echo htmlspecialchars($old['reason'] ?? ''); ?></textarea>
+                                autofocus><?php echo htmlspecialchars($errors['old']['reason'] ?? ''); ?></textarea>
                         </div>
 
                         <div class="textarea-meta">
@@ -110,6 +110,35 @@
                                     <line x1="12" y1="16" x2="12.01" y2="16" />
                                 </svg>
                                 <?php echo htmlspecialchars($errors['reason']); ?>
+                            </div>
+                        <?php endif; ?>
+                    </div>
+
+                    <!-- ========================= -->
+                    <!-- Due Date / Time Field -->
+                    <!-- ========================= -->
+                    <div class="form-group <?php echo isset($errors['due_date']) ? 'has-error' : ''; ?>">
+                        <label for="due_date">Due Date &amp; Time <span class="required">*</span></label>
+                        <div class="input-wrapper">
+                            <input type="datetime-local" id="due_date" name="due_date"
+                                value="<?= htmlspecialchars($errors['old']['due_date'] ?? $assetData['due_date'] ?? '') ?>">
+                            <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="3" y="4" width="18" height="18" rx="2" />
+                                <line x1="16" y1="2" x2="16" y2="6" />
+                                <line x1="8" y1="2" x2="8" y2="6" />
+                                <line x1="3" y1="10" x2="21" y2="10" />
+                            </svg>
+                        </div>
+                        <?php if (isset($errors['due_date'])): ?>
+                            <div class="error-text">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                    stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="12" cy="12" r="10" />
+                                    <line x1="12" y1="8" x2="12" y2="12" />
+                                    <line x1="12" y1="16" x2="12.01" y2="16" />
+                                </svg>
+                                <?php echo htmlspecialchars($errors['due_date']); ?>
                             </div>
                         <?php endif; ?>
                     </div>
@@ -142,10 +171,11 @@
         document.addEventListener('DOMContentLoaded', () => {
             const form = document.getElementById('requestAssetForm');
             const reasonInput = document.getElementById('reason');
+            const dueDateInput = document.getElementById('due_date');
             const charCountEl = document.getElementById('charCount');
             const submitBtn = document.getElementById('submitBtn');
 
-            if (!form || !reasonInput) return;
+            if (!form || !reasonInput || !dueDateInput) return;
 
             const createErrorSvg = () => {
                 const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
@@ -179,8 +209,8 @@
                 return svg;
             };
 
-            const showError = (message) => {
-                const group = reasonInput.closest('.form-group');
+            const showError = (inputEl, message) => {
+                const group = inputEl.closest('.form-group');
                 if (!group) return;
 
                 group.classList.add('has-error');
@@ -197,8 +227,8 @@
                 errorEl.appendChild(document.createTextNode(' ' + message));
             };
 
-            const clearError = () => {
-                const group = reasonInput.closest('.form-group');
+            const clearError = (inputEl) => {
+                const group = inputEl.closest('.form-group');
                 if (!group) return;
 
                 group.classList.remove('has-error');
@@ -215,38 +245,84 @@
                 }
             };
 
+            // Validate Reason
             const validateReason = () => {
                 const val = reasonInput.value.trim();
                 if (!val) {
-                    showError('Please provide a reason for requesting this asset.');
+                    showError(reasonInput, 'Please provide a reason for requesting this asset.');
                     return false;
                 }
                 if (val.length < 10) {
-                    showError('Reason must be at least 10 characters long.');
+                    showError(reasonInput, 'Reason must be at least 10 characters long.');
                     return false;
                 }
-                clearError();
+                clearError(reasonInput);
                 return true;
             };
 
-            // Real-time counter and error handling
+            // Validate Due Timestamp (Date & Time)
+            const validateDueTimestamp = () => {
+                const val = dueDateInput.value.trim();
+                if (!val) {
+                    showError(dueDateInput, 'Please select a date and time.');
+                    return false;
+                }
+
+                // Parse standard ISO format from <input type="datetime-local"> (YYYY-MM-DDTHH:mm)
+                const selectedTimestamp = new Date(val);
+                const now = new Date();
+
+                if (isNaN(selectedTimestamp.getTime())) {
+                    showError(dueDateInput, 'Please enter a valid date and time.');
+                    return false;
+                }
+
+                if (selectedTimestamp < now) {
+                    showError(dueDateInput, 'Due timestamp cannot be in the past.');
+                    return false;
+                }
+
+                clearError(dueDateInput);
+                return true;
+            };
+
+            // Reason field listeners
             reasonInput.addEventListener('input', () => {
                 updateCharCount();
                 if (reasonInput.value.trim().length >= 10) {
-                    clearError();
+                    clearError(reasonInput);
                 }
             });
 
             reasonInput.addEventListener('blur', validateReason);
 
-            // Initialize count on page load
+            // Due Timestamp field listeners
+            dueDateInput.addEventListener('input', () => {
+                if (dueDateInput.value) {
+                    const selected = new Date(dueDateInput.value);
+                    if (!isNaN(selected.getTime()) && selected >= new Date()) {
+                        clearError(dueDateInput);
+                    }
+                }
+            });
+            dueDateInput.addEventListener('change', validateDueTimestamp);
+            dueDateInput.addEventListener('blur', validateDueTimestamp);
+
+            // Initialize count on load
             updateCharCount();
 
             // Form Submission
             form.addEventListener('submit', (e) => {
-                if (!validateReason()) {
+                const isReasonValid = validateReason();
+                const isTimestampValid = validateDueTimestamp();
+
+                if (!isReasonValid || !isTimestampValid) {
                     e.preventDefault();
-                    reasonInput.focus();
+                    if (!isReasonValid) {
+                        reasonInput.focus();
+                    } else if (!isTimestampValid) {
+                        dueDateInput.focus();
+                    }
                     return;
                 }
 

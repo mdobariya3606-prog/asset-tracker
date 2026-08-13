@@ -22,11 +22,7 @@ class SelectAssetRequestController
 
 	public function index()
 	{
-		if (empty($_SESSION['user_id'])) {
-			$_SESSION['login_error'] = 'Please sign in to view asset requests.';
-			route('login');
-			exit;
-		}
+		require __DIR__ . '/../../Middleware/auth.php';
 
 		if ($_SESSION['user_role'] === 'HR' || $_SESSION['user_role'] === 'EMPLOYEE') {
 			$requests = $this->myRequests();

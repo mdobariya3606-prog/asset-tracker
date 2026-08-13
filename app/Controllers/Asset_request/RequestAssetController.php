@@ -9,10 +9,12 @@ class RequestAssetController
 {
 	private \PDO $conn;
 	private AssetRequest $assetRequestModel;
+	private Asset $assetModel;
 
 	public function __construct(\PDO $conn)
 	{
 		$this->conn = $conn;
+		$this->assetModel = new Asset($conn);
 		$this->assetRequestModel = new AssetRequest($conn);
 	}
 
@@ -20,7 +22,7 @@ class RequestAssetController
 	{
 		$this->validateRequest();
 
-		$asset = (new Asset($this->conn))->find($asset_id);
+		$asset = $this->assetModel->find($asset_id);
 		if (empty($asset)) {
 			$errors['reason'] = "Asset does not exists";
 		}
@@ -28,12 +30,13 @@ class RequestAssetController
 		$errors = $this->assetRequestModel->validate($assetRequest);
 
 		if (empty($errors)) {
-			$stmt = $this->conn->prepare("INSERT INTO asset_requests (user_id, asset_id, asset_name, reason) VALUES (:user_id, :asset_id, :asset_name, :reason)");
+			$stmt = $this->conn->prepare("INSERT INTO asset_requests (user_id, asset_id, asset_name, reason, due_date) VALUES (:user_id, :asset_id, :asset_name, :reason, :due_date)");
 			$stmt->execute([
 				'user_id' => $_SESSION['user_id'],
 				'asset_id' => $asset_id,
 				'asset_name' => $asset['name'],
-				'reason' => $assetRequest['reason']
+				'reason' => $assetRequest['reason'],
+				'due_date' => $assetRequest['due_date'],
 			]);
 
 			$_SESSION['success'] = "Request sent successfully";
@@ -46,16 +49,18 @@ class RequestAssetController
 
 	private function validateRequest()
 	{
-		$asset = (new Asset($this->conn))->find((int)($_GET['id'] ?? 0));
-		if (empty($asset) || strtoupper((string)($asset['status'] ?? '')) !== 'AVAILABLE') {
-			$_SESSION['general'] = 'Asset #' . $asset['id'] . ' is not available for request.';
+		$assetModel = (new Asset($this->conn));
+		$assetId = $_GET['id'] ?? null;
+
+		if (!$assetModel->isAvailable($assetId)) {
+			$_SESSION['general'] = 'Asset #' . $assetId . ' is not available for request.';
 			route('assets');
 			exit;
 		}
 
 		$stmt = $this->conn->prepare('select id from asset_requests where user_id = ? and asset_id = ?');
 
-		$stmt->execute([$_SESSION['user_id'], $_GET['id']]);
+		$stmt->execute([$_SESSION['user_id'], $assetId]);
 
 		if ($stmt->rowCount() > 0) {
 			$_SESSION['success'] = 'Request already sent.';

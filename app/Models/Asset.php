@@ -313,6 +313,28 @@ class Asset
 		return $stmt->fetch(PDO::FETCH_ASSOC) ?: [];
 	}
 
+	public function exists($assetId) {
+		$sql = 'SELECT id
+                FROM assets 
+                WHERE id = ?';
+
+		$stmt = $this->conn->prepare($sql);
+		$stmt->execute([$assetId]);
+
+		return $stmt->rowCount() > 0;
+	}
+
+	public function isAvailable($assetId) {
+		$sql = 'SELECT id
+                FROM assets 
+                WHERE id = ? and status = "AVAILABLE"';
+
+		$stmt = $this->conn->prepare($sql);
+		$stmt->execute([$assetId]);
+
+		return $stmt->rowCount() > 0;
+	}
+
 	public function export($option = 'pdf')
 	{
 		$stmt = $this->conn->query("

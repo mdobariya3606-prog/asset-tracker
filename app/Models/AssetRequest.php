@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Controllers\Asset\SelectAssetController;
+use DateTime;
 use PDO;
 
 class AssetRequest
@@ -24,14 +25,14 @@ class AssetRequest
 			exit;
 		}
 
-		$asset = $this->assetModel->find($id);
-		if (empty($asset) || strtoupper((string)($asset['status'] ?? '')) !== 'AVAILABLE') {
-			$_SESSION['general'] = 'Asset #' . $asset['id'] . ' is not available for request.';
+		if (!$this->assetModel->isAvailable($id)) {
+			$_SESSION['general'] = 'Asset #' . $id . ' is not available for request.';
 			route('assets');
 			exit;
 		}
 
-		require '../resources/views/asset_requests/create.php';
+		view('asset.requests.create');
+		exit;
 	}
 
 	public function findOrFail(int $id): array
@@ -50,10 +51,25 @@ class AssetRequest
 	{
 		$errors = [];
 
-		$reason = $assetRequest['reason'];
+		$reason = trim($assetRequest['reason']);
+		$dueDate = $assetRequest['due_date'];
 
 		if (empty($reason)) {
-			$errors['reason'] = 'Reason is required';
+			$errors['reason'] = 'Please provide a reason for requesting this asset.';
+		}
+
+		if (strlen($reason) < 10) {
+			$errors['reason'] = 'Reason must be at least 10 characters long.';
+			$errors['old']['reason'] = $reason;
+		}
+
+		if (empty($dueDate)) {
+			$errors['due_date'] = 'Please select a due date.';
+		}
+
+		if (!empty($dueDate) && $dueDate < date('Y-m-d H:i:s')) {
+			$errors['due_date'] = 'Due date cannot be in the past.';
+			$errors['old']['due_date'] = $dueDate;
 		}
 
 		return $errors;
@@ -110,9 +126,9 @@ class AssetRequest
 	public function export($option = 'pdf')
 	{
 		$stmt = $this->conn->query('select * from asset_requests order by status');
-		
+
 		$role = $_SESSION['user_role'];
-		
+
 		if ($role === 'HR' || $role === 'EMPLOYEE') {
 			$stmt = $this->conn->prepare('select * from asset_requests where user_id = ? order by status');
 			$stmt->execute([$_SESSION['user_id']]);
@@ -124,7 +140,7 @@ class AssetRequest
 			view('asset.requests.excel', ['requests' => $requests]);
 			exit;
 		}
-		
+
 		view('asset.requests.pdf', ['requests' => $requests]);
 		exit;
 	}
