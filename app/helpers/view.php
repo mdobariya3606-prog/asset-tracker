@@ -18,7 +18,10 @@ function view(int|string $viewFile, array $vars = []): void
         'users.select' => $prefix . '/users/select.php',
         'users.pdf' => $prefix . '/users/export-pdf.php',
         'users.excel' => $prefix . '/users/export-excel.php',
-
+        
+        'notices.select' => $prefix . '/notices/select.php',
+        'notices.create' => $prefix . '/notices/create.php',
+        
         'departments.create' => $prefix . '/departments/create.php',
         'departments.select' => $prefix . '/departments/select.php',
 
@@ -46,7 +49,7 @@ function view(int|string $viewFile, array $vars = []): void
     $viewFile = $pages[$viewFile] ?? null;
 
     if (!$viewFile) {
-        view(403);
+        view(404);
         exit;
     }
 

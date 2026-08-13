@@ -307,6 +307,12 @@ tr:last-child td {
     border: 1px solid #fecaca;
 }
 
+.badge-role-admin, .badge-overdue {
+    background: #fef2f2;
+    color: #5c0d0d;
+    border: 1px solid #fecaca;
+}
+
 .badge-role-hr {
     background: #fdf2f8;
     color: #9d174d;

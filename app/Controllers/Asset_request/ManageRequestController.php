@@ -105,14 +105,16 @@ class ManageRequestController
 		route('assets/requests');
 	}
 
-	public function cancel($id)
+	public function cancel()
 	{
 		require_once __DIR__ . '/../../Middleware/auth.php';
-		
-		if (empty($id) || !isset($id)) {
+
+		if (empty($_GET['id']) || !isset($_GET['id'])) {
 			view(404);
 			exit;
 		}
+		
+		$id = $_GET['id'];
 
 		$assetRequest = $this->assetRequestModel->findOrFail($id);
 

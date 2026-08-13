@@ -8,6 +8,7 @@ try {
         'home.php',
         'departments.php',
         'designations.php',
+        'notices.php',
         'users.php',
         'assets.php',
         'asset_requests.php',

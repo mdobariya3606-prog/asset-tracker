@@ -12,6 +12,7 @@ function route(string $route, $params = ''): void
         'users',
         'users/create',
         'fp-mail',
+        'notices',
     ];
 
     if (!in_array($route, $routes, true)) {

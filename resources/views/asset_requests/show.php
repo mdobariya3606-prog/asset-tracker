@@ -267,16 +267,23 @@
                 <span><?= htmlspecialchars($assetRequest['returned_at'] ?? 'N/A') ?></span>
             </div>
 
+            <!--Due date-->
+            <div class="detail">
+                <label>Due date</label>
+                <span><?= htmlspecialchars($assetRequest['due_date'] ?? 'N/A') ?></span>
+            </div>
+
         </section>
         <nav class="actions">
-            <a class="back" href="<?php
-                                    if (isset($_SESSION['back'])) {
-                                        echo $_SESSION['back'];
-                                        unset($_SESSION['back']);
-                                    } else {
-                                        echo "index.php?route=assets/requests";
-                                    }
-                                    ?>">Back</a>
+            <a class="back"
+                href="<?php
+                        if (isset($_SESSION['back'])) {
+                            echo $_SESSION['back'];
+                            unset($_SESSION['back']);
+                        } else {
+                            echo "index.php?route=assets/requests";
+                        }
+                        ?>">Back</a>
 
             <?php
             if ($canManageRequest) { ?>
@@ -297,10 +304,4 @@
         </nav>
     </main>
 </body>
-<script>
-    function confirmCancel() {
-        return confirm('Are you sure to cancel this request, after that it cannot be revert.')
-    }
-</script>
-
 </html>

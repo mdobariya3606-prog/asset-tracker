@@ -31,7 +31,12 @@ switch ("$method:$route") {
         return true;
 
     case 'GET:assets/requests/cancel':
-        (new ManageRequestController($conn))->cancel($_GET['id']);
+        (new ManageRequestController($conn))->cancel();
+        return true;
+
+    case 'GET:assets/requests/overdue':
+        $stmt = $conn->query('update asset_requests set status = "OVERDUE" where due_date < now()');
+        return true;
 }
 
 return false;
