@@ -31,6 +31,7 @@ try {
         exit;
     }
 } catch (Throwable $e) {
+    throw $e;
     logError($e);
     view(500);
     exit;

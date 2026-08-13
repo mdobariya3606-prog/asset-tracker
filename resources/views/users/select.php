@@ -154,6 +154,7 @@ function getSortIndicator(string $column, string $currentSort, string $currentOr
 
         /* Menu Items Animation & Hover */
         .dropdown-menu button {
+            font-family: Inter;
             color: #334155;
             padding: 8px 12px;
             text-decoration: none;

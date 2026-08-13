@@ -35,7 +35,7 @@ switch ("$method:$route") {
         return true;
 
     case 'GET:assets/requests/overdue':
-        $stmt = $conn->query('update asset_requests set status = "OVERDUE" where due_date < now()');
+        require __DIR__ . '/../public/testing/overdue.php';
         return true;
 }
 

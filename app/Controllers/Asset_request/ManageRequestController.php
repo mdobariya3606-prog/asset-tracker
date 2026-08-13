@@ -92,15 +92,27 @@ class ManageRequestController
 
 		$this->assetRequestModel->update($requestId, $inputAssetRequest, $assetRequest);
 
-		if ($inputAssetRequest['status'] === 'APPROVED') {
+		$updatedStatus = $inputAssetRequest['status'];
+
+		if ($updatedStatus === 'APPROVED') {
+
+			sendNotice(10, $assetRequest['user_id']);
 
 			(new AuditLog($this->conn))->log('ASSET_ASSIGNMENT', $assetRequest['asset_id']);
 			(new Asset($this->conn))->updateStatus($assetRequest['asset_id'], 'ASSIGNED', $assetRequest['user_id']);
-		} elseif ($inputAssetRequest['status'] === 'RETURNED') {
+		} else if ($updatedStatus === 'REJECTED') {
+			sendNotice(11, $assetRequest['user_id']);
+			
+		} elseif ($updatedStatus === 'ISSUED') {
+			sendNotice(12, $assetRequest['user_id']);
 
+		} elseif ($updatedStatus === 'RETURNED') {
+
+			sendNotice(15, $assetRequest['user_id']);
 			(new AuditLog($this->conn))->log('ASSET_RETURN', $assetRequest['asset_id']);
 			(new Asset($this->conn))->updateStatus($assetRequest['asset_id'], 'AVAILABLE');
 		}
+
 		$_SESSION['success'] = 'Asset request updated successfully.';
 		route('assets/requests');
 	}
@@ -113,12 +125,12 @@ class ManageRequestController
 			view(404);
 			exit;
 		}
-		
+
 		$id = $_GET['id'];
 
 		$assetRequest = $this->assetRequestModel->findOrFail($id);
 
-		require_once __DIR__ . '/../../Middleware/assetOwner.php';
+		middleware('assetOwner');
 
 		$asset = $this->assetModel->findOrFail($assetRequest['asset_id']);
 
@@ -191,7 +203,7 @@ class ManageRequestController
 		];
 	}
 
-	private function alreadyAssigned($asset, $assetRequest, $inputAssetRequest)
+	private function alreadyAssigned(array $asset, array $assetRequest, array $inputAssetRequest)
 	{
 		switch ($asset['status']) {
 			case 'ASSIGNED':
@@ -209,10 +221,10 @@ class ManageRequestController
 
 	private function validateStatus(array $assetRequest, array $input)
 	{
-		$assetStatus = $assetRequest['status'];
+		$assetRequestStatus = $assetRequest['status'];
 		$inputStatus = $input['status'];
 
-		switch ($assetStatus) {
+		switch ($assetRequestStatus) { 
 			//				can approve/reject only
 			case 'PENDING':
 				switch ($inputStatus) {
@@ -246,6 +258,12 @@ class ManageRequestController
 			case 'REJECTED':
 				if ($inputStatus !== 'REJECTED') {
 					return 'This request is already rejected.';
+				}
+				break;
+
+			case 'OVERDUE':
+				if ($inputStatus !== 'RETURNED') {
+					return 'This request is already issued.';
 				}
 				break;
 		}

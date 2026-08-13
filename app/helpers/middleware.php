@@ -20,5 +20,5 @@ function middleware(string $middleware): void
         exit;
     }
 
-    require $requiredMiddleware;
+    require_once $requiredMiddleware;
 }

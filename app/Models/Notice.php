@@ -6,7 +6,7 @@ use PDO;
 
 class Notice
 {
-    private $conn;
+    private PDO $conn;
 
     public function __construct(PDO $conn)
     {
@@ -18,6 +18,7 @@ class Notice
         $stmt = $this->conn->prepare('
         select n.*, 
         nt.title as title,
+        nr.id as nr_id,
         nr.confirmed_at
         from notices n
 
@@ -25,7 +26,7 @@ class Notice
         left join notice_recipients nr on n.id = nr.notice_id
 
         where employee_id = ?
-        order by nr.confirmed_at, n.id');
+        order by nr.created_at desc, nr.confirmed_at, n.id');
 
         $stmt->execute([$_SESSION['user_id']]);
 

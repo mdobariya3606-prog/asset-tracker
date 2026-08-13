@@ -39,6 +39,7 @@ class RequestAssetController
 				'due_date' => $assetRequest['due_date'],
 			]);
 
+			sendNotice(7, $_SESSION['user_id']);
 			$_SESSION['success'] = "Request sent successfully";
 			route('assets');
 		}
