@@ -94,6 +94,10 @@
         text-align: center;
         box-sizing: border-box;
     }
+
+    .notice {
+        background: #ef4444;
+    }
 </style>
 <?php
 
@@ -121,6 +125,7 @@ $user = (new User($conn))->find($_SESSION['user_id'])[0];
 
         use App\Config\Database;
         use App\Models\AssetRequest;
+        use App\Models\Notice;
 
         if (!empty($user)): ?>
             <div class="avatar-badge">
@@ -181,4 +186,20 @@ $user = (new User($conn))->find($_SESSION['user_id'])[0];
             <?php endif; ?>
         </span>
     </a>
+
+    <?php
+    $pendingNotices = (new Notice($conn))->pendingNotices();
+    ?>
+    <a href="index.php?route=notices"
+        class="tab-link <?= $route === 'notices' ? 'active' : '' ?>">
+        <span class="tab-label">
+            Notices
+            <?php if ($pendingNotices > 0): ?>
+                <span class="notification-badge notice">
+                    <?= $pendingNotices > 99 ? '99+' : $pendingNotices ?>
+                </span>
+            <?php endif; ?>
+        </span>
+    </a>
+
 </nav>
