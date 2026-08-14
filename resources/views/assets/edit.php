@@ -31,6 +31,7 @@
 </head>
 
 <body>
+
     <!-- ========================= -->
     <!-- Edit User Page -->
     <!-- ========================= -->
@@ -60,12 +61,7 @@
             <!-- ========================= -->
             <?php if (!empty($errors['general'])): ?>
                 <div class="alert-error">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                        stroke-linejoin="round">
-                        <circle cx="12" cy="12" r="10" />
-                        <line x1="12" y1="8" x2="12" y2="12" />
-                        <line x1="12" y1="16" x2="12.01" y2="16" />
-                    </svg>
+                    <i data-lucide="circle-alert"></i>
                     <?php echo htmlspecialchars($errors['general']); ?>
                 </div>
             <?php endif; ?>
@@ -94,12 +90,7 @@
                         </div>
                         <?php if (isset($errors['name'])): ?>
                             <div class="error-text">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                    stroke-linecap="round" stroke-linejoin="round">
-                                    <circle cx="12" cy="12" r="10" />
-                                    <line x1="12" y1="8" x2="12" y2="12" />
-                                    <line x1="12" y1="16" x2="12.01" y2="16" />
-                                </svg>
+                                <i data-lucide="circle-alert"></i>
                                 <?php echo htmlspecialchars($errors['name']); ?>
                             </div>
                         <?php endif; ?>
@@ -123,12 +114,7 @@
                         </div>
                         <?php if (isset($errors['serial_number'])): ?>
                             <div class="error-text">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                    stroke-linecap="round" stroke-linejoin="round">
-                                    <circle cx="12" cy="12" r="10" />
-                                    <line x1="12" y1="8" x2="12" y2="12" />
-                                    <line x1="12" y1="16" x2="12.01" y2="16" />
-                                </svg>
+                                <i data-lucide="circle-alert"></i>
                                 <?php echo htmlspecialchars($errors['serial_number']); ?>
                             </div>
                         <?php endif; ?>
@@ -151,12 +137,7 @@
                         </div>
                         <?php if (isset($errors['brand'])): ?>
                             <div class="error-text">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                    stroke-linecap="round" stroke-linejoin="round">
-                                    <circle cx="12" cy="12" r="10" />
-                                    <line x1="12" y1="8" x2="12" y2="12" />
-                                    <line x1="12" y1="16" x2="12.01" y2="16" />
-                                </svg>
+                                <i data-lucide="circle-alert"></i>
                                 <?php echo htmlspecialchars($errors['brand']); ?>
                             </div>
                         <?php endif; ?>
@@ -207,14 +188,10 @@
                                 <path d="M3 7a2 2 0 0 1 2-2h5l2 2h7a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7z" />
                             </svg>
                         </div>
+
                         <?php if (isset($errors['category_id'])): ?>
                             <div class="error-text">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                    stroke-linecap="round" stroke-linejoin="round">
-                                    <circle cx="12" cy="12" r="10" />
-                                    <line x1="12" y1="8" x2="12" y2="12" />
-                                    <line x1="12" y1="16" x2="12.01" y2="16" />
-                                </svg><?php echo htmlspecialchars($errors['category_id']); ?>
+                                <i data-lucide="circle-alert"></i><?php echo htmlspecialchars($errors['category_id']); ?>
                             </div>
                         <?php endif; ?>
                     </div>
@@ -241,12 +218,7 @@
                         </div>
                         <?php if (isset($errors['vendor_id'])): ?>
                             <div class="error-text">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                    stroke-linecap="round" stroke-linejoin="round">
-                                    <circle cx="12" cy="12" r="10" />
-                                    <line x1="12" y1="8" x2="12" y2="12" />
-                                    <line x1="12" y1="16" x2="12.01" y2="16" />
-                                </svg><?php echo htmlspecialchars($errors['vendor_id']); ?>
+                                <i data-lucide="circle-alert"></i><?php echo htmlspecialchars($errors['vendor_id']); ?>
                             </div>
                         <?php endif; ?>
                     </div>
@@ -280,12 +252,7 @@
                         </div>
                         <?php if (isset($errors['status'])): ?>
                             <div class="error-text">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                    stroke-linecap="round" stroke-linejoin="round">
-                                    <circle cx="12" cy="12" r="10" />
-                                    <line x1="12" y1="8" x2="12" y2="12" />
-                                    <line x1="12" y1="16" x2="12.01" y2="16" />
-                                </svg><?php echo htmlspecialchars($errors['status']); ?>
+                                <i data-lucide="circle-alert"></i><?php echo htmlspecialchars($errors['status']); ?>
                             </div>
                         <?php endif; ?>
                     </div>
@@ -306,12 +273,7 @@
                         </div>
                         <?php if (isset($errors['cost'])): ?>
                             <div class="error-text">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                    stroke-linecap="round" stroke-linejoin="round">
-                                    <circle cx="12" cy="12" r="10" />
-                                    <line x1="12" y1="8" x2="12" y2="12" />
-                                    <line x1="12" y1="16" x2="12.01" y2="16" />
-                                </svg>
+                                <i data-lucide="circle-alert"></i>
                                 <?php echo htmlspecialchars($errors['cost']); ?>
                             </div>
                         <?php endif; ?>
@@ -335,12 +297,7 @@
                         </div>
                         <?php if (isset($errors['purchase_date'])): ?>
                             <div class="error-text">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                    stroke-linecap="round" stroke-linejoin="round">
-                                    <circle cx="12" cy="12" r="10" />
-                                    <line x1="12" y1="8" x2="12" y2="12" />
-                                    <line x1="12" y1="16" x2="12.01" y2="16" />
-                                </svg>
+                                <i data-lucide="circle-alert"></i>
                                 <?php echo htmlspecialchars($errors['purchase_date']); ?>
                             </div>
                         <?php endif; ?>
@@ -364,12 +321,7 @@
                         </div>
                         <?php if (isset($errors['warranty_date'])): ?>
                             <div class="error-text">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                    stroke-linecap="round" stroke-linejoin="round">
-                                    <circle cx="12" cy="12" r="10" />
-                                    <line x1="12" y1="8" x2="12" y2="12" />
-                                    <line x1="12" y1="16" x2="12.01" y2="16" />
-                                </svg>
+                                <i data-lucide="circle-alert"></i>
                                 <?php echo htmlspecialchars($errors['warranty_date']); ?>
                             </div>
                         <?php endif; ?>
@@ -391,12 +343,7 @@
                         <?php endif; ?>
                         <?php if (isset($errors['image'])): ?>
                             <div class="error-text">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                    stroke-linecap="round" stroke-linejoin="round">
-                                    <circle cx="12" cy="12" r="10" />
-                                    <line x1="12" y1="8" x2="12" y2="12" />
-                                    <line x1="12" y1="16" x2="12.01" y2="16" />
-                                </svg>
+                                <i data-lucide="circle-alert"></i>
                                 <?php echo htmlspecialchars($errors['image']); ?>
                             </div>
                         <?php endif; ?>
@@ -411,14 +358,7 @@
                             class="btn-cancel">Cancel</a>
                         <button type="submit" class="btn-submit" id="submitBtn">
                             <span class="btn-content">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                    stroke-linecap="round" stroke-linejoin="round">
-                                    <path
-                                        d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
-                                    <polyline
-                                        points="17 21 17 13 7 13 7 21" />
-                                    <polyline points="7 3 7 8 15 8" />
-                                </svg>
+                                <i data-lucide="file-text"></i>
                                 <span>Save Changes</span>
                             </span>
                         </button>
@@ -658,6 +598,10 @@
                 }
             });
         });
+    </script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        lucide.createIcons();
     </script>
 </body>
 

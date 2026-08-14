@@ -213,7 +213,6 @@
 </head>
 
 <body>
-
     <div class="page">
 
         <?php view('header'); ?>
@@ -460,6 +459,10 @@
         <div id="exportLoaderText" style="font-size: 14px; font-weight: 600;">Generating report...</div>
     </div>
 
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        lucide.createIcons();
+    </script>
 </body>
 
 </html>
