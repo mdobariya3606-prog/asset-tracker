@@ -26,6 +26,7 @@ class CreateUserController
 
 			// Separate file data from post data
 			$file = $_FILES['profile_image'] ?? null;
+
 			$result = $this->register($postData);
 
 			if ($result['success']) {
@@ -45,7 +46,7 @@ class CreateUserController
 					} else {
 						$ext = pathinfo($file['name'], PATHINFO_EXTENSION);
 						$filename = "profile_{$userId}." . strtolower($ext);
-						$dest = __DIR__ . '/../../storage/profile_images/' . $filename;
+						$dest = __DIR__ . '/../../../storage/profile_images/' . $filename;
 						if (!move_uploaded_file($file['tmp_name'], $dest)) {
 							$result['success'] = false;
 							$result['errors']['profile_image'] = 'Failed to move uploaded file.';

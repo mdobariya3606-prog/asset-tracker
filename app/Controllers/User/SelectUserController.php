@@ -50,10 +50,10 @@ class SelectUserController
 			$activeDeptName = $activeDept[0]['name'] ?? null;
 		}
 
-		$activeDesignName = null;
+		$activeDesigName = null;
 		if ($designationId !== null) {
 			$activeDesign = (new Designation($this->conn))->find($designationId);
-			$activeDesignName = $activeDesign[0]['name'] ?? null;
+			$activeDesigName = $activeDesign[0]['name'] ?? null;
 		}
 
 		$totalUsers = $this->userModel->count($search, $departmentId, $designationId);
@@ -84,7 +84,7 @@ class SelectUserController
 			'departmentId' => $departmentId,
 			'designationId' => $designationId,
 			'activeDeptName' => $activeDeptName,
-			'activeDesignName' => $activeDesignName,
+			'activeDesigName' => $activeDesigName,
 			'totalUsers' => $totalUsers,
 			'totalPages' => $totalPages,
 			'users' => $users,
