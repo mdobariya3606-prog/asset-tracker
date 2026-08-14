@@ -212,7 +212,6 @@ $canAdd = $role !== 'EMPLOYEE';
 </head>
 
 <body>
-
     <div class="page">
 
         <?php view('header'); ?>
@@ -650,6 +649,10 @@ $canAdd = $role !== 'EMPLOYEE';
         });
     </script>
 
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        lucide.createIcons();
+    </script>
 </body>
 
 </html>
