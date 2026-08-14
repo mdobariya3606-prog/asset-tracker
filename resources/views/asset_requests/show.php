@@ -169,7 +169,8 @@
             border: 1px solid #bbf7d0;
         }
     </style>
-    <link rel="stylesheet" href="resources/css/style.css">
+
+    <link rel="stylesheet" href="resources/css/user.css">
 </head>
 
 <body>

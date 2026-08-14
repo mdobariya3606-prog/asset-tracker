@@ -306,10 +306,13 @@ function getSortIndicator(string $column, string $currentSort, string $currentOr
             <div class="filter-status"
                 style="display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; padding: 2px 4px;">
                 <span style="font-size: 13px; color: var(--slate-500); font-weight: 600; margin-right: 4px;">Active Filters:</span>
+
                 <?php if ($departmentId !== null && isset($activeDeptName)): ?>
                     <span class="badge"
                         style="background: #eff6ff; color: var(--blue); padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; border: 1px solid rgba(59, 130, 246, 0.2); display: inline-flex; align-items: center; gap: 8px;">
+
                         Department: <?= htmlspecialchars($activeDeptName) ?>
+
                         <a href="index.php?route=users&search=<?= urlencode($search) ?><?php if ($designationId !== null) echo '&designation_id=' . $designationId; ?>"
                             style="color: var(--blue); text-decoration: none; font-size: 15px; font-weight: bold; line-height: 1; cursor: pointer;">&times;</a>
                     </span>
@@ -317,6 +320,7 @@ function getSortIndicator(string $column, string $currentSort, string $currentOr
                 <?php if ($designationId !== null && isset($activeDesigName)): ?>
                     <span class="badge"
                         style="background: #ecfdf5; color: #10b981; padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; border: 1px solid rgba(16, 185, 129, 0.2); display: inline-flex; align-items: center; gap: 8px;">
+                        
                         Designation: <?= htmlspecialchars($activeDesigName) ?>
                         <a href="index.php?route=users&search=<?= urlencode($search) ?><?php if ($departmentId !== null) echo '&department_id=' . $departmentId; ?>"
                             style="color: #10b981; text-decoration: none; font-size: 15px; font-weight: bold; line-height: 1; cursor: pointer;">&times;</a>

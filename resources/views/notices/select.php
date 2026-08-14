@@ -151,6 +151,63 @@ $canAdd = $role !== 'EMPLOYEE';
             color: #0f172a;
             transform: translateX(2px);
         }
+
+        /* ── Mobile Responsive Adjustments ── */
+        @media (max-width: 768px) {
+            .page-header {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 14px;
+            }
+
+            .notice-dropdown {
+                width: 100%;
+            }
+
+            .btn-notice {
+                width: 100%;
+                justify-content: center;
+                box-sizing: border-box;
+            }
+
+            .notice-dropdown .dropdown-menu {
+                left: 0;
+                right: auto;
+                width: 100%;
+                min-width: 0;
+                box-sizing: border-box;
+            }
+
+            .card {
+                width: 100%;
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            .card table {
+                min-width: 600px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .page-header h2 {
+                font-size: 20px;
+            }
+
+            .page-header p {
+                font-size: 12px;
+            }
+
+            .card table {
+                min-width: 550px;
+            }
+
+            .confirm-notice-btn,
+            .confirmed-notice {
+                width: 30px;
+                height: 30px;
+            }
+        }
     </style>
 </head>
 

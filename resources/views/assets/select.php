@@ -154,6 +154,61 @@
             color: #0f172a;
             transform: translateX(2px);
         }
+
+        /* ── Mobile Responsive Adjustments ── */
+        @media (max-width: 768px) {
+            .page-header {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 14px;
+            }
+
+            .page-header-actions {
+                width: 100%;
+            }
+
+            .export-dropdown {
+                width: 100%;
+            }
+
+            .btn-export {
+                width: 100%;
+                justify-content: center;
+                box-sizing: border-box;
+            }
+
+            .dropdown-menu {
+                left: 0;
+                right: 0;
+                width: 100%;
+                min-width: 0;
+                box-sizing: border-box;
+            }
+
+            .card {
+                width: 100%;
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            .card table {
+                min-width: 650px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .page-header h2 {
+                font-size: 20px;
+            }
+
+            .page-header p {
+                font-size: 12px;
+            }
+
+            .card table {
+                min-width: 600px;
+            }
+        }
     </style>
 </head>
 
@@ -285,7 +340,7 @@
                                     </a>
                                 </td>
 
-                                <td style="color: var(--slate-700); font-weight: 600;">
+                                <td style="color: var(--slate-600); font-weight: 600;">
                                     <?= htmlspecialchars($asset['serial_number'] ?? '') ?>
                                 </td>
 
