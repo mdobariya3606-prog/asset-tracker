@@ -82,12 +82,7 @@
             <!-- ========================= -->
             <?php if (!empty($errors['general'])): ?>
                 <div class="alert-error">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                        stroke-linejoin="round">
-                        <circle cx="12" cy="12" r="10" />
-                        <line x1="12" y1="8" x2="12" y2="12" />
-                        <line x1="12" y1="16" x2="12.01" y2="16" />
-                    </svg>
+                    <i data-lucide="circle-alert"></i>
                     <?php echo htmlspecialchars($errors['general']); ?>
                 </div>
             <?php endif; ?>
@@ -114,12 +109,7 @@
                         </div>
                         <?php if (isset($errors['password'])): ?>
                             <div class="error-text">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                    stroke-linecap="round" stroke-linejoin="round">
-                                    <circle cx="12" cy="12" r="10" />
-                                    <line x1="12" y1="8" x2="12" y2="12" />
-                                    <line x1="12" y1="16" x2="12.01" y2="16" />
-                                </svg>
+                                <i data-lucide="circle-alert"></i>
                                 <?php echo htmlspecialchars($errors['password']); ?>
                             </div>
                         <?php endif; ?>
@@ -139,12 +129,7 @@
                         </div>
                         <?php if (isset($errors['confirm_password'])): ?>
                             <div class="error-text">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                    stroke-linecap="round" stroke-linejoin="round">
-                                    <circle cx="12" cy="12" r="10" />
-                                    <line x1="12" y1="8" x2="12" y2="12" />
-                                    <line x1="12" y1="16" x2="12.01" y2="16" />
-                                </svg>
+                                <i data-lucide="circle-alert"></i>
                                 <?php echo htmlspecialchars($errors['confirm_password']); ?>
                             </div>
                         <?php endif; ?>
@@ -309,6 +294,10 @@
                 }
             });
         });
+    </script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        lucide.createIcons();
     </script>
 </body>
 
