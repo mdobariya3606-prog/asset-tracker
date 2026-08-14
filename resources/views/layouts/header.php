@@ -147,27 +147,40 @@
     /* ── Mobile Responsive Rules ── */
     @media (max-width: 768px) {
 
+        /*
+         * Mobile header:
+         * Keep the header as one compact row.
+         * Desktop layout is untouched.
+         */
         .navbar {
-            padding: 10px 12px;
-            margin-bottom: 16px;
+            padding: 8px 10px;
+            margin-bottom: 12px;
             gap: 8px;
             min-width: 0;
+            overflow: hidden;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: flex-start;
         }
 
         .logo-section {
-            gap: 8px;
+            gap: 7px;
             min-width: 0;
+            flex: 0 1 auto;
+            margin-right: auto;
+            justify-content: flex-start;
         }
 
         .logo-icon {
-            width: 25px;
-            height: 25px;
-            border-radius: 9px;
+            width: 28px;
+            height: 28px;
+            border-radius: 8px;
         }
 
         .logo-icon svg {
-            width: 14px;
-            height: 12px;
+            width: 15px;
+            height: 15px;
         }
 
         .logo-text {
@@ -175,7 +188,7 @@
         }
 
         .logo-text h1 {
-            font-size: 16px;
+            font-size: 15px;
             white-space: nowrap;
         }
 
@@ -186,43 +199,49 @@
         .nav-user {
             gap: 6px;
             min-width: 0;
+            flex: 0 0 auto;
+            margin-left: auto;
+            justify-content: flex-end;
         }
 
-        /* Convert buttons to circular icon-only buttons */
-        .nav-user .btn-icon-text {
-            width: 34px;
-            height: 34px;
+        /* Mobile: show only avatar + logout.
+           Name/email remain available on desktop. */
+        .nav-user>div[style*="text-align"] {
+            display: none;
+        }
+
+        .avatar-badge {
+            width: 30px;
+            height: 30px;
+        }
+
+        .nav-user .btn-logout {
+            width: 30px;
+            height: 30px;
             padding: 0 !important;
             border-radius: 50% !important;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
             box-sizing: border-box;
             flex-shrink: 0;
         }
 
-        /* Hide text spans inside action buttons */
-        .nav-user .btn-icon-text .btn-text {
-            display: none;
-        }
-
-        .nav-user .btn-icon-text svg {
-            width: 16px !important;
-            height: 16px !important;
+        .nav-user .btn-logout svg {
+            width: 14px !important;
+            height: 14px !important;
             margin: 0;
         }
 
-        .avatar-badge {
-            width: 34px;
-            height: 34px;
-        }
-
-        /* Responsive Admin Navigation Tabs */
+        /* Navigation stays separate and scrolls horizontally */
         .admin-tabs {
             display: flex;
-            gap: 8px;
+            gap: 10px;
             overflow-x: auto;
             overflow-y: visible;
             white-space: nowrap;
-            padding: 8px 4px 10px;
-            margin-bottom: 16px;
+            padding: 4px 2px 8px;
+            margin-bottom: 12px;
             scrollbar-width: none;
             -ms-overflow-style: none;
             -webkit-overflow-scrolling: touch;
@@ -246,40 +265,26 @@
     @media (max-width: 480px) {
 
         .navbar {
-            padding: 8px 10px;
-            gap: 6px;
-        }
-
-        .logo-section {
-            gap: 6px;
+            padding: 7px 9px;
         }
 
         .logo-icon {
-            width: 20px;
-            height: 20px;
+            width: 27px;
+            height: 27px;
         }
 
         .logo-text h1 {
-            font-size: 15px;
+            font-size: 14px;
+        }
+
+        .avatar-badge,
+        .nav-user .btn-logout {
+            width: 29px;
+            height: 29px;
         }
 
         .nav-user {
             gap: 5px;
-        }
-
-        .avatar-badge {
-            width: 32px;
-            height: 32px;
-        }
-
-        .nav-user .btn-icon-text {
-            width: 32px;
-            height: 32px;
-        }
-
-        .nav-user .btn-icon-text svg {
-            width: 15px !important;
-            height: 15px !important;
         }
     }
 </style>
@@ -370,7 +375,7 @@ $user = (new User($conn))->find($_SESSION['user_id'])[0];
             <form
                 action="index.php?route=logout"
                 method="POST"
-                style="margin: 0;">
+                style="margin: 0; margin-right: 10px;">
 
                 <button
                     type="submit"
