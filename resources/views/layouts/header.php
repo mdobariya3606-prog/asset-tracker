@@ -23,21 +23,30 @@
     .logo-icon {
         width: 40px;
         height: 40px;
-        background: linear-gradient(135deg, var(--blue, #3b82f6), var(--cyan, #06b6d4));
-        border-radius: 10px;
         display: flex;
         align-items: center;
         justify-content: center;
-        box-shadow: 0 4px 12px rgba(59, 130, 246, .25);
         flex-shrink: 0;
+        color: #334155;
+        background: #f1f5f9;
+        border: 1px solid #e2e8f0;
+        border-radius: 10px;
+    }
+
+    .logo-icon svg,
+    .logo-icon i {
+        width: 20px;
+        height: 20px;
+        font-size: 20px;
+        color: currentColor;
     }
 
     .logo-icon svg {
-        width: 20px;
-        height: 20px;
-        stroke: #fff;
+        stroke: currentColor;
         fill: none;
-        stroke-width: 2;
+        stroke-width: 1.8;
+        stroke-linecap: round;
+        stroke-linejoin: round;
     }
 
     .logo-text h1 {
@@ -275,6 +284,10 @@
     }
 </style>
 
+<script src="https://unpkg.com/lucide@latest"></script>
+<script>
+    lucide.createIcons();
+</script>
 <?php
 
 use App\Models\User;
