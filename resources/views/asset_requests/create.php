@@ -10,6 +10,7 @@
     <title>Request Asset — AssetTracker</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="resources/css/form.css">
+    <script src="resources/js/svg.js"></script>
     <style>
         @keyframes spin {
             to {
@@ -51,13 +52,7 @@
             <!-- ========================= -->
             <div class="card-header">
                 <div class="icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                        stroke-linejoin="round">
-                        <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" />
-                        <rect x="8" y="2" width="8" height="4" rx="1" ry="1" />
-                        <path d="M9 12h6" />
-                        <path d="M9 16h6" />
-                    </svg>
+                    <i data-lucide="clipboard-list"></i>
                 </div>
                 <h1>Request <?= htmlspecialchars($asset['name'] ?? 'Asset') ?></h1>
                 <p>Explain the business need and reason for requesting this asset.</p>
@@ -68,12 +63,7 @@
             <!-- ========================= -->
             <?php if (!empty($errors['general'])): ?>
                 <div class="alert-error">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                        stroke-linejoin="round">
-                        <circle cx="12" cy="12" r="10" />
-                        <line x1="12" y1="8" x2="12" y2="12" />
-                        <line x1="12" y1="16" x2="12.01" y2="16" />
-                    </svg>
+                    <i data-lucide="circle-alert"></i>
                     <?php echo htmlspecialchars($errors['general']); ?>
                 </div>
             <?php endif; ?>
@@ -103,12 +93,7 @@
 
                         <?php if (isset($errors['reason'])): ?>
                             <div class="error-text">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                    stroke-linecap="round" stroke-linejoin="round">
-                                    <circle cx="12" cy="12" r="10" />
-                                    <line x1="12" y1="8" x2="12" y2="12" />
-                                    <line x1="12" y1="16" x2="12.01" y2="16" />
-                                </svg>
+                                <i data-lucide="circle-alert"></i>
                                 <?php echo htmlspecialchars($errors['reason']); ?>
                             </div>
                         <?php endif; ?>
@@ -122,6 +107,7 @@
                         <div class="input-wrapper">
                             <input type="datetime-local" id="due_date" name="due_date"
                                 value="<?= htmlspecialchars($errors['old']['due_date'] ?? $assetData['due_date'] ?? '') ?>">
+
                             <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                                 stroke-linecap="round" stroke-linejoin="round">
                                 <rect x="3" y="4" width="18" height="18" rx="2" />
@@ -132,12 +118,7 @@
                         </div>
                         <?php if (isset($errors['due_date'])): ?>
                             <div class="error-text">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                    stroke-linecap="round" stroke-linejoin="round">
-                                    <circle cx="12" cy="12" r="10" />
-                                    <line x1="12" y1="8" x2="12" y2="12" />
-                                    <line x1="12" y1="16" x2="12.01" y2="16" />
-                                </svg>
+                                <i data-lucide="lock"></i>
                                 <?php echo htmlspecialchars($errors['due_date']); ?>
                             </div>
                         <?php endif; ?>
@@ -166,7 +147,10 @@
             </form>
         </div>
     </div>
-
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        lucide.createIcons();
+    </script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const form = document.getElementById('requestAssetForm');

@@ -174,7 +174,6 @@
 </head>
 
 <body>
-
     <main class="card">
         <section class="hero">
             <div class="hero-icon">
@@ -304,6 +303,10 @@
             <?php } ?>
         </nav>
     </main>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        lucide.createIcons();
+    </script>
 </body>
 
 </html>
