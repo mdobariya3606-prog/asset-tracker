@@ -169,7 +169,7 @@
             border: 1px solid #bbf7d0;
         }
     </style>
-    <link rel="stylesheet" href="../resources/css/style.css">
+    <link rel="stylesheet" href="resources/css/style.css">
 </head>
 
 <body>
@@ -304,4 +304,5 @@
         </nav>
     </main>
 </body>
+
 </html>

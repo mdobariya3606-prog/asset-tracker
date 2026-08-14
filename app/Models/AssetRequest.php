@@ -125,6 +125,7 @@ class AssetRequest
 
 	public function export($option = 'pdf')
 	{
+		middleware('auth');
 		$stmt = $this->conn->query('select * from asset_requests order by status');
 
 		$role = $_SESSION['user_role'];

@@ -30,7 +30,13 @@ class ResetPasswordController
 
 		$errors = [];
 		$old = [];
-		require '../resources/views/users/reset-password.php';
+
+		view('users.reset-password', [
+			'user' => $user,
+			'errors' => $errors,
+			'old' => $old,
+		]);
+		exit;
 	}
 
 	private function authorizePrivileged(string $targetRole): void
@@ -92,14 +98,14 @@ class ResetPasswordController
 
 		if (!empty($errors)) {
 			$old = $postParams;
-			require '../resources/views/users/reset-password.php';
+			view('users.reset-password', ['old' => $old]);
 			return;
 		}
 
 		if (!$this->user->resetPassword($id, $password)) {
 			$errors['general'] = 'Failed to reset the password.';
 			$old = [];
-			require '../resources/views/users/reset-password.php';
+			view('users.reset-password', ['errors' => $errors, 'old' => $old]);
 			return;
 		}
 

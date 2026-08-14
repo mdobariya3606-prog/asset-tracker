@@ -5,6 +5,7 @@ use App\Controllers\User\EditUserController;
 use App\Controllers\User\ProfileController;
 use App\Controllers\User\ResetPasswordController;
 use App\Controllers\User\SelectUserController;
+use App\Models\Route;
 
 switch ("$method:$route") {
     case 'GET:users':
@@ -44,7 +45,6 @@ switch ("$method:$route") {
         return true;
 
     case 'GET:chart':
-        // require_once __DIR__ . '/../app/Middleware/manager.php';
         require_once __DIR__ . '/../public/testing/chart.php';
         exit;
 }

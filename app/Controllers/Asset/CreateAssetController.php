@@ -21,8 +21,8 @@ class CreateAssetController
 
 	public function store(array $data): void
 	{
-		require_once __DIR__ . '/../../Middleware/auth.php';
-		require_once __DIR__ . '/../../Middleware/manager.php';
+		middleware('auth');
+		middleware('manager');
 
 		// Step 1: Validate input fields first before creating
 		$errors = $this->asset->validate($data);
@@ -80,15 +80,23 @@ class CreateAssetController
 
 	public function create(): void
 	{
-		require_once __DIR__ . '/../../Middleware/auth.php';
-		require_once __DIR__ . '/../../Middleware/manager.php';
+		middleware('auth');
+		middleware('manager');
 
 		$errors = [];
 		$assetData = [];
 		$categories = (new Category($this->conn))->all();
 		$vendors = (new Vendor($this->conn))->all();
 		$statusEnum = $this->asset->statusEnum();
-		require '../resources/views/assets/create.php';
+
+		view('assets.create', [
+			'errors' => $errors,
+			'assetData' => $assetData,
+			'categories' => $categories,
+			'vendors' => $vendors,
+			'statusEnum' => $statusEnum,
+		]);
+		exit;
 	}
 
 	/**
@@ -124,7 +132,7 @@ class CreateAssetController
 			];
 		}
 
-		$storageDir = '../storage/asset_images';
+		$storageDir = 'storage/asset_images';
 		if (!is_dir($storageDir)) {
 			@mkdir($storageDir, 0775, true);
 		}
@@ -162,8 +170,8 @@ class CreateAssetController
 
 	public function edit(int $id): void
 	{
-		require_once __DIR__ . '/../../Middleware/auth.php';
-		require_once __DIR__ . '/../../Middleware/manager.php';
+		middleware('auth');
+		middleware('manager');
 
 		$asset = $this->asset->find($id);
 		if (empty($asset)) {
@@ -177,13 +185,21 @@ class CreateAssetController
 		$statusEnum = $this->asset->statusEnum();
 		$categories = (new Category($this->conn))->all();
 		$vendors = (new Vendor($this->conn))->all();
-		require '../resources/views/assets/edit.php';
+
+		view('assets.edit', [
+			'errors' => $errors,
+			'assetData' => $assetData,
+			'statusEnum' => $statusEnum,
+			'categories' => $categories,
+			'vendors' => $vendors,
+		]);
+		exit;
 	}
 
 	public function update(int $id, array $inputData): void
 	{
-		require_once __DIR__ . '/../../Middleware/auth.php';
-		require_once __DIR__ . '/../../Middleware/manager.php';
+		middleware('auth');
+		middleware('manager');
 
 		$existingAsset = $this->asset->find($id);
 		if (empty($existingAsset)) {
@@ -268,10 +284,10 @@ class CreateAssetController
 
 	public function delete(int $id): void
 	{
-		require_once __DIR__ . '/../../Middleware/auth.php';
-		require_once __DIR__ . '/../../Middleware/manager.php';
+		middleware('auth');
+		middleware('manager');
 
-		$storageDir = '../storage/asset_images';
+		$storageDir = 'storage/asset_images';
 		foreach (glob($storageDir . '/asset_' . $id . '.*') as $existingFile) {
 			@unlink($existingFile);
 		}

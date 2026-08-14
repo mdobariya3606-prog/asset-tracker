@@ -22,7 +22,7 @@ class SelectAssetRequestController
 
 	public function index()
 	{
-		require __DIR__ . '/../../Middleware/auth.php';
+		middleware('auth');
 
 		if ($_SESSION['user_role'] === 'HR' || $_SESSION['user_role'] === 'EMPLOYEE') {
 			$requests = $this->myRequests();
@@ -38,10 +38,10 @@ class SelectAssetRequestController
 
 	public function show(int $id)
 	{
-		require_once __DIR__ . '/../../middleware/auth.php';
+		middleware('auth');
 		$role = strtoupper($_SESSION['user_role'] ?? 'EMPLOYEE');
-		
-		require_once __DIR__ . '/../../middleware/asset.php';
+
+		middleware('asset');
 
 		$dashboardUserRole = $role;
 

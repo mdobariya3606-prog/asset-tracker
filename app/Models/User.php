@@ -400,6 +400,8 @@ class User
 
 	public function export($option = 'pdf', $role = null)
 	{
+		middleware('auth');
+		
 		$sql = "SELECT u.*, d.name AS department_name, des.name AS designation_name
 				FROM users u
 				LEFT JOIN departments d ON u.department_id = d.id

@@ -18,8 +18,8 @@ class CreateDepartmentController
 
 	public function store(array $department)
 	{
-		require_once __DIR__ . '/../../Middleware/auth.php';
-		require_once __DIR__ . '/../../Middleware/admin.php';
+		middleware('auth');
+		middleware('admin');
 
 		$errors = $this->department->validate($department);
 		if (empty($errors)) {
@@ -35,8 +35,8 @@ class CreateDepartmentController
 
 	public function create()
 	{
-		require_once __DIR__ . '/../../Middleware/auth.php';
-		require_once __DIR__ . '/../../Middleware/admin.php';
+		middleware('auth');
+		middleware('admin');
 		
 		view('departments.create');
 	}

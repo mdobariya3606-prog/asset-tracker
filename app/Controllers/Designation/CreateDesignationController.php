@@ -18,8 +18,8 @@ class CreateDesignationController
 
 	public function store(array $designation)
 	{
-		require_once __DIR__ . '/../../Middleware/auth.php';
-		require_once __DIR__ . '/../../Middleware/admin.php';
+		middleware('auth');
+		middleware('admin');
 
 		$errors = $this->designation->validate($designation);
 
@@ -35,8 +35,8 @@ class CreateDesignationController
 
 	public function create()
 	{
-		require_once __DIR__ . '/../../Middleware/auth.php';
-		require_once __DIR__ . '/../../Middleware/admin.php';
+		middleware('auth');
+		middleware('admin');
 
 		view('designations.create');
 		exit;

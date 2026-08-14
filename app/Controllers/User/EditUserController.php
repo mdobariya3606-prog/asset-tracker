@@ -128,11 +128,7 @@ class EditUserController
 
 	public function updateUser(array $getParams, array $postParams)
 	{
-		if (empty($_SESSION['user_id'])) {
-			$_SESSION['login_error'] = 'Please sign in to edit a user.';
-			route('login');
-			exit;
-		}
+		middleware('auth');
 
 		$id = (int)($getParams['id'] ?? 0);
 		$isOwnProfile = $id === (int)$_SESSION['user_id'];
@@ -150,9 +146,6 @@ class EditUserController
 			view(403);
 			exit;
 		}
-
-		// Password changes are handled outside the profile edit form.
-		unset($postParams['password'], $postParams['confirm_password']);
 
 		// Apply role-based parameter restrictions
 		if ($viewerRole === 'HR') {
@@ -221,6 +214,7 @@ class EditUserController
 	{
 		// 1. Pass the file to validate()
 		$errors = $this->user->validate($data, true, $id, $file);
+		$isDeleted = (bool) $data['delete_profile_image'];
 
 		if (!empty($errors)) {
 			return [
@@ -230,15 +224,22 @@ class EditUserController
 			];
 		}
 
+		$uploadDir = __DIR__ . '/../../../storage/profile_images/';
+
 		// 2. Handle image deletion request (if user checked "remove profile picture")
-		if (!empty($data['remove_profile_image'])) {
+		if ($isDeleted) {
 			$data['profile_image'] = null;
-			// Optional: delete old file from disk here
+
+			$user = (new User($this->conn))->find($id)[0];
+			$fileName = $uploadDir . $user['profile_image'];
+
+			if (file_exists($fileName)) {
+				unlink($fileName);
+			}
 		}
 
 		// 3. Handle new image upload
 		if (!empty($file) && isset($file['error']) && $file['error'] === UPLOAD_ERR_OK) {
-			$uploadDir = __DIR__ . '/../../../storage/profile_images/';
 
 			// Ensure directory exists
 			if (!is_dir($uploadDir)) {
@@ -299,7 +300,7 @@ class EditUserController
 			];
 		}
 
-		$storageDir = '../storage/profile_images';
+		$storageDir = 'storage/profile_images';
 		if (!is_dir($storageDir)) {
 			@mkdir($storageDir, 0777, true);
 		}
@@ -333,14 +334,11 @@ class EditUserController
 
 	public function destroy(array $getParams)
 	{
-		if (empty($_SESSION['user_id'])) {
-			$_SESSION['login_error'] = 'Please sign in to delete a user.';
-			route('login');
-			exit;
-		}
+		middleware('auth');
 
 		$id = (int)($getParams['id'] ?? 0);
 		$targetUser = $this->user->find($id)[0] ?? null;
+
 		if ($targetUser === null) {
 			$_SESSION['login_error'] = 'User not found.';
 			route('users');;

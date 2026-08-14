@@ -21,8 +21,8 @@ class CreateUserController
 	public function store(array $postData): void
 	{
 		try {
-			require_once __DIR__ . '/../../Middleware/auth.php';
-			require_once __DIR__ . '/../../Middleware/admin.php';
+			middleware('auth');
+			middleware('admin');
 
 			// Separate file data from post data
 			$file = $_FILES['profile_image'] ?? null;
@@ -45,7 +45,7 @@ class CreateUserController
 					} else {
 						$ext = pathinfo($file['name'], PATHINFO_EXTENSION);
 						$filename = "profile_{$userId}." . strtolower($ext);
-						$dest = __DIR__ . '/../../../storage/profile_images/' . $filename;
+						$dest = __DIR__ . '/../../storage/profile_images/' . $filename;
 						if (!move_uploaded_file($file['tmp_name'], $dest)) {
 							$result['success'] = false;
 							$result['errors']['profile_image'] = 'Failed to move uploaded file.';
@@ -159,9 +159,9 @@ class CreateUserController
 
 	public function create(): void
 	{
-		require_once __DIR__ . '/../../Middleware/auth.php';
-		require_once __DIR__ . '/../../Middleware/admin.php';
-		
+		middleware('auth');
+		middleware('admin');
+
 		$formData = $this->showForm();
 
 		view('users.register', [

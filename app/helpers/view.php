@@ -5,6 +5,7 @@ function view(int|string $viewFile, array $vars = []): void
     $prefix = __DIR__ . '/../../resources/views';
 
     $pages = [
+        'header' => __DIR__ . '/../../resources/views/layouts/header.php',
         'login' => $prefix . '/users/login.php',
 
         403 => $prefix . '/errors/403.php',

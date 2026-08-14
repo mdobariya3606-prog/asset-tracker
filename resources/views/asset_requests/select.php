@@ -6,8 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Assets — AssetTracker</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="../resources/css/style.css">
-    <link rel="stylesheet" href="../resources/css/user.css">
+    <link rel="stylesheet" href="resources/css/style.css">
+    <link rel="stylesheet" href="resources/css/user.css">
 
     <style>
         /* Export Loading Overlay */
@@ -129,6 +129,7 @@
 
         /* Menu Items Animation & Hover */
         .dropdown-menu button {
+            font-family: Inter;
             color: #334155;
             padding: 8px 12px;
             text-decoration: none;
@@ -157,7 +158,7 @@
 
 <body>
     <div class="page">
-        <?php include '../resources/views/layouts/header.php'; ?>
+        <?php view('header'); ?>
 
         <div class="page-header">
             <div>

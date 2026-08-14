@@ -1,12 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= htmlspecialchars($user['name']) ?> - Profile</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        *, *::before, *::after {
+        *,
+        *::before,
+        *::after {
             box-sizing: border-box;
         }
 
@@ -135,7 +138,8 @@
                 grid-template-columns: 1fr;
             }
 
-            .hero, .details {
+            .hero,
+            .details {
                 padding-left: 24px;
                 padding-right: 24px;
             }
@@ -147,46 +151,46 @@
         }
     </style>
 </head>
+
 <body>
-<main class="card">
-    <section class="hero">
-        <?php if (!empty($user['profile_image'])): ?>
-            <div class="avatar"><img class="avatar-image"
-                                     src="../storage/profile_images/<?= htmlspecialchars($user['profile_image']) ?>"
-                                     alt="Profile image"></div>
-        <?php else: ?>
-            <div class="avatar">
-                <?php if (!empty($user['profile_image'])): ?>
-                    <img class="avatar-image"
-                         src="../storage/profile_images/<?= htmlspecialchars($user['profile_image']) ?>"
-                         alt="Profile image">
-                <?php else: ?>
+    <main class="card">
+        <section class="hero">
+            <?php if (!empty($user['profile_image'])):
+                $serverPath = __DIR__ . "/../../../storage/profile_images/{$user['profile_image']}";
+            ?>
+                <div class="avatar"><img class="avatar-image"
+                        src="storage/profile_images/<?= htmlspecialchars($user['profile_image']) ?>?v=<?= filemtime($serverPath) ?>"
+                        alt="Profile image"></div>
+            <?php else: ?>
+                <div class="avatar">
                     <?= strtoupper(substr($user['name'], 0, 1)) ?>
-                <?php endif; ?>
+                </div>
+            <?php endif; ?>
+            <h1><?= htmlspecialchars($user['name']) ?></h1>
+            <p><?= htmlspecialchars($user['email']) ?></p>
+        </section>
+        <section class="details">
+            <div class="detail"><label>Mobile</label><span><?= htmlspecialchars($user['mobile'] ?? 'N/A') ?></span></div>
+            <div class="detail"><label>Role</label><span><?= htmlspecialchars($user['role'] ?? 'EMPLOYEE') ?></span></div>
+            <div class="detail">
+                <label>Department</label><span><?= htmlspecialchars($user['department_name'] ?? 'N/A') ?></span>
             </div>
-        <?php endif; ?>
-        <h1><?= htmlspecialchars($user['name']) ?></h1>
-        <p><?= htmlspecialchars($user['email']) ?></p>
-    </section>
-    <section class="details">
-        <div class="detail"><label>Mobile</label><span><?= htmlspecialchars($user['mobile'] ?? 'N/A') ?></span></div>
-        <div class="detail"><label>Role</label><span><?= htmlspecialchars($user['role'] ?? 'EMPLOYEE') ?></span></div>
-        <div class="detail">
-            <label>Department</label><span><?= htmlspecialchars($user['department_name'] ?? 'N/A') ?></span></div>
-        <div class="detail">
-            <label>Designation</label><span><?= htmlspecialchars($user['designation_name'] ?? 'N/A') ?></span></div>
-    </section>
-    <nav class="actions">
-        <a class="back" href="<?= $_SESSION['back'] ?? 'index.php?route=users' ?>">Back</a>
-        <?php if ($canEditProfile): ?>
-            <a class="edit" href="index.php?route=users/edit&id=<?= (int)$user['id'] ?>">Edit Profile</a>
-        <?php endif; ?>
-        <?php if ($canManageResetOrDelete): ?>
-            <a class="reset" href="index.php?route=users/reset-password&id=<?= (int)$user['id'] ?>">Reset Password</a>
-            <a class="delete" href="index.php?route=users/delete&id=<?= (int)$user['id'] ?>"
-               onclick="return confirm('Are you sure you want to delete this user?');">Delete Profile</a>
-        <?php endif; ?>
-    </nav>
-</main>
+            <div class="detail">
+                <label>Designation</label><span><?= htmlspecialchars($user['designation_name'] ?? 'N/A') ?></span>
+            </div>
+        </section>
+        <nav class="actions">
+            <a class="back" href="<?= $_SESSION['back'] ?? 'index.php?route=users' ?>">Back</a>
+            <?php if ($canEditProfile): ?>
+                <a class="edit" href="index.php?route=users/edit&id=<?= (int)$user['id'] ?>">Edit Profile</a>
+            <?php endif; ?>
+            <?php if ($canManageResetOrDelete): ?>
+                <a class="reset" href="index.php?route=users/reset-password&id=<?= (int)$user['id'] ?>">Reset Password</a>
+                <a class="delete" href="index.php?route=users/delete&id=<?= (int)$user['id'] ?>"
+                    onclick="return confirm('Are you sure you want to delete this user?');">Delete Profile</a>
+            <?php endif; ?>
+        </nav>
+    </main>
 </body>
+
 </html>

@@ -129,12 +129,13 @@ $user = (new User($conn))->find($_SESSION['user_id'])[0];
 
         if (!empty($user)): ?>
             <div class="avatar-badge">
-                <?php if (!empty($user['profile_image'])): ?>
-                    <img src="../storage/profile_images/<?= htmlspecialchars($user['profile_image']) ?>"
+                <?php $serverPath = __DIR__ . "/../../../storage/profile_images/{$user['profile_image']}";
+                if (!empty($user['profile_image'])): ?> 
+                    <img src="storage/profile_images/<?= htmlspecialchars($user['profile_image']) ?>?v=<?= filemtime($serverPath) ?>"
                         alt="<?= htmlspecialchars($user['name']) ?> profile image"
                         style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%; display: block;">
                 <?php else: ?>
-                    <?= strtoupper(substr($user['user_name'], 0, 1)) ?>
+                    <?= strtoupper(substr($user['name'], 0, 1)) ?>
                 <?php endif; ?>
             </div>
             <div style="text-align: left; line-height: 1.2;">

@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Edit User — AssetTracker</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="../resources/css/form.css">
+    <link rel="stylesheet" href="resources/css/form.css">
     <style>
         /* Avatar & Media Controls Styling */
         .avatar-section {
@@ -225,8 +225,11 @@
                 <!-- Profile Avatar Circle Header -->
                 <div class="avatar-section">
                     <div class="avatar-wrapper" id="avatarWrapper" title="<?php echo !empty($user['profile_image']) ? 'Click to view profile photo' : 'Upload photo'; ?>">
-                        <?php if (!empty($user['profile_image'])): ?>
-                            <img src="../storage/profile_images/<?= htmlspecialchars($user['profile_image']) ?>" id="avatarImage" alt="Profile image">
+                        <?php
+                        $serverPath = __DIR__ . "/../../../storage/profile_images/{$user['profile_image']}";
+                        
+                        if (!empty($user['profile_image'])): ?>
+                            <img src="storage/profile_images/<?= htmlspecialchars($user['profile_image']) ?>?v=<?= filemtime($serverPath) ?>" id="avatarImage" alt="Profile image">
                             <div class="avatar-overlay">
                                 <svg viewBox="0 0 24 24">
                                     <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />

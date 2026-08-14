@@ -337,6 +337,8 @@ class Asset
 
 	public function export($option = 'pdf')
 	{
+		middleware('auth');
+		
 		$stmt = $this->conn->query("
 			SELECT a.*,
 				c.name as category_name, 

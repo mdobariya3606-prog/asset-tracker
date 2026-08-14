@@ -1,13 +1,13 @@
 <?php
 
-require_once '../vendor/autoload.php';
+require_once __DIR__ . '/../../../vendor/autoload.php';
 
 use Dompdf\Dompdf;
 
 // Fetch requests here if they are not already available.
 // $requests = ...
 
-$css = file_get_contents('../resources/css/pdf.css');
+$css = file_get_contents('resources/css/pdf.css');
 
 $html = '
 <!DOCTYPE html>

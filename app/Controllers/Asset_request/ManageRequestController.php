@@ -23,7 +23,7 @@ class ManageRequestController
 	{
 		$role = $_SESSION['user_role'] ?? 'EMPLOYEE';
 
-		require_once '../app/middleware/manager.php';
+		middleware('manager');
 
 		$assetRequest = $this->assetRequestModel->findOrFail($assetRequestId);
 
@@ -119,8 +119,8 @@ class ManageRequestController
 
 	public function cancel()
 	{
-		require_once __DIR__ . '/../../Middleware/auth.php';
-
+		middleware('auth');
+		
 		if (empty($_GET['id']) || !isset($_GET['id'])) {
 			view(404);
 			exit;

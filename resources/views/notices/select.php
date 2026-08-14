@@ -14,8 +14,8 @@ $canAdd = $role !== 'EMPLOYEE';
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
         rel="stylesheet">
 
-    <link rel="stylesheet" href="../resources/css/style.css">
-    <link rel="stylesheet" href="../resources/css/user.css">
+    <link rel="stylesheet" href="resources/css/style.css">
+    <link rel="stylesheet" href="resources/css/user.css">
 
     <style>
         /* ── Notice Confirmation Button ── */
@@ -158,7 +158,7 @@ $canAdd = $role !== 'EMPLOYEE';
 
     <div class="page">
 
-        <?php include '../resources/views/layouts/header.php'; ?>
+        <?php view('header'); ?>
 
         <!-- Success Message Banner -->
         <?php

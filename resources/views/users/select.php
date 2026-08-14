@@ -31,7 +31,7 @@ function getSortIndicator(string $column, string $currentSort, string $currentOr
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Users Dashboard — AssetTracker</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="../resources/css/user.css">
+    <link rel="stylesheet" href="resources/css/user.css">
 
     <style>
         /* Export Loading Overlay */
@@ -185,7 +185,7 @@ function getSortIndicator(string $column, string $currentSort, string $currentOr
 
     <div class="page">
 
-        <?php include '../resources/views/layouts/header.php'; ?>
+        <?php view('header'); ?>
 
         <!-- Success Message Banner -->
         <?php
@@ -395,8 +395,9 @@ function getSortIndicator(string $column, string $currentSort, string $currentOr
                                         <a class="profile-link" href="index.php?route=users/profile&id=<?= $user['id'] ?>">
                                             <div class="user-info">
                                                 <div class="user-avatar">
-                                                    <?php if (!empty($user['profile_image'])): ?>
-                                                        <img src="../storage/profile_images/<?= htmlspecialchars($user['profile_image']) ?>"
+                                                    <?php if (!empty($user['profile_image'])): 
+                                                        $serverPath = __DIR__ . "/../../../storage/profile_images/{$user['profile_image']}"; ?>
+                                                        <img src="storage/profile_images/<?= htmlspecialchars($user['profile_image']) ?>?v=<?= filemtime($serverPath) ?>"
                                                             alt="<?= htmlspecialchars($user['name']) ?> profile image">
                                                     <?php else: ?>
                                                         <?= strtoupper(substr($user['name'], 0, 1)) ?>

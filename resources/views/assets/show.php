@@ -216,7 +216,7 @@
             <div class="avatar">
                 <?php if (!empty($asset['image'])): ?>
                     <img class="avatar-image"
-                        src="../<?= htmlspecialchars($asset['image']) ?>"
+                        src="<?= htmlspecialchars($asset['image']) ?>"
                         alt="<?= htmlspecialchars($asset['name'] ?? 'Asset image') ?>">
                 <?php else: ?>
                     <?= strtoupper(substr($asset['name'] ?? 'A', 0, 1)) ?>

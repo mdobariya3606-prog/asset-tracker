@@ -19,7 +19,7 @@ class SelectAssetController
 
 	public function index(): void
 	{
-		require_once __DIR__ . '/../../Middleware/auth.php';
+		middleware('auth');
 
 		// Render dashboard identity and access controls from the latest database
 		// record instead of relying on values saved at sign-in.
@@ -39,7 +39,7 @@ class SelectAssetController
 
 	public function show(int $id): void
 	{
-		require_once __DIR__ . '/../../Middleware/auth.php';
+		middleware('auth');
 
 		$role = strtoupper($_SESSION['user_role'] ?? 'EMPLOYEE');
 		$dashboardUserRole = $role;

@@ -555,7 +555,7 @@
             }
         }
     </style>
-    <link rel="stylesheet" href="../resources/css/form.css">
+    <link rel="stylesheet" href="resources/css/form.css">
 </head>
 
 <body>
