@@ -79,19 +79,29 @@ body::after {
 }
 
 .card-header .icon {
-    width: 56px;
-    height: 56px;
-    background: linear-gradient(135deg, #3b82f6, #06b6d4);
-    border-radius: 16px;
+    width: 48px;
+    height: 48px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     margin-bottom: 16px;
-    box-shadow: 0 4px 16px rgba(59, 130, 246, 0.3);
-    overflow: hidden;
+    color: #475569;
+    background: #f1f5f9;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
 }
 
 .card-header .icon svg {
+    width: 24px;
+    height: 24px;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+/* .card-header .icon svg {
     width: 28px;
     height: 28px;
     fill: none;
@@ -99,7 +109,7 @@ body::after {
     stroke-width: 2;
     stroke-linecap: round;
     stroke-linejoin: round;
-}
+} */
 
 .card-header .icon img {
     width: 100%;
@@ -365,6 +375,47 @@ body::after {
     cursor: pointer;
     text-decoration: none;
     margin: 0;
+}
+
+.input-icon {
+    width: 18px;
+    height: 18px;
+    color: #64748b;
+    stroke-width: 1.8;
+}
+
+.reset-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 12px 16px;
+    border: 1px solid #cbd5e1;
+    border-radius: 10px;
+    background: #fff;
+    color: #475569;
+    font: 600 14px Inter, sans-serif;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background-color 0.2s, border-color 0.2s, color 0.2s;
+}
+
+.btn-secondary:hover {
+    background: #f8fafc;
+    border-color: #94a3b8;
+    color: #334155;
+}
+
+@media (max-width: 480px) {
+    .reset-actions {
+        grid-template-columns: 1fr;
+    }
 }
 
 /* Submit Button Specifics */
