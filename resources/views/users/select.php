@@ -182,7 +182,6 @@ function getSortIndicator(string $column, string $currentSort, string $currentOr
 </head>
 
 <body>
-
     <div class="page">
 
         <?php view('header'); ?>
@@ -383,12 +382,6 @@ function getSortIndicator(string $column, string $currentSort, string $currentOr
                                         Designation<?= getSortIndicator('designation', $sort, $order) ?>
                                     </a>
                                 </th>
-                                <th>
-                                    <a href="<?= getSortUrl('role', $sort, $order, $search, $page, $departmentId, $designationId) ?>"
-                                        style="text-decoration: none; color: inherit; display: inline-flex; align-items: center; gap: 4px;">
-                                        Role<?= getSortIndicator('role', $sort, $order) ?>
-                                    </a>
-                                </th>
                             </tr>
                         </thead>
                         <tbody>
@@ -399,7 +392,7 @@ function getSortIndicator(string $column, string $currentSort, string $currentOr
                                         <a class="profile-link" href="index.php?route=users/profile&id=<?= $user['id'] ?>">
                                             <div class="user-info">
                                                 <div class="user-avatar">
-                                                    <?php if (!empty($user['profile_image'])): 
+                                                    <?php if (!empty($user['profile_image'])):
                                                         $serverPath = __DIR__ . "/../../../storage/profile_images/{$user['profile_image']}"; ?>
                                                         <img src="storage/profile_images/<?= htmlspecialchars($user['profile_image']) ?>?v=<?= filemtime($serverPath) ?>"
                                                             alt="<?= htmlspecialchars($user['name']) ?> profile image">
@@ -425,11 +418,6 @@ function getSortIndicator(string $column, string $currentSort, string $currentOr
                                     <td class="user-designation">
                                         <span class="badge badge-desig">
                                             <?= htmlspecialchars($user['designation_name'] ?? 'N/A') ?>
-                                        </span>
-                                    </td>
-                                    <td>
-                                        <span class="badge badge-role-<?= strtolower($user['role'] ?? 'employee') ?>">
-                                            <?= htmlspecialchars($user['role'] ?? 'EMPLOYEE') ?>
                                         </span>
                                     </td>
                                 </tr>
@@ -663,6 +651,10 @@ function getSortIndicator(string $column, string $currentSort, string $currentOr
         <div id="exportLoaderText" style="font-size: 14px; font-weight: 600;">Generating report...</div>
     </div>
 
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        lucide.createIcons();
+    </script>
 </body>
 
 </html>

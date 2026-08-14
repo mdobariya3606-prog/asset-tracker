@@ -227,7 +227,7 @@
                     <div class="avatar-wrapper" id="avatarWrapper" title="<?php echo !empty($user['profile_image']) ? 'Click to view profile photo' : 'Upload photo'; ?>">
                         <?php
                         $serverPath = __DIR__ . "/../../../storage/profile_images/{$user['profile_image']}";
-                        
+
                         if (!empty($user['profile_image'])): ?>
                             <img src="storage/profile_images/<?= htmlspecialchars($user['profile_image']) ?>?v=<?= filemtime($serverPath) ?>" id="avatarImage" alt="Profile image">
                             <div class="avatar-overlay">
@@ -765,6 +765,10 @@
                 }
             });
         });
+    </script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        lucide.createIcons();
     </script>
 </body>
 
