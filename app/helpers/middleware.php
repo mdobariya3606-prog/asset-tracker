@@ -1,7 +1,11 @@
 <?php
 
+use App\Config\Database;
+
 function middleware(string $middleware, array $vars = []): void
 {
+    $conn = (new Database())->getConnection();
+    
     $prefix = __DIR__ . '/../Middleware';
 
     $middlewares = [
