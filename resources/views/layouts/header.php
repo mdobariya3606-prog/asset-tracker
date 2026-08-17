@@ -240,7 +240,7 @@
             overflow-x: auto;
             overflow-y: visible;
             white-space: nowrap;
-            padding: 4px 2px 8px;
+            padding: 8px 8px 10px;
             margin-bottom: 12px;
             scrollbar-width: none;
             -ms-overflow-style: none;
@@ -252,12 +252,41 @@
         }
 
         .tab-link {
+            position: relative;
             flex: 0 0 auto;
             white-space: nowrap;
         }
 
         .tab-label {
+            display: inline-flex;
+            align-items: center;
             white-space: nowrap;
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -7px;
+            right: -10px;
+
+            min-width: 15px;
+            height: 15px;
+            padding: 0 4px;
+
+            border-radius: 999px;
+            background: #25D366;
+            color: #fff;
+
+            font-size: 8px;
+            font-weight: 700;
+            line-height: 15px;
+            text-align: center;
+
+            box-sizing: border-box;
+            z-index: 10;
+        }
+
+        .notification-badge.notice {
+            background: #ef4444;
         }
     }
 
