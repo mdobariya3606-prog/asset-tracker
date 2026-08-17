@@ -91,4 +91,21 @@ class SelectUserController
 			'message' => $message ?? null,
 		]);
 	}
+
+	public function trash()
+	{
+		$stmt = $this->conn->query('
+			select u.id, u.name, u.email, dep.name as department, des.name as designation
+			from users u
+
+			join departments dep
+			on u.department_id = dep.id
+			join designations des
+			on u.designation_id = des.id
+
+			where deleted_at is not null
+		');
+		$users = $stmt->fetchAll(PDO::FETCH_ASSOC);
+		view('users.deleted', ['users' => $users]);
+	}
 }

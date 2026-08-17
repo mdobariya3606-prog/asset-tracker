@@ -271,9 +271,9 @@ function getSortIndicator(string $column, string $currentSort, string $currentOr
                             Export Excel
                         </button>
 
-                        <button type="button" onclick="printTable()">
+                        <button type="button" onclick="deletedUsers()">
                             <span>🖨️</span>
-                            Print
+                            Deleted users
                         </button>
 
                     </div>
@@ -537,6 +537,10 @@ function getSortIndicator(string $column, string $currentSort, string $currentOr
 
         function registerUser() {
             window.location.href = 'index.php?route=users/create';
+        }
+
+        function deletedUsers() {
+            window.location.href = 'index.php?route=users/deleted';
         }
 
         function exportPDF() {

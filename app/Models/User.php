@@ -80,9 +80,9 @@ class User
 		return $stmt->execute($params);
 	}
 
-	public function delete($id): bool
+	public function softDelete($id): bool
 	{
-		$stmt = $this->conn->prepare('DELETE FROM users WHERE id = ?');
+		$stmt = $this->conn->prepare('UPDATE users SET deleted_at = now() WHERE id = ?');
 		return $stmt->execute([$id]);
 	}
 
@@ -289,6 +289,7 @@ class User
             FROM users u
             LEFT JOIN departments d ON u.department_id = d.id
             LEFT JOIN designations des ON u.designation_id = des.id
+			WHERE u.deleted_at IS NULL 
         ";
 		$whereClauses = [];
 		$params = [];
@@ -306,7 +307,7 @@ class User
 			$params[] = $designationId;
 		}
 		if (!empty($whereClauses)) {
-			$sql .= ' WHERE ' . implode(' AND ', $whereClauses);
+			$sql .= ' AND ' . implode(' AND ', $whereClauses);
 		}
 		$sql .= " ORDER BY {$orderByColumn} {$orderDirection} LIMIT ? OFFSET ?";
 		$stmt = $this->conn->prepare($sql);
