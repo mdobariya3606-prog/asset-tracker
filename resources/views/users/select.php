@@ -319,7 +319,7 @@ function getSortIndicator(string $column, string $currentSort, string $currentOr
                 <?php if ($designationId !== null && isset($activeDesigName)): ?>
                     <span class="badge"
                         style="background: #ecfdf5; color: #10b981; padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; border: 1px solid rgba(16, 185, 129, 0.2); display: inline-flex; align-items: center; gap: 8px;">
-                        
+
                         Designation: <?= htmlspecialchars($activeDesigName) ?>
                         <a href="index.php?route=users&search=<?= urlencode($search) ?><?php if ($departmentId !== null) echo '&department_id=' . $departmentId; ?>"
                             style="color: #10b981; text-decoration: none; font-size: 15px; font-weight: bold; line-height: 1; cursor: pointer;">&times;</a>

@@ -59,7 +59,13 @@ class RequestAssetController
 			exit;
 		}
 
-		$stmt = $this->conn->prepare('select id from asset_requests where user_id = ? and asset_id = ?');
+		$stmt = $this->conn->prepare('
+		SELECT id FROM asset_requests 
+		WHERE user_id = ? 
+			AND asset_id = ? 
+			AND status != "CANCELLED" 
+			AND status != "RETURNED"
+			AND status != "REJECTED"');
 
 		$stmt->execute([$_SESSION['user_id'], $assetId]);
 

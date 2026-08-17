@@ -206,7 +206,7 @@ class Asset
 		}
 
 		$columns = $this->getTableColumns('assets');
-		$allowedFields = ['name', 'category_id', 'brand', 'model', 'serial_number', 'purchase_date', 'warranty_date', 'vendor_id', 'cost', 'status', 'image'];
+		$allowedFields = ['name', 'category_id', 'brand', 'model', 'serial_number', 'purchase_date', 'warranty_date', 'vendor_id', 'cost', 'status', 'image', 'assignee_id'];
 		$updateData = [];
 
 		foreach ($allowedFields as $field) {
