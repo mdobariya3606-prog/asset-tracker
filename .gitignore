@@ -4,7 +4,6 @@
 /public/uploads/*
 !/public/uploads/.gitkeep
 /public/testing/
-storage/
 logs/
 *.png
 *.jpg
