@@ -102,10 +102,8 @@ class ManageRequestController
 			(new Asset($this->conn))->updateStatus($assetRequest['asset_id'], 'ASSIGNED', $assetRequest['user_id']);
 		} else if ($updatedStatus === 'REJECTED') {
 			sendNotice(11, $assetRequest['user_id']);
-			
 		} elseif ($updatedStatus === 'ISSUED') {
 			sendNotice(12, $assetRequest['user_id']);
-
 		} elseif ($updatedStatus === 'RETURNED') {
 
 			sendNotice(15, $assetRequest['user_id']);
@@ -120,17 +118,18 @@ class ManageRequestController
 	public function cancel()
 	{
 		middleware('auth');
-		
+
 		if (empty($_GET['id']) || !isset($_GET['id'])) {
 			view(404);
 			exit;
 		}
 
 		$id = $_GET['id'];
-
 		$assetRequest = $this->assetRequestModel->findOrFail($id);
 
-		middleware('assetOwner');
+		middleware('assetOwner', [
+			'assetRequest' => $assetRequest,
+		]);
 
 		$asset = $this->assetModel->findOrFail($assetRequest['asset_id']);
 
@@ -156,12 +155,19 @@ class ManageRequestController
 		if ($requestStatus === 'APPROVED') {
 
 			$asset['status'] = 'AVAILABLE';
+			$asset['assigne'] = null;
 			$this->assetModel->update($asset['id'], $asset);
+			$this->removeUserFromAsset($asset['id']);
 		}
 
 		$_SESSION['success'] = 'Request cancelled successfully';
 		route('assets/requests');
 		exit;
+	}
+
+	private function removeUserFromAsset(int $assetId) {
+		$stmt = $this->conn->prepare('UPDATE assets set user_id = null where id = ?');
+		$stmt->execute([$assetId]);
 	}
 
 	private function validate(array $assetRequest): array
@@ -224,7 +230,7 @@ class ManageRequestController
 		$assetRequestStatus = $assetRequest['status'];
 		$inputStatus = $input['status'];
 
-		switch ($assetRequestStatus) { 
+		switch ($assetRequestStatus) {
 			//				can approve/reject only
 			case 'PENDING':
 				switch ($inputStatus) {

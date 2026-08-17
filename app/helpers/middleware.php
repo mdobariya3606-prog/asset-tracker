@@ -1,6 +1,6 @@
 <?php
 
-function middleware(string $middleware): void
+function middleware(string $middleware, array $vars = []): void
 {
     $prefix = __DIR__ . '/../Middleware';
 
@@ -19,6 +19,9 @@ function middleware(string $middleware): void
         view(403);
         exit;
     }
+    
+    // extract($vars, 1);
+    extract($vars, EXTR_SKIP);
 
     require_once $requiredMiddleware;
 }
