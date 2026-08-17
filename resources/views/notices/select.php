@@ -389,8 +389,9 @@ $canAdd = $role !== 'EMPLOYEE';
                                 <!-- Title -->
 
                                 <td
+                                    class='notice-title'
                                     style="
-                                        color: var(--blue);
+                                        color: var(<?= !$notice['confirmed_at'] ? '--blue' : '--slate-500'; ?>);
                                         text-decoration: none;
                                         font-weight: 600;
                                     ">
@@ -490,8 +491,8 @@ $canAdd = $role !== 'EMPLOYEE';
 
             event.stopPropagation();
 
-            const dropdown = document.getElementById('noticeDropdown');
-
+            const dropdown = document.getElementById('');
+            noticeDropdown
             if (dropdown) {
                 dropdown.classList.toggle('active');
             }
@@ -556,6 +557,13 @@ $canAdd = $role !== 'EMPLOYEE';
                                 'Failed to confirm notice.'
                             );
 
+                        }
+
+                        // Change title color after successful confirmation
+                        
+                        const title = button.closest('tr').querySelector('.notice-title');
+                        if (title) {
+                            title.style.color = 'var(--slate-500)';
                         }
 
 

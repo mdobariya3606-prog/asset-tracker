@@ -96,19 +96,17 @@ class ManageRequestController
 
 		if ($updatedStatus === 'APPROVED') {
 
-			sendNotice(10, $assetRequest['user_id']);
-
 			(new AuditLog($this->conn))->log('ASSET_ASSIGNMENT', $assetRequest['asset_id']);
 			(new Asset($this->conn))->updateStatus($assetRequest['asset_id'], 'ASSIGNED', $assetRequest['user_id']);
-		} else if ($updatedStatus === 'REJECTED') {
-			sendNotice(11, $assetRequest['user_id']);
-		} elseif ($updatedStatus === 'ISSUED') {
-			sendNotice(12, $assetRequest['user_id']);
+
 		} elseif ($updatedStatus === 'RETURNED') {
 
-			sendNotice(15, $assetRequest['user_id']);
 			(new AuditLog($this->conn))->log('ASSET_RETURN', $assetRequest['asset_id']);
 			(new Asset($this->conn))->updateStatus($assetRequest['asset_id'], 'AVAILABLE');
+			
+		} elseif ($updatedStatus === 'REJECTED') {
+
+			sendStatusNotice('rejected', $assetRequest);
 		}
 
 		$_SESSION['success'] = 'Asset request updated successfully.';
@@ -165,7 +163,8 @@ class ManageRequestController
 		exit;
 	}
 
-	private function removeUserFromAsset(int $assetId) {
+	private function removeUserFromAsset(int $assetId)
+	{
 		$stmt = $this->conn->prepare('UPDATE assets set user_id = null where id = ?');
 		$stmt->execute([$assetId]);
 	}

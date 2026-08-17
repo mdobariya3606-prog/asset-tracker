@@ -18,13 +18,13 @@ class RequestAssetController
 		$this->assetRequestModel = new AssetRequest($conn);
 	}
 
-	public function store($asset_id, $assetRequest)
+	public function store(int $asset_id, array $assetRequest)
 	{
 		$this->validateRequest();
 
 		$asset = $this->assetModel->find($asset_id);
 		if (empty($asset)) {
-			$errors['reason'] = "Asset does not exists";
+			$errors['reason'] = "Asset does not exists.";
 		}
 
 		$errors = $this->assetRequestModel->validate($assetRequest);
@@ -39,7 +39,6 @@ class RequestAssetController
 				'due_date' => $assetRequest['due_date'],
 			]);
 
-			sendNotice(7, $_SESSION['user_id']);
 			$_SESSION['success'] = "Request sent successfully";
 			route('assets');
 		}
