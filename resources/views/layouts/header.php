@@ -442,7 +442,7 @@ $user = (new User($conn))->find($_SESSION['user_id'])[0];
 
     <a
         href="index.php?route=users"
-        class="tab-link <?= $route === 'users' ? 'active' : '' ?>">
+        class="tab-link <?= ($route === 'users' || $route === 'users/deleted') ? 'active' : '' ?>">
         Users
     </a>
 

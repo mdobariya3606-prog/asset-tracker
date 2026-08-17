@@ -8,26 +8,26 @@ use PDO;
 
 class AssetRequest
 {
-	private \PDO $conn;
+	private PDO $conn;
 	private Asset $assetModel;
 
-	public function __construct(\PDO $conn)
+	public function __construct(PDO $conn)
 	{
 		$this->conn = $conn;
 		$this->assetModel = new Asset($conn);
 	}
 
-	public function create($id)
+	public function create(int $id)
 	{
-		$isAlreadyRequested = (new SelectAssetController($this->conn))->isAlreadyRequested();
-		if ($isAlreadyRequested) {
-			view(403);
-			exit;
-		}
-
 		if (!$this->assetModel->isAvailable($id)) {
 			$_SESSION['general'] = 'Asset #' . $id . ' is not available for request.';
 			route('assets');
+			exit;
+		}
+		
+		$isAlreadyRequested = (new SelectAssetController($this->conn))->isAlreadyRequested();
+		if ($isAlreadyRequested) {
+			view(403);
 			exit;
 		}
 
@@ -47,7 +47,7 @@ class AssetRequest
 		return $assetRequest;
 	}
 
-	public function validate($assetRequest): array
+	public function validate(array $assetRequest): array
 	{
 		$errors = [];
 

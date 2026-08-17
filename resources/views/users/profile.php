@@ -216,9 +216,9 @@
 
             <?php else : ?>
                 <a class="delete"
-                    href="index.php?route=users/delete&id=<?= (int)$user['id'] ?>"
-                    onclick="return confirm('Are you sure you want to delete this user?');">
-                    Restore Profile
+                    href="index.php?route=users/restore&id=<?= (int)$user['id'] ?>"
+                    onclick="return confirm('Are you sure you want to restore back this user?');">
+                    Restore User
                 </a>
             <?php endif; ?>
         </nav>

@@ -5,6 +5,7 @@ use App\Controllers\User\EditUserController;
 use App\Controllers\User\ProfileController;
 use App\Controllers\User\ResetPasswordController;
 use App\Controllers\User\SelectUserController;
+use App\Controllers\User\UserTrashController;
 use App\Models\Route;
 
 switch ("$method:$route") {
@@ -13,7 +14,11 @@ switch ("$method:$route") {
         return true;
 
     case 'GET:users/deleted':
-        (new SelectUserController($conn))->trash();
+        (new UserTrashController($conn))->trash();
+        return true;
+
+    case 'GET:users/restore':
+        (new UserTrashController($conn))->restore($_GET['id']);
         return true;
 
     case 'GET:users/create':
