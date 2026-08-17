@@ -26,7 +26,7 @@
 
         .card {
             width: min(100%, 720px);
-            overflow: hidden;
+            overflow: visible;
             background: #fff;
             border: 1px solid #e2e8f0;
             border-radius: 22px;
@@ -206,6 +206,54 @@
                 padding-right: 24px;
             }
         }
+
+        .document-dropdown {
+            position: relative;
+            flex: 1 1 140px;
+        }
+
+        .document-dropdown summary {
+            padding: 12px 16px;
+            border-radius: 10px;
+            color: #1d4ed8;
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            font-size: 13px;
+            font-weight: 600;
+            text-align: center;
+            cursor: pointer;
+            list-style: none;
+        }
+
+        .document-dropdown summary::-webkit-details-marker {
+            display: none;
+        }
+
+        .document-menu {
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: calc(100% + 6px);
+            z-index: 10;
+            overflow: hidden;
+            background: #fff;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            box-shadow: 0 8px 20px rgba(15, 23, 42, .12);
+        }
+
+        .document-menu a {
+            display: block;
+            padding: 11px 14px;
+            color: #1e293b;
+            font-size: 13px;
+            font-weight: 500;
+            text-decoration: none;
+        }
+
+        .document-menu a:hover {
+            background: #f1f5f9;
+        }
     </style>
 </head>
 
@@ -222,44 +270,54 @@
                     <?= strtoupper(substr($asset['name'] ?? 'A', 0, 1)) ?>
                 <?php endif; ?>
             </div>
+
             <h1><?= htmlspecialchars($asset['name'] ?? '') ?></h1>
             <p>Asset ID: <?= htmlspecialchars($asset['id'] ?? '') ?></p>
             <?php $status = strtolower((string)($asset['status'] ?? '')); ?>
             <span class="status-badge status-<?= htmlspecialchars($status === '' ? 'available' : $status) ?>"><?= htmlspecialchars($asset['status'] ?? '') ?></span>
         </section>
+
         <section class="details">
             <div class="detail">
                 <label>Category</label>
                 <span><?= htmlspecialchars($asset['category_name'] ?? 'N/A') ?></span>
             </div>
+
             <div class="detail">
                 <label>Brand</label>
                 <span><?= htmlspecialchars($asset['brand'] ?? 'N/A') ?></span>
             </div>
+
             <div class="detail">
                 <label>Model</label>
                 <span><?= htmlspecialchars($asset['model'] ?? 'N/A') ?></span>
             </div>
+
             <div class="detail">
                 <label>Serial Number</label>
                 <span><?= htmlspecialchars($asset['serial_number'] ?? 'N/A') ?></span>
             </div>
+
             <div class="detail">
                 <label>Purchase Date</label>
                 <span><?= htmlspecialchars($asset['purchase_date'] ?? 'N/A') ?></span>
             </div>
+
             <div class="detail">
                 <label>Warranty Date</label>
                 <span><?= htmlspecialchars($asset['warranty_date'] ?? 'N/A') ?></span>
             </div>
+
             <div class="detail">
                 <label>Vendor</label>
                 <span><?= htmlspecialchars($asset['vendor_name'] ?? 'N/A') ?></span>
             </div>
+
             <div class="detail">
                 <label>Cost</label>
                 <span><?= htmlspecialchars($asset['cost'] ?? 'N/A') ?></span>
             </div>
+
             <div class="detail">
                 <label>Assignee</label>
                 <span>
@@ -275,6 +333,7 @@
                 </span>
             </div>
         </section>
+
         <nav class="actions">
             <a class="back" href="index.php?route=assets">Back</a>
 
@@ -289,6 +348,20 @@
                     <a class="request" href="index.php?route=assets/request&id=<?= (int)$asset['id'] ?>">Request Asset</a>
                 <?php endif; ?>
             <?php endif; ?>
+
+            <details class="document-dropdown">
+                <summary>Documents</summary>
+
+                <div class="document-menu">
+                    <a href="index.php?route=assets/invoice&id=<?= (int)$asset['id'] ?>">
+                        Invoice
+                    </a>
+
+                    <a href="index.php?route=assets/warranty&id=<?= (int)$asset['id'] ?>">
+                        Warranty Card
+                    </a>
+                </div>
+            </details>
         </nav>
     </main>
 </body>

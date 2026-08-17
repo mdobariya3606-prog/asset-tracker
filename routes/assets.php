@@ -2,6 +2,7 @@
 
 use App\Controllers\Asset\CreateAssetController;
 use App\Controllers\Asset\SelectAssetController;
+use App\Models\Asset;
 
 switch ("$method:$route") {
     case 'GET:assets':
@@ -30,6 +31,14 @@ switch ("$method:$route") {
 
     case 'GET:assets/delete':
         (new CreateAssetController($conn))->delete((int)($_GET['id'] ?? 0));
+        return true;
+
+    case 'GET:assets/invoice':
+        (new Asset($conn))->print($_GET['id'], 'invoice');
+        return true;
+
+    case 'GET:assets/warranty':
+        (new Asset($conn))->print($_GET['id'], 'warranty');
         return true;
 }
 
