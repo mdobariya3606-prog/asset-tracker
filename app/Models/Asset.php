@@ -91,7 +91,7 @@ class Asset
 			if (($normalized[$field] ?? '') === '') {
 				$errors[$field] = ucfirst(str_replace('_', ' ', $field)) . ' is required.';
 			}
-		}
+		}	
 
 		if (($normalized['name'] ?? '') !== '' && mb_strlen($normalized['name']) > 150) {
 			$errors['name'] = 'Asset name must not exceed 150 characters.';
@@ -368,8 +368,10 @@ class Asset
 		exit;
 	}
 
-	public function print($id, $type = 'invoice')
+	public function print($type = 'invoice')
 	{
+		middleware('auth');
+
 		$assetId = (int) $_GET['id'] ?? 1;
 
 		$asset = $this->find($assetId);
@@ -435,7 +437,7 @@ class Asset
 		$subtotal = number_format($subtotal, 2);
 		$total = number_format($total, 2);
 		$gst = number_format($gst, 2);
-
+	
 		$html = <<<HTML
 <!DOCTYPE html>
 <html>
@@ -604,12 +606,12 @@ class Asset
 </html>
 HTML;
 
-		$this->outputPdf($html, 'asset-invoice-' . $invoiceNumber . '.pdf');
+		$this->outputPdf($html, 'Asset-Invoice-' . $invoiceNumber . '.pdf');
 	}
 
 	private function warranty(array $data): void
 	{
-		$company      = htmlspecialchars($data['company'] ?? 'Your Company');
+		$company      = htmlspecialchars($data['company'] ?? 'DayDreamSoft PVT LTD');
 		$brand        = htmlspecialchars($data['brand'] ?? 'N/A');
 		$assetName    = htmlspecialchars($data['asset_name'] ?? 'N/A');
 		$model        = htmlspecialchars($data['model'] ?? 'N/A');

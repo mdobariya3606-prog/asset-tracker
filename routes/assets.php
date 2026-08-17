@@ -34,11 +34,11 @@ switch ("$method:$route") {
         return true;
 
     case 'GET:assets/invoice':
-        (new Asset($conn))->print($_GET['id'], 'invoice');
+        (new Asset($conn))->print('invoice');
         return true;
 
     case 'GET:assets/warranty':
-        (new Asset($conn))->print($_GET['id'], 'warranty');
+        (new Asset($conn))->print('warranty');
         return true;
 }
 
