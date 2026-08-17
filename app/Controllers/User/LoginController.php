@@ -126,7 +126,7 @@ class LoginController
 
 		// 4) Find user and verify password (generic error to prevent enumeration)
 		$user = $this->user->findByEmail($email);
-		if (!$user || !password_verify($password, $user['password'])) {
+		if (!$user || $user['deleted_at'] || !password_verify($password, $user['password'])) {
 			// Increment failed attempts on both keys
 			$this->limiter->hit($throttleComboKey, 60);
 			$this->limiter->hit($throttleIpKey, 60);

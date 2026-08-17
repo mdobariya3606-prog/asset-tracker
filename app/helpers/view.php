@@ -13,6 +13,7 @@ function view(int|string $viewFile, array $vars = []): void
         404 => $prefix . '/errors/404.php',
         500 => $prefix . '/errors/500.php',
 
+        'users.deleted' => $prefix . '/users/deleted.php',
         'users.edit' => $prefix . '/users/edit.php',
         'users.profile' => $prefix . '/users/profile.php',
         'users.register' => $prefix . '/users/register.php',

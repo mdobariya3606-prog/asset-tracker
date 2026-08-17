@@ -334,7 +334,7 @@ class EditUserController
 
 	public function destroy(array $getParams)
 	{
-		middleware('auth');
+		middleware('hr');
 
 		$id = (int)($getParams['id'] ?? 0);
 		$targetUser = $this->user->find($id)[0] ?? null;
@@ -352,7 +352,7 @@ class EditUserController
 			exit;
 		}
 
-		if ($this->delete($id)) {
+		if ($this->softDelete($id)) {
 			$_SESSION['success'] = 'User deleted successfully!';
 		} else {
 			$_SESSION['login_error'] = 'Failed to delete user.';
@@ -387,8 +387,8 @@ class EditUserController
 	 * @param int $id
 	 * @return bool
 	 */
-	public function delete(int $id): bool
+	public function softDelete(int $id): bool
 	{
-		return $this->user->delete($id);
+		return $this->user->softDelete($id);
 	}
 }

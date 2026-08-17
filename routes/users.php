@@ -12,6 +12,10 @@ switch ("$method:$route") {
         (new SelectUserController($conn))->index($_GET);
         return true;
 
+    case 'GET:users/deleted':
+        (new SelectUserController($conn))->trash();
+        return true;
+
     case 'GET:users/create':
         (new CreateUserController($conn))->create();
         return true;

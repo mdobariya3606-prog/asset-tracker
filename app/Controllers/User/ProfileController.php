@@ -16,11 +16,7 @@ class ProfileController
 
 	public function show(array $getParams): void
 	{
-		if (empty($_SESSION['user_id'])) {
-			$_SESSION['login_error'] = 'Please sign in to view a user profile.';
-			route('login');
-			exit;
-		}
+		middleware('auth');
 
 		$viewerRole = strtoupper($_SESSION['user_role'] ?? 'EMPLOYEE');
 
@@ -34,6 +30,8 @@ class ProfileController
 
 		$targetRole = strtoupper($user['role'] ?? 'EMPLOYEE');
 		$canEditProfile = $viewerRole === 'ADMIN' || ($viewerRole === 'MANAGER' && $targetRole !== 'ADMIN');
+		$isDeleted = $user['deleted_at'];
+
 		$canManageResetOrDelete = false;
 		if ($viewerRole === 'ADMIN') {
 			$canManageResetOrDelete = true;
@@ -46,7 +44,8 @@ class ProfileController
 		view('users.profile', [
 			'user' => $user,
 			'canEditProfile' => $canEditProfile,
-			'canManageResetOrDelete' => $canManageResetOrDelete
+			'canManageResetOrDelete' => $canManageResetOrDelete,
+			'isDeleted' => $isDeleted,
 		]);
 	}
 }

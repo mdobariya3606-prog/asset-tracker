@@ -298,7 +298,7 @@ tr:last-child td {
 
 .user-department,
 .user-designation {
-  text-align: center;
+  text-align: left;
   white-space: nowrap;
 }
 
