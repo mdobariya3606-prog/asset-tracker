@@ -364,6 +364,11 @@ class Asset
 			exit;
 		}
 
+		if ($option === 'csv') {
+			view('assets.csv', ['assets' => $assets]);
+			exit;
+		}
+
 		view('assets.pdf', ['assets' => $assets]);
 		exit;
 	}

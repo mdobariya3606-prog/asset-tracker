@@ -13,6 +13,10 @@ switch ("$method:$route") {
         (new Asset($conn))->export('excel');
         return true;
 
+    case 'GET:assets/csv':
+        (new Asset($conn))->export('csv');
+        return true;
+
     case 'GET:assets/requests/pdf':
         (new AssetRequest($conn))->export('pdf');
         return true;

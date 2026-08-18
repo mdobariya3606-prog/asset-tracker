@@ -37,6 +37,7 @@ function view(int|string $viewFile, array $vars = []): void
         'assets.show' => $prefix . '/assets/show.php',
         'assets.pdf' => $prefix . '/assets/export-pdf.php',
         'assets.excel' => $prefix . '/assets/export-excel.php',
+        'assets.csv' => $prefix . '/assets/export-csv.php',
 
         'asset.requests.create' => $prefix . '/asset_requests/create.php',
         'asset.requests.select' => $prefix . '/asset_requests/select.php',

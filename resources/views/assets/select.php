@@ -259,8 +259,8 @@
                             <span>📊</span> Export Excel
                         </button>
 
-                        <button type="button" onclick="printTable()">
-                            <span>🖨️</span> Print
+                        <button type="button" onclick="exportCsv()">
+                            <span>🖨️</span> Export CSV
                         </button>
 
                     </div>
@@ -439,7 +439,7 @@
         function exportPDF() {
             downloadFileWithLoader(
                 'index.php?route=assets/pdf',
-                'Users_Report.pdf',
+                'Asset_Report.pdf',
                 'Generating PDF document...'
             );
         }
@@ -447,8 +447,16 @@
         function exportExcel() {
             downloadFileWithLoader(
                 'index.php?route=assets/excel',
-                'Users_Report.xlsx',
+                'Asset_Report.xlsx',
                 'Preparing Excel spreadsheet...'
+            );
+        }
+
+        function exportCsv() {
+            downloadFileWithLoader(
+                'index.php?route=assets/csv',
+                'Assets_Report.csv',
+                'Preparing CSV file...'
             );
         }
     </script>
