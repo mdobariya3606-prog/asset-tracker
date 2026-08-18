@@ -53,7 +53,7 @@
                                 type="password"
                                 name="password"
                                 id="password"
-                                placeholder="Min 6 characters"
+                                placeholder="8-30 chars, 1 upper, 1 lower, 1 number, 1 symbol"
                                 autofocus>
 
                             <i data-lucide="lock" class="input-icon"></i>
@@ -285,19 +285,35 @@
                     return false;
                 }
 
-                if (input.value.length < 6) {
+                const val = input.value;
 
-                    showError(
-                        input,
-                        'Password must be at least 6 characters long.'
-                    );
+                if (val.length < 8 || val.length > 30) {
+                    showError(input, 'Password must be 8–30 characters long.');
+                    return false;
+                }
 
+                if (!/[A-Z]/.test(val)) {
+                    showError(input, 'Password must contain at least 1 uppercase letter.');
+                    return false;
+                }
+
+                if (!/[a-z]/.test(val)) {
+                    showError(input, 'Password must contain at least 1 lowercase letter.');
+                    return false;
+                }
+
+                if (!/[0-9]/.test(val)) {
+                    showError(input, 'Password must contain at least 1 number.');
+                    return false;
+                }
+
+                if (!/[^A-Za-z0-9]/.test(val)) {
+                    showError(input, 'Password must contain at least 1 symbol.');
                     return false;
                 }
 
                 clearError(input);
 
-                // Re-check confirmation password when password changes
                 if (confirmPasswordInput.value) {
                     validateConfirmPassword(confirmPasswordInput);
                 }

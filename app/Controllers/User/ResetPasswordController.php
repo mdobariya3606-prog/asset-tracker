@@ -80,7 +80,7 @@ class ResetPasswordController
 		$user = $this->user->find($id)[0] ?? null;
 		if ($user === null) {
 			$_SESSION['login_error'] = 'User not found.';
-			route('users');;
+			route('users');
 			exit;
 		}
 
@@ -89,16 +89,30 @@ class ResetPasswordController
 		$password = (string)($postParams['password'] ?? '');
 		$confirmation = (string)($postParams['password_confirmation'] ?? '');
 		$errors = [];
-		if (strlen($password) < 6) {
-			$errors['password'] = 'Password must be 6 or more characters.';
+
+		if (empty($password)) {
+			$errors['password'] = 'Password is required.';
+		} elseif (strlen($password) < 8 || strlen($password) > 30) {
+			$errors['password'] = 'Password must be 8–30 characters long.';
+		} elseif (!preg_match('/[A-Z]/', $password)) {
+			$errors['password'] = 'Password must contain at least 1 uppercase letter.';
+		} elseif (!preg_match('/[a-z]/', $password)) {
+			$errors['password'] = 'Password must contain at least 1 lowercase letter.';
+		} elseif (!preg_match('/[0-9]/', $password)) {
+			$errors['password'] = 'Password must contain at least 1 number.';
+		} elseif (!preg_match('/[^A-Za-z0-9]/', $password)) {
+			$errors['password'] = 'Password must contain at least 1 symbol.';
 		}
-		if ($password !== $confirmation) {
+
+		if (empty($confirmation)) {
+			$errors['password_confirmation'] = 'Please confirm the password.';
+		} elseif ($password !== $confirmation) {
 			$errors['password_confirmation'] = 'Passwords do not match.';
 		}
 
 		if (!empty($errors)) {
 			$old = $postParams;
-			view('users.reset-password', ['old' => $old]);
+			view('users.reset-password', ['errors' => $errors, 'old' => $old]);
 			return;
 		}
 
@@ -110,7 +124,7 @@ class ResetPasswordController
 		}
 
 		$_SESSION['success'] = 'Password reset successfully for ' . $user['name'] . '.';
-		route('users');;
+		route('users');
 		exit;
 	}
 }

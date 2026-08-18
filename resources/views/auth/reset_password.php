@@ -100,7 +100,7 @@
                     <div class="form-group full-width <?php echo isset($errors['password']) ? 'has-error' : ''; ?>">
                         <label for="password">New Password <span class="required">*</span></label>
                         <div class="input-wrapper">
-                            <input type="password" name="password" id="password" placeholder="Enter new password" autofocus>
+                            <input type="password" name="password" id="password" placeholder="8-30 chars, 1 upper, 1 lower, 1 number, 1 symbol" autofocus>
                             <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                                 stroke-linecap="round" stroke-linejoin="round">
                                 <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
@@ -235,8 +235,24 @@
                     showError(passwordInput, 'New Password is required.');
                     return false;
                 }
-                if (val.length < 6) {
-                    showError(passwordInput, 'Password must be at least 6 characters long.');
+                if (val.length < 8 || val.length > 30) {
+                    showError(passwordInput, 'Password must be 8–30 characters long.');
+                    return false;
+                }
+                if (!/[A-Z]/.test(val)) {
+                    showError(passwordInput, 'Password must contain at least 1 uppercase letter.');
+                    return false;
+                }
+                if (!/[a-z]/.test(val)) {
+                    showError(passwordInput, 'Password must contain at least 1 lowercase letter.');
+                    return false;
+                }
+                if (!/[0-9]/.test(val)) {
+                    showError(passwordInput, 'Password must contain at least 1 number.');
+                    return false;
+                }
+                if (!/[^A-Za-z0-9]/.test(val)) {
+                    showError(passwordInput, 'Password must contain at least 1 symbol.');
                     return false;
                 }
                 clearError(passwordInput);
