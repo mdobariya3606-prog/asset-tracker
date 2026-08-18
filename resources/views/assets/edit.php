@@ -42,20 +42,16 @@
             <!-- ========================= -->
             <div class="card-header">
                 <div class="icon">
-                    <?php if (!empty($assetData['image'])): ?>
-                        <img src="<?= htmlspecialchars($assetData['image']) ?>"
-                            alt="Profile image">
-                    <?php else: ?>
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                            stroke-linejoin="round">
-                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
-                            <path d="M18.5 2.5a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4Z" />
-                        </svg>
-                    <?php endif; ?>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                        <path d="M18.5 2.5a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4Z" />
+                    </svg>
                 </div>
                 <h1>Edit Asset</h1>
                 <p>Modify details for <?php echo htmlspecialchars($old['name'] ?? $assetData['name'] ?? 'Asset'); ?></p>
             </div>
+
             <!-- ========================= -->
             <!-- General Validation Error -->
             <!-- ========================= -->
@@ -65,6 +61,7 @@
                     <?php echo htmlspecialchars($errors['general']); ?>
                 </div>
             <?php endif; ?>
+            
             <!-- ========================= -->
             <!-- Edit User Form -->
             <!-- ========================= -->
@@ -323,28 +320,6 @@
                             <div class="error-text">
                                 <i data-lucide="circle-alert"></i>
                                 <?php echo htmlspecialchars($errors['warranty_date']); ?>
-                            </div>
-                        <?php endif; ?>
-                    </div>
-
-                    <!-- ========================= -->
-                    <!-- Profile Image Upload -->
-                    <!-- ========================= -->
-                    <div class="form-group full-width <?php echo isset($errors['image']) ? 'has-error' : ''; ?>">
-                        <label for="image">Profile Image (optional)</label>
-                        <div class="input-wrapper">
-                            <input type="file" name="image" id="image" accept=".png,.jpg,.jpeg,.webp">
-                        </div>
-                        <?php if (!empty($assetData['image'])): ?>
-                            <div class="error-text" style="margin-top: 10px; display: block; color: #475569;">
-                                Current image:
-                                <strong><?php echo htmlspecialchars(substr($assetData['image'], 21)); ?></strong>
-                            </div>
-                        <?php endif; ?>
-                        <?php if (isset($errors['image'])): ?>
-                            <div class="error-text">
-                                <i data-lucide="circle-alert"></i>
-                                <?php echo htmlspecialchars($errors['image']); ?>
                             </div>
                         <?php endif; ?>
                     </div>
