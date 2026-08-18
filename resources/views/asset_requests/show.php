@@ -276,14 +276,7 @@
         </section>
         <nav class="actions">
             <a class="back"
-                href="<?php
-                        if (isset($_SESSION['back'])) {
-                            echo $_SESSION['back'];
-                            unset($_SESSION['back']);
-                        } else {
-                            echo "index.php?route=assets/requests";
-                        }
-                        ?>">Back</a>
+                href="index.php?route=assets/requests">Back</a>
 
             <?php
             if ($canManageRequest) { ?>

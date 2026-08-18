@@ -43,7 +43,7 @@ class ForgotPasswordEmail
 
         $generatedCode = $this->generateFPHash($user_id);
 
-        $link = "http://localhost/AssetTracker/index.php?route=reset-password&id={$generatedCode['id']}&code=" . urlencode($generatedCode['code']);
+        $link = "https://asset-tracker.page.gd/index.php?route=reset-password&id={$generatedCode['id']}&code=" . urlencode($generatedCode['code']);
 
         $mailAddress = $user[0]['email'];
 

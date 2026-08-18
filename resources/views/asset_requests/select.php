@@ -308,16 +308,15 @@
                             <tr>
                                 <td style="color: var(--slate-400); font-weight: 600;">
                                     <a href="index.php?route=assets/requests/show&id=<?= $request['id'] ?>"
-                                        style="color: var(--slate-500); font-weight: 600;"
-                                        onclick="<?php $_SESSION['back'] = 'index.php?route=assets/requests'; ?>">
+                                        style="color: var(--slate-500); font-weight: 600;">
+
                                         #<?= htmlspecialchars($request['id'] ?? '') ?>
                                     </a>
                                 </td>
                                 <?php if ($canAccess) { ?>
                                     <td>
                                         <a href="index.php?route=users/profile&id=<?= $request['user_id'] ?>"
-                                            style="color: var(--slate-500); font-weight: 600;"
-                                            onclick="<?php $_SESSION['back'] = 'index.php?route=assets/requests'; ?>">
+                                            style="color: var(--slate-500); font-weight: 600;">
                                             #<?= htmlspecialchars($request['user_id'] ?? '') ?>
                                         </a>
                                     </td>
@@ -325,8 +324,7 @@
 
                                 <td>
                                     <a href="index.php?route=assets/show&id=<?= $request['asset_id'] ?>"
-                                        style="color: var(--slate-500); font-weight: 600;"
-                                        onclick="<?php $_SESSION['back'] = 'index.php?route=assets/requests'; ?>">
+                                        style="color: var(--slate-500); font-weight: 600;">
                                         #<?= htmlspecialchars($request['asset_id'] ?? '') ?>
                                     </a>
                                 </td>

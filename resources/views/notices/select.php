@@ -491,7 +491,7 @@ $canAdd = $role !== 'EMPLOYEE';
 
             event.stopPropagation();
 
-            const dropdown = document.getElementById('');
+            const dropdown = document.getElementById('noticeDropdown');
             noticeDropdown
             if (dropdown) {
                 dropdown.classList.toggle('active');
@@ -560,7 +560,7 @@ $canAdd = $role !== 'EMPLOYEE';
                         }
 
                         // Change title color after successful confirmation
-                        
+
                         const title = button.closest('tr').querySelector('.notice-title');
                         if (title) {
                             title.style.color = 'var(--slate-500)';

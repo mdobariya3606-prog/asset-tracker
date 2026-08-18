@@ -108,12 +108,12 @@ class User
 	/**
 	 * Soft delete: marks the user as deleted without removing the row.
 	 */
-	public function softDelete($id): bool
+	public function softDelete(int $id): bool
 	{
 		$stmt = $this->conn->prepare('UPDATE users SET deleted_at = now() WHERE id = ?');
 		return $stmt->execute([$id]);
 	}
-	public function deletePermanantly($id): bool
+	public function deletePermanantly(int $id): bool
 	{
 		$stmt = $this->conn->prepare('DELETE from users WHERE id = ?');
 		if ($stmt->execute([$id])) {

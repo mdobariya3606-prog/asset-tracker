@@ -260,7 +260,7 @@ function getSortIndicator(string $column, string $currentSort, string $currentOr
                             </button>
 
                             <button type="button" onclick="deletedUsers()">
-                                <span>🖨️</span>
+                                <span>🗑️</span>
                                 Deleted users
                             </button>
 

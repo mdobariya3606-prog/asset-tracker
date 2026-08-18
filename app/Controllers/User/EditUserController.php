@@ -3,6 +3,7 @@
 namespace App\Controllers\User;
 
 use App\Models\User;
+use Exception;
 use PDO;
 
 class EditUserController
@@ -324,7 +325,19 @@ class EditUserController
 		}
 
 		if ($deletePerm) {
-			$this->user->deletePermanantly($id);
+			$this->conn->beginTransaction();
+			try {
+				$this->user->deletePermanantly($id);
+				$path = __DIR__ . '/../../../storage/profile_images/' . $targetUser['profile_image'];
+
+				if (file_exists($path)) {
+					unlink($path);
+				}
+
+				$this->conn->commit();
+			} catch (Exception $e) {
+				$this->conn->rollBack();
+			}
 		} else {
 			if ($this->softDelete($id)) {
 				$_SESSION['success'] = 'User deleted successfully!';

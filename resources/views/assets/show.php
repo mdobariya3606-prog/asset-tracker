@@ -323,8 +323,7 @@
                 <span>
                     <?php if (!empty($asset['assignee_id'])): ?>
                         <a href="index.php?route=users/profile&id=<?= $asset['assignee_id']; ?>"
-                            style="color: #1e293b; font-weight: 500;"
-                            onclick="<?php $_SESSION['back'] = 'index.php?route=assets/show&id=' . $asset['id']; ?>">
+                            style="color: #1e293b; font-weight: 500;">
                             #<?= htmlspecialchars($asset['assignee_id']) ?>
                         </a>
                     <?php else: ?>
