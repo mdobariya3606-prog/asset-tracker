@@ -94,6 +94,8 @@ class ResetPasswordController
             exit;
         }
 
+        $this->resetPasswordService->removeToken($id);
+
         $_SESSION['success'] = 'Password updated successfully.';
         (new AuditLog($this->conn))->log('PASSWORD_CHANGE', null, $reset['user_id']);
 
