@@ -259,6 +259,11 @@ function getSortIndicator(string $column, string $currentSort, string $currentOr
                                 Register User
                             </button>
 
+                            <button type="button" onclick="deletedUsers()">
+                                <span>🖨️</span>
+                                Deleted users
+                            </button>
+
                         <?php endif; ?>
 
                         <button type="button" onclick="exportPDF()">
@@ -269,11 +274,6 @@ function getSortIndicator(string $column, string $currentSort, string $currentOr
                         <button type="button" onclick="exportExcel()">
                             <span>📊</span>
                             Export Excel
-                        </button>
-
-                        <button type="button" onclick="deletedUsers()">
-                            <span>🖨️</span>
-                            Deleted users
                         </button>
 
                     </div>

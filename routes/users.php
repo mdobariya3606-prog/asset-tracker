@@ -53,6 +53,10 @@ switch ("$method:$route") {
         (new EditUserController($conn))->destroy($_GET);
         return true;
 
+    case 'GET:users/delete/per':
+        (new EditUserController($conn))->destroy($_GET, true);
+        return true;
+
     case 'GET:chart':
         require_once __DIR__ . '/../public/testing/chart.php';
         exit;

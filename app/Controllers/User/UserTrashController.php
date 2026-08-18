@@ -18,6 +18,9 @@ class UserTrashController
 
     public function trash()
     {
+        middleware('auth');
+        middleware('hr');
+
         $stmt = $this->conn->query('
 			select u.id, u.name, u.email, dep.name as department, des.name as designation
 			from users u
