@@ -30,6 +30,7 @@ class EditUserController
 		$viewerRole = strtoupper($_SESSION['user_role'] ?? 'EMPLOYEE');
 
 		$formData = $this->showForm($id);
+
 		if (!$formData) {
 			$_SESSION['login_error'] = 'User not found.';
 			route('users');
@@ -136,6 +137,7 @@ class EditUserController
 		$viewerRole = strtoupper($_SESSION['user_role'] ?? 'EMPLOYEE');
 
 		$currentUser = $this->user->find($id)[0] ?? null;
+
 		if (!$currentUser) {
 			$_SESSION['login_error'] = 'User not found.';
 			route('users');
@@ -165,7 +167,7 @@ class EditUserController
 
 		// Execute update pipeline (handles validation, file moving, and DB update atomically)
 		$result = $this->update($id, $postParams, $file);
-
+		
 		if ($result['success']) {
 			if ($isOwnProfile) {
 				$_SESSION['user_name'] = trim($postParams['name']);

@@ -161,7 +161,7 @@ class CreateUserController
 	public function create(): void
 	{
 		middleware('auth');
-		middleware('admin');
+		middleware('hr');
 
 		$formData = $this->showForm();
 

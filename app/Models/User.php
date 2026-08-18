@@ -274,7 +274,6 @@ class User
 			elseif (function_exists('finfo_open')) {
 				$finfo = finfo_open(FILEINFO_MIME_TYPE);
 				$mimeType = finfo_file($finfo, $file['tmp_name']);
-				finfo_close($finfo);
 
 				if (!in_array($mimeType, $allowedMimeTypes)) {
 					$this->errors['profile_image'] = 'Invalid image file format.';

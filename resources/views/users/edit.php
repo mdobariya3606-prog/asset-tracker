@@ -1,3 +1,4 @@
+<!-- <?php var_dump($errors); ?> -->
 <!DOCTYPE html>
 <html lang="en">
 
@@ -252,14 +253,14 @@
             </div>
 
             <!-- Validation Error Alert -->
-            <?php if (!empty($errors['general'])): ?>
+            <?php if (!empty($errors['profile_image'])): ?>
                 <div class="alert-error">
                     <svg viewBox="0 0 24 24">
                         <circle cx="12" cy="12" r="10" />
                         <line x1="12" y1="8" x2="12" y2="12" />
                         <line x1="12" y1="16" x2="12.01" y2="16" />
                     </svg>
-                    <?php echo htmlspecialchars($errors['general']); ?>
+                    <?php echo htmlspecialchars($errors['profile_image']); ?>
                 </div>
             <?php endif; ?>
 

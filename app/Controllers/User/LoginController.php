@@ -128,8 +128,8 @@ class LoginController
 		$user = $this->user->findByEmail($email);
 		if (!$user || $user['deleted_at'] || !password_verify($password, $user['password'])) {
 			// Increment failed attempts on both keys
-			$this->limiter->hit($throttleComboKey, 60);
-			$this->limiter->hit($throttleIpKey, 60);
+			$this->limiter->hit($throttleComboKey, 300);
+			$this->limiter->hit($throttleIpKey, 300);
 
 			return [
 				'success' => false,
@@ -159,6 +159,8 @@ class LoginController
 
 			(new User($this->conn))->saveRememberToken($user['id'], hash('sha256', $token));
 		}
+
+		session_regenerate_id();
 
 		$_SESSION['user_id'] = $user['id'];
 		$_SESSION['user_name'] = $user['name'];

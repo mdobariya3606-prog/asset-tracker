@@ -37,6 +37,10 @@ switch ("$method:$route") {
     case 'POST:reset-password':
         (new ResetViaEmail($conn))->updatePassword($_GET, $_POST);
         return true;
+
+    case 'GET:force-error':
+        echo 1 / 0;
+        return true;
 }
 
 return false;

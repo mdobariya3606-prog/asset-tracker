@@ -5,6 +5,7 @@ namespace App\Controllers\Asset_request;
 use App\Models\Asset;
 use App\Models\AssetRequest;
 use App\Models\AuditLog;
+use App\Models\User;
 
 class ManageRequestController
 {
@@ -88,6 +89,20 @@ class ManageRequestController
 				'statusEnum' => $statusEnum,
 			]);
 			exit;
+		}
+
+		// If status is being set to APPROVED, ensure the user is not deleted
+		if ($inputAssetRequest['status'] === 'APPROVED') {
+			$user = (new User($this->conn))->find($assetRequest['user_id'])[0];
+			if ($user['deleted_at']) {
+				$errors['general'] = 'Cannot approve this request because the employee has been deleted.';
+				view('asset.requests.manage', [
+					'assetRequest' => $assetRequest,
+					'errors' => $errors,
+					'statusEnum' => $statusEnum,
+				]);
+				exit;
+			}
 		}
 
 		$this->assetRequestModel->update($requestId, $inputAssetRequest, $assetRequest);
