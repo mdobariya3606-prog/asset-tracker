@@ -56,22 +56,35 @@ class AssetRequest
 
 		if (empty($reason)) {
 			$errors['reason'] = 'Please provide a reason for requesting this asset.';
-		}
-
-		if (strlen($reason) < 10) {
+		} elseif (strlen($reason) < 10) {
 			$errors['reason'] = 'Reason must be at least 10 characters long.';
-			$errors['old']['reason'] = $reason;
 		}
 
 		if (empty($dueDate)) {
 			$errors['due_date'] = 'Please select a due date.';
+		} else {
+			$timestamp = strtotime($dueDate);
+
+			if ($timestamp === false) {
+				$errors['due_date'] = 'Please enter valid date and time.';
+			} elseif ($dueDate < date('Y-m-d H:i:s')) {
+				$errors['due_date'] = 'Due date cannot be in the past.';
+			} else {
+				$hour = (int) date('H', $timestamp);
+				$minute = (int) date('i', $timestamp);
+				$totalMinutes= $hour * 60 + $minute;
+
+				if ($totalMinutes < 9 * 60 || $totalMinutes > 18 * 60) {
+					$errors['due_date'] = 'Due time must be between 9:00 AM and 6:00 PM.';
+				}
+			}
 		}
 
-		if (!empty($dueDate) && $dueDate < date('Y-m-d H:i:s')) {
-			$errors['due_date'] = 'Due date cannot be in the past.';
+		if (!empty($errors)) {
+			$errors['old']['reason'] = $reason;
 			$errors['old']['due_date'] = $dueDate;
 		}
-
+		
 		return $errors;
 	}
 

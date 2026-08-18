@@ -134,7 +134,7 @@
                         <button type="submit" class="btn-submit" id="submitBtn">
                             <span class="btn-content">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                    stroke-linecap="round" stroke-linejoin="round">
+                                    <!-- stroke-linecap="round" stroke-linejoin="round"> -->
                                     <line x1="22" y1="2" x2="11" y2="13" />
                                     <polygon points="22 2 15 22 11 13 2 9 22 2" />
                                 </svg>
@@ -252,7 +252,6 @@
                     return false;
                 }
 
-                // Parse standard ISO format from <input type="datetime-local"> (YYYY-MM-DDTHH:mm)
                 const selectedTimestamp = new Date(val);
                 const now = new Date();
 
@@ -263,6 +262,18 @@
 
                 if (selectedTimestamp < now) {
                     showError(dueDateInput, 'Due timestamp cannot be in the past.');
+                    return false;
+                }
+
+                // Working hours check: 9:00 AM - 6:00 PM
+                const hours = selectedTimestamp.getHours();
+                const minutes = selectedTimestamp.getMinutes();
+                const totalMinutes = hours * 60 + minutes;
+                const startMinutes = 9 * 60; // 9:00 AM
+                const endMinutes = 18 * 60; // 6:00 PM
+
+                if (totalMinutes < startMinutes || totalMinutes > endMinutes) {
+                    showError(dueDateInput, 'Due time must be between 9:00 AM and 6:00 PM.');
                     return false;
                 }
 
