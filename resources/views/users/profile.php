@@ -214,11 +214,16 @@
                     Delete Profile
                 </a>
 
-            <?php else : ?>
+            <?php elseif ($canManageResetOrDelete && $isDeleted): ?>
                 <a class="delete"
                     href="index.php?route=users/restore&id=<?= (int)$user['id'] ?>"
                     onclick="return confirm('Are you sure you want to restore back this user?');">
                     Restore User
+                </a>
+                <a class="delete"
+                    href="index.php?route=users/delete/per&id=<?= (int)$user['id'] ?>"
+                    onclick="return confirm('Are you sure you want to delete this user permanantly?');">
+                    Delete permanently
                 </a>
             <?php endif; ?>
         </nav>

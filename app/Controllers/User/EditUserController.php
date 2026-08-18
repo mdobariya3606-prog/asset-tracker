@@ -31,7 +31,7 @@ class EditUserController
 		$formData = $this->showForm($id);
 		if (!$formData) {
 			$_SESSION['login_error'] = 'User not found.';
-			route('users');;
+			route('users');
 			exit;
 		}
 
@@ -214,7 +214,7 @@ class EditUserController
 	{
 		// 1. Pass the file to validate()
 		$errors = $this->user->validate($data, true, $id, $file);
-		$isDeleted = (bool) $data['delete_profile_image'];
+		$isDeleted = !empty($data['delete_profile_image']);
 
 		if (!empty($errors)) {
 			return [
@@ -231,31 +231,60 @@ class EditUserController
 			$data['profile_image'] = null;
 
 			$user = (new User($this->conn))->find($id)[0];
-			$fileName = $uploadDir . $user['profile_image'];
+			if (!empty($user['profile_image'])) {
+				$fileName = $uploadDir . basename($user['profile_image']);
 
-			if (file_exists($fileName)) {
-				unlink($fileName);
+				if (file_exists($fileName)) {
+					unlink($fileName);
+				}
 			}
 		}
 
 		// 3. Handle new image upload
 		if (!empty($file) && isset($file['error']) && $file['error'] === UPLOAD_ERR_OK) {
+			$allowedExtensions = ['jpg', 'jpeg', 'png', 'webp'];
+			$allowedMimes = ['image/jpeg', 'image/png', 'image/webp'];
+			$maxSize = 2 * 1024 * 1024;
+			$extension = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
 
-			// Ensure directory exists
+			if (!in_array($extension, $allowedExtensions, true)) {
+				return [
+					'success' => false,
+					'errors'  => ['profile_image' => 'Invalid file type. Allowed: jpg, jpeg, png, webp.'],
+					'old'     => $data,
+				];
+			}
+
+			// Verify actual file content, not just the client-supplied extension
+			$finfo = finfo_open(FILEINFO_MIME_TYPE);
+			$mimeType = finfo_file($finfo, $file['tmp_name']);
+			finfo_close($finfo);
+
+			if (!in_array($mimeType, $allowedMimes, true)) {
+				return [
+					'success' => false,
+					'errors'  => ['profile_image' => 'Invalid file type. Allowed: jpg, jpeg, png, webp.'],
+					'old'     => $data,
+				];
+			}
+
+			if ($file['size'] > $maxSize) {
+				return [
+					'success' => false,
+					'errors'  => ['profile_image' => 'File exceeds maximum size of 2 MB.'],
+					'old'     => $data,
+				];
+			}
+
 			if (!is_dir($uploadDir)) {
 				mkdir($uploadDir, 0755, true);
 			}
 
-			// Generate unique filename to prevent collisions/caching issues
-			$extension = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
 			$filename = 'profile_' . $id . '.' . $extension;
 			$targetPath = $uploadDir . $filename;
 
 			if (move_uploaded_file($file['tmp_name'], $targetPath)) {
-				// Store relative path or filename in data array
 				$data['profile_image'] = $filename;
-
-				// Optional: delete previous image file from disk here
 			} else {
 				return [
 					'success' => false,
@@ -274,65 +303,7 @@ class EditUserController
 		];
 	}
 
-	private function handleProfileImageUpload(int $userId, array $file): array
-	{
-		if (($file['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_OK) {
-			return [
-				'success' => false,
-				'errors' => ['profile_image' => 'Failed to upload profile image.'],
-			];
-		}
-
-		$allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
-		$maxSize = 2 * 1024 * 1024;
-		$mimeType = $file['type'] ?? '';
-		if (!in_array($mimeType, $allowedTypes, true)) {
-			return [
-				'success' => false,
-				'errors' => ['profile_image' => 'Invalid file type. Allowed: jpg, jpeg, png, webp.'],
-			];
-		}
-
-		if (($file['size'] ?? 0) > $maxSize) {
-			return [
-				'success' => false,
-				'errors' => ['profile_image' => 'File exceeds maximum size of 2 MB.'],
-			];
-		}
-
-		$storageDir = 'storage/profile_images';
-		if (!is_dir($storageDir)) {
-			@mkdir($storageDir, 0777, true);
-		}
-
-		$ext = strtolower(pathinfo($file['name'] ?? 'profile.jpg', PATHINFO_EXTENSION));
-		if ($ext === '') {
-			$ext = 'jpg';
-		}
-
-		$filename = "profile_{$userId}.{$ext}";
-		$destination = $storageDir . '/' . $filename;
-
-		foreach (glob($storageDir . '/profile_' . $userId . '.*') as $existingFile) {
-			@unlink($existingFile);
-		}
-
-		if (!move_uploaded_file($file['tmp_name'], $destination)) {
-			return [
-				'success' => false,
-				'errors' => ['profile_image' => 'Failed to store profile image.'],
-			];
-		}
-
-		$this->user->update($userId, ['profile_image' => $filename]);
-
-		return [
-			'success' => true,
-			'errors' => [],
-		];
-	}
-
-	public function destroy(array $getParams)
+	public function destroy(array $getParams, bool $deletePerm = false)
 	{
 		middleware('hr');
 
@@ -341,7 +312,7 @@ class EditUserController
 
 		if ($targetUser === null) {
 			$_SESSION['login_error'] = 'User not found.';
-			route('users');;
+			route('users');
 			exit;
 		}
 
@@ -352,12 +323,17 @@ class EditUserController
 			exit;
 		}
 
-		if ($this->softDelete($id)) {
-			$_SESSION['success'] = 'User deleted successfully!';
+		if ($deletePerm) {
+			$this->user->deletePermanantly($id);
 		} else {
-			$_SESSION['login_error'] = 'Failed to delete user.';
+			if ($this->softDelete($id)) {
+				$_SESSION['success'] = 'User deleted successfully!';
+			} else {
+				$_SESSION['login_error'] = 'Failed to delete user.';
+			}
 		}
-		route('users');;
+
+		route('users');
 		exit;
 	}
 
