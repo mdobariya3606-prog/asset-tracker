@@ -7,7 +7,7 @@ use Dompdf\Dompdf;
 // Fetch $users here if they are not already available.
 // $users = ...
 
-$css = file_get_contents('../resources/css/pdf.css');
+$css = file_get_contents(__DIR__ . '/../../css/pdf.css');
 
 $html = '
 <!DOCTYPE html>
