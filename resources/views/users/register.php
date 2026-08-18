@@ -194,7 +194,7 @@
                     <div class="form-group <?php echo isset($errors['password']) ? 'has-error' : ''; ?>">
                         <label for="password">Password <span class="required">*</span></label>
                         <div class="input-wrapper">
-                            <input type="password" name="password" id="password" placeholder="Min 6 characters">
+                            <input type="password" name="password" id="password" placeholder="Min 8 chars, 1 upper, 1 lower, 1 number, 1 symbol">
                             <svg class="input-icon" viewBox="0 0 24 24">
                                 <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
                                 <path d="M7 11V7a5 5 0 0 1 10 0v4" />
@@ -376,16 +376,42 @@
                 return true;
             };
 
-            // 4. Password Strength (Min 6 chars)
+            // 4. Password Strength (min 8 chars, 1 upper, 1 lower, 1 number, 1 symbol)
             const validatePassword = (input) => {
                 if (!validateRequired(input, 'Password')) return false;
-                if (input.value.length < 6) {
-                    showError(input, 'Password must be at least 6 characters long.');
-                    return false;
+
+                const val = input.value;
+                const rules = [{
+                        test: /^.{8,30}$/,
+                        message: 'Password must be 8–30 characters long.'
+                    },
+                    {
+                        test: /[A-Z]/,
+                        message: 'Password must contain at least 1 uppercase letter.'
+                    },
+                    {
+                        test: /[a-z]/,
+                        message: 'Password must contain at least 1 lowercase letter.'
+                    },
+                    {
+                        test: /[0-9]/,
+                        message: 'Password must contain at least 1 number.'
+                    },
+                    {
+                        test: /[^A-Za-z0-9]/,
+                        message: 'Password must contain at least 1 symbol.'
+                    }
+                ];
+
+                for (const rule of rules) {
+                    if (!rule.test.test(val)) {
+                        showError(input, rule.message);
+                        return false;
+                    }
                 }
+
                 clearError(input);
 
-                // Re-validate confirm password match if populated
                 const confirmInput = document.getElementById('confirm_password');
                 if (confirmInput && confirmInput.value) {
                     validateConfirmPassword(confirmInput);
