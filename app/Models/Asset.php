@@ -243,6 +243,14 @@ class Asset
 		return $stmt->execute($updateData);
 	}
 
+	public function isIssued(int $id): bool
+	{
+		$stmt = $this->conn->prepare('SELECT status FROM assets WHERE id = ?');
+		$stmt->execute([$id]);
+		$status = strtoupper((string)$stmt->fetchColumn());
+		return in_array($status, ['ASSIGNED', 'ISSUED'], true);
+	}
+
 	public function delete(int $id): bool
 	{
 		$stmt = $this->conn->prepare('DELETE FROM assets WHERE id = ?');

@@ -287,6 +287,12 @@ class CreateAssetController
 		middleware('auth');
 		middleware('manager');
 
+		if ($this->asset->isIssued($id)) {
+			$_SESSION['general'] = 'Cannot delete asset #' . $id . ': This asset is currently issued to a user. Please return the asset before deleting.';
+			route('assets');
+			exit;
+		}
+
 		$storageDir = 'storage/asset_images';
 		foreach (glob($storageDir . '/asset_' . $id . '.*') as $existingFile) {
 			@unlink($existingFile);

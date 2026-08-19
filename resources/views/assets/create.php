@@ -312,29 +312,6 @@
                             </div>
                         <?php endif; ?>
                     </div>
-
-                    <!-- ========================= -->
-                    <!-- Profile Image Upload -->
-                    <!-- ========================= -->
-                    <div class="form-group full-width <?php echo isset($errors['image']) ? 'has-error' : ''; ?>">
-                        <label for="image">Profile Image (optional)</label>
-                        <div class="input-wrapper">
-                            <input type="file" name="image" id="image" accept=".png,.jpg,.jpeg,.webp">
-                        </div>
-                        <?php if (!empty($assetData['image'])): ?>
-                            <div class="error-text" style="margin-top: 10px; display: block; color: #475569;">
-                                Current image:
-                                <strong><?php echo htmlspecialchars($assetData['image']); ?></strong>
-                            </div>
-                        <?php endif; ?>
-                        <?php if (isset($errors['image'])): ?>
-                            <div class="error-text">
-                                <i data-lucide="circle-alert"></i>
-                                <?php echo htmlspecialchars($errors['image']); ?>
-                            </div>
-                        <?php endif; ?>
-                    </div>
-
                     <!-- ========================= -->
                     <!-- Form Actions -->
                     <!-- Cancel & Save Buttons -->
