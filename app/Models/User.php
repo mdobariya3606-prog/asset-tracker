@@ -196,14 +196,18 @@ class User
 
 		// --- Department validation ---
 		if (empty($department_id)) {
-			$this->errors['department_id'] = 'Department is required.';
+			if (!$isEdit) {
+				$this->errors['department_id'] = 'Department is required.';
+			}
 		} elseif (!is_numeric($department_id)) {
 			$this->errors['department_id'] = 'Please select a department.';
 		}
 
 		// --- Designation validation ---
 		if (empty($designation_id)) {
-			$this->errors['designation_id'] = 'Designation is required.';
+			if (!$isEdit) {
+				$this->errors['designation_id'] = 'Designation is required.';
+			}
 		} elseif (!is_numeric($designation_id)) {
 			$this->errors['designation_id'] = 'Please select a designation.';
 		}
@@ -236,15 +240,35 @@ class User
 			return null;
 		};
 
+		$old_password = $user['old_password'] ?? '';
+
 		// On create, password is always required.
-		// On edit, only validate if the user is actually changing it.
-		$needsPasswordCheck = $isEdit ? (!empty($password) || !empty($confirm_password)) : true;
+		// On edit, validate if user provided an old_password, new password, or confirm_password.
+		$needsPasswordCheck = $isEdit ? (!empty($old_password) || !empty($password) || !empty($confirm_password)) : true;
 
 		if ($needsPasswordCheck) {
-			if (empty($password)) {
-				$this->errors['password'] = 'Password is required.';
-			} elseif ($err = $validatePasswordStrength($password)) {
-				$this->errors['password'] = $err;
+			if ($isEdit) {
+				if (empty($old_password)) {
+					$this->errors['old_password'] = 'Current password is required to set a new password.';
+				} else if ($excludeId) {
+					// Verify old password against existing DB record
+					$existingUser = $this->find($excludeId)[0] ?? null;
+					if ($existingUser && !password_verify($old_password, $existingUser['password'])) {
+						$this->errors['old_password'] = 'Current password is incorrect.';
+					}
+				}
+
+				if (empty($password)) {
+					$this->errors['password'] = 'New password is required.';
+				} elseif ($err = $validatePasswordStrength($password)) {
+					$this->errors['password'] = $err;
+				}
+			} else {
+				if (empty($password)) {
+					$this->errors['password'] = 'Password is required.';
+				} elseif ($err = $validatePasswordStrength($password)) {
+					$this->errors['password'] = $err;
+				}
 			}
 
 			if (empty($confirm_password)) {

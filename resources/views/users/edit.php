@@ -414,7 +414,7 @@
                         </div>
                     <?php endif; ?>
 
-                    <?php if ($canEditDesignation): ?>
+                    <?php if ($canEditDesignation) { ?>
                         <!-- Designation -->
                         <div class="form-group <?php echo isset($errors['designation_id']) ? 'has-error' : ''; ?>">
                             <label for="designation_id">Designation <span class="required">*</span></label>
@@ -441,7 +441,104 @@
                                 </div>
                             <?php endif; ?>
                         </div>
-                    <?php endif; ?>
+                    <?php } ?>
+                    <!-- Change Password Section -->
+                    <div class="form-group full-width" style="margin-top: 15px; margin-bottom: 5px;">
+                        <h3 style="font-size: 15px; font-weight: 600; color: #1e293b; border-bottom: 1px solid #e2e8f0; padding-bottom: 8px;">Change Password <span style="font-size: 12px; font-weight: 400; color: #64748b;">(Leave blank to keep existing password)</span></h3>
+                    </div>
+
+                    <!-- Current Password -->
+                    <div class="form-group full-width <?php echo isset($errors['old_password']) ? 'has-error' : ''; ?>">
+                        <label for="old_password">Current Password</label>
+                        <div class="input-wrapper">
+                            <input type="password" name="old_password" id="old_password" placeholder="Enter current password">
+                            <svg class="input-icon" viewBox="0 0 24 24">
+                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                                <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                            </svg>
+                            <button type="button" class="pass-toggle" onclick="togglePassword('old_password', this)">
+                                <svg viewBox="0 0 24 24" class="eye-open">
+                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                                    <circle cx="12" cy="12" r="3" />
+                                </svg>
+                                <svg viewBox="0 0 24 24" class="eye-closed" style="display:none">
+                                    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
+                                    <line x1="1" y1="1" x2="23" y2="23" />
+                                </svg>
+                            </button>
+                        </div>
+                        <?php if (isset($errors['old_password'])): ?>
+                            <div class="error-text">
+                                <svg viewBox="0 0 24 24">
+                                    <circle cx="12" cy="12" r="10" />
+                                    <line x1="12" y1="8" x2="12" y2="12" />
+                                    <line x1="12" y1="16" x2="12.01" y2="16" />
+                                </svg><?php echo htmlspecialchars($errors['old_password']); ?>
+                            </div>
+                        <?php endif; ?>
+                    </div>
+
+                    <!-- New Password -->
+                    <div class="form-group <?php echo isset($errors['password']) ? 'has-error' : ''; ?>">
+                        <label for="password">New Password</label>
+                        <div class="input-wrapper">
+                            <input type="password" name="password" id="password" placeholder="Enter new password">
+                            <svg class="input-icon" viewBox="0 0 24 24">
+                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                                <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                            </svg>
+                            <button type="button" class="pass-toggle" onclick="togglePassword('password', this)">
+                                <svg viewBox="0 0 24 24" class="eye-open">
+                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                                    <circle cx="12" cy="12" r="3" />
+                                </svg>
+                                <svg viewBox="0 0 24 24" class="eye-closed" style="display:none">
+                                    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
+                                    <line x1="1" y1="1" x2="23" y2="23" />
+                                </svg>
+                            </button>
+                        </div>
+                        <?php if (isset($errors['password'])): ?>
+                            <div class="error-text">
+                                <svg viewBox="0 0 24 24">
+                                    <circle cx="12" cy="12" r="10" />
+                                    <line x1="12" y1="8" x2="12" y2="12" />
+                                    <line x1="12" y1="16" x2="12.01" y2="16" />
+                                </svg><?php echo htmlspecialchars($errors['password']); ?>
+                            </div>
+                        <?php endif; ?>
+                    </div>
+
+                    <!-- Confirm Password -->
+                    <div class="form-group <?php echo isset($errors['confirm_password']) ? 'has-error' : ''; ?>">
+                        <label for="confirm_password">Confirm New Password</label>
+                        <div class="input-wrapper">
+                            <input type="password" name="confirm_password" id="confirm_password" placeholder="Confirm new password">
+                            <svg class="input-icon" viewBox="0 0 24 24">
+                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                                <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                            </svg>
+                            <button type="button" class="pass-toggle" onclick="togglePassword('confirm_password', this)">
+                                <svg viewBox="0 0 24 24" class="eye-open">
+                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                                    <circle cx="12" cy="12" r="3" />
+                                </svg>
+                                <svg viewBox="0 0 24 24" class="eye-closed" style="display:none">
+                                    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
+                                    <line x1="1" y1="1" x2="23" y2="23" />
+                                </svg>
+                            </button>
+                        </div>
+                        <?php if (isset($errors['confirm_password'])): ?>
+                            <div class="error-text">
+                                <svg viewBox="0 0 24 24">
+                                    <circle cx="12" cy="12" r="10" />
+                                    <line x1="12" y1="8" x2="12" y2="12" />
+                                    <line x1="12" y1="16" x2="12.01" y2="16" />
+                                </svg><?php echo htmlspecialchars($errors['confirm_password']); ?>
+                            </div>
+                        <?php endif; ?>
+                    </div>
 
                     <!-- Form Actions -->
                     <div class="actions-row">
@@ -502,6 +599,21 @@
     </div>
 
     <script>
+        function togglePassword(fieldId, btn) {
+            const input = document.getElementById(fieldId);
+            const eyeOpen = btn.querySelector('.eye-open');
+            const eyeClosed = btn.querySelector('.eye-closed');
+            if (input.type === 'password') {
+                input.type = 'text';
+                eyeOpen.style.display = 'none';
+                eyeClosed.style.display = 'block';
+            } else {
+                input.type = 'password';
+                eyeOpen.style.display = 'block';
+                eyeClosed.style.display = 'none';
+            }
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
             const form = document.getElementById('editForm');
             if (!form) return;
@@ -655,6 +767,79 @@
                 return true;
             };
 
+            // Password Validation Logic for Edit Page
+            const validatePasswordGroup = () => {
+                const oldPassInput = document.getElementById('old_password');
+                const passInput = document.getElementById('password');
+                const confirmPassInput = document.getElementById('confirm_password');
+
+                const oldVal = oldPassInput ? oldPassInput.value : '';
+                const newVal = passInput ? passInput.value : '';
+                const confirmVal = confirmPassInput ? confirmPassInput.value : '';
+
+                // If user hasn't typed anything in any of the password fields, clear errors and pass validation
+                if (!oldVal && !newVal && !confirmVal) {
+                    if (oldPassInput) clearError(oldPassInput);
+                    if (passInput) clearError(passInput);
+                    if (confirmPassInput) clearError(confirmPassInput);
+                    return true;
+                }
+
+                let valid = true;
+
+                // 1. Current Password required if changing password
+                if (oldPassInput && !oldVal) {
+                    showError(oldPassInput, 'Current password is required to set a new password.');
+                    valid = false;
+                } else if (oldPassInput) {
+                    clearError(oldPassInput);
+                }
+
+                // 2. New Password Strength Check
+                if (passInput) {
+                    if (!newVal) {
+                        showError(passInput, 'New password is required.');
+                        valid = false;
+                    } else {
+                        const rules = [
+                            { test: /^.{8,30}$/, message: 'Password must be 8–30 characters long.' },
+                            { test: /[A-Z]/, message: 'Password must contain at least 1 uppercase letter.' },
+                            { test: /[a-z]/, message: 'Password must contain at least 1 lowercase letter.' },
+                            { test: /[0-9]/, message: 'Password must contain at least 1 number.' },
+                            { test: /[^A-Za-z0-9]/, message: 'Password must contain at least 1 symbol.' }
+                        ];
+
+                        let passRulePassed = true;
+                        for (const rule of rules) {
+                            if (!rule.test.test(newVal)) {
+                                showError(passInput, rule.message);
+                                passRulePassed = false;
+                                valid = false;
+                                break;
+                            }
+                        }
+                        if (passRulePassed) {
+                            clearError(passInput);
+                        }
+                    }
+                }
+
+                // 3. Confirm Password Match
+                if (confirmPassInput) {
+                    if (!confirmVal) {
+                        showError(confirmPassInput, 'Confirm password is required.');
+                        valid = false;
+                    } else if (confirmVal !== newVal) {
+                        showError(confirmPassInput, 'Passwords do not match.');
+                        valid = false;
+                    } else {
+                        clearError(confirmPassInput);
+                    }
+                }
+
+                return valid;
+            };
+
             const validateProfileImage = (input) => {
                 if (!input.files || input.files.length === 0) {
                     return true;
@@ -738,6 +923,24 @@
                 designationInput.addEventListener('change', () => validateRequired(designationInput, 'Designation'));
             }
 
+            const oldPassInput = document.getElementById('old_password');
+            if (oldPassInput) {
+                oldPassInput.addEventListener('input', validatePasswordGroup);
+                oldPassInput.addEventListener('blur', validatePasswordGroup);
+            }
+
+            const passInput = document.getElementById('password');
+            if (passInput) {
+                passInput.addEventListener('input', validatePasswordGroup);
+                passInput.addEventListener('blur', validatePasswordGroup);
+            }
+
+            const confirmPassInput = document.getElementById('confirm_password');
+            if (confirmPassInput) {
+                confirmPassInput.addEventListener('input', validatePasswordGroup);
+                confirmPassInput.addEventListener('blur', validatePasswordGroup);
+            }
+
             if (imageInput) {
                 imageInput.addEventListener('change', () => validateProfileImage(imageInput));
             }
@@ -752,6 +955,7 @@
                 if (roleInput && !validateRequired(roleInput, 'Role')) isValid = false;
                 if (departmentInput && !validateRequired(departmentInput, 'Department')) isValid = false;
                 if (designationInput && !validateRequired(designationInput, 'Designation')) isValid = false;
+                if (!validatePasswordGroup()) isValid = false;
                 if (imageInput && !validateProfileImage(imageInput)) isValid = false;
 
                 if (!isValid) {

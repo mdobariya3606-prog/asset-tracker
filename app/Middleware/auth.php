@@ -37,4 +37,4 @@ if (isset($_SESSION['last_activity']) && (time() - $_SESSION['last_activity']) >
 }
 
 // If session is still valid, update last activity timestamp
-$_SESSION['last_activity'] = time();
+$_SESSION['last_activity'] = time();

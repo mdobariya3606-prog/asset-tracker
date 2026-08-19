@@ -5,6 +5,7 @@ namespace App\Controllers\Email;
 use App\Config\Mail;
 use App\Models\User;
 use DateTime;
+use Exception;
 use PDO;
 
 class ForgotPasswordEmail
@@ -41,19 +42,28 @@ class ForgotPasswordEmail
             exit;
         }
 
-        $generatedCode = $this->generateFPHash($user_id);
+        $this->conn->beginTransaction();
 
-        $link = "http://localhost/AssetTracker/index.php?route=reset-password&id={$generatedCode['id']}&code=" . urlencode($generatedCode['code']);
+        try {
+            $generatedCode = $this->generateFPHash($user_id);
+    
+            $link = "http://localhost/AssetTracker/index.php?route=reset-password&id={$generatedCode['id']}&code=" . urlencode($generatedCode['code']);
+    
+            $mailAddress = $user[0]['email'];
+    
+            if ($mailAddress) {
+                $this->mail->send($mailAddress, 'Forgot password', $link);
+            } else {
+                view(404);
+            }
+    
+            $_SESSION['success'] = 'Mail sent successfully.';
 
-        $mailAddress = $user[0]['email'];
-
-        if ($mailAddress) {
-            $this->mail->send($mailAddress, 'Forgot password', $link);
-        } else {
-            view(404);
+            $this->conn->commit();
+        } catch (Exception $e) {
+            $this->conn->rollBack();
+            throw $e;
         }
-
-        $_SESSION['success'] = 'Mail sent successfully.';
 
         if (empty($_SESSION['user_id'])) {
             view('fp-mail');
