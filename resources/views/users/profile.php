@@ -189,6 +189,12 @@
             <div class="detail">
                 <label>Designation</label><span><?= htmlspecialchars($user['designation_name'] ?? 'N/A') ?></span>
             </div>
+
+            <?php if ($_SESSION['user_role'] === 'ADMIN') { ?>
+                <div class="detail">
+                    <label>Joining Date</label><span><?= htmlspecialchars($user['joining_date'] ?? 'N/A') ?></span>
+                </div>
+            <?php } ?>
         </section>
 
         <nav class="actions">
