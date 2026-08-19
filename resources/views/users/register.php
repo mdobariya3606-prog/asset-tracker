@@ -25,7 +25,11 @@
                 <p>Fill in the details to register a new user</p>
             </div>
 
-            <?php if (!empty($success)): ?>
+            <?php
+
+            use App\helpers\Csrf;
+
+            if (!empty($success)): ?>
                 <div class="alert-success">
                     <svg viewBox="0 0 24 24">
                         <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
@@ -37,6 +41,9 @@
 
             <form action="index.php?route=users/create" method="post" enctype="multipart/form-data" novalidate
                 id="registerForm">
+
+                <?= Csrf::field() ?>
+
                 <div class="form-grid">
                     <div class="form-group full-width <?php echo isset($errors['name']) ? 'has-error' : ''; ?>">
                         <label for="name">Full Name <span class="required">*</span></label>

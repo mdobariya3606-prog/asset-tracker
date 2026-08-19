@@ -2,6 +2,7 @@
 
 namespace App\Controllers\Department;
 
+use App\helpers\Csrf;
 use App\Models\Department;
 use PDO;
 
@@ -18,6 +19,11 @@ class CreateDepartmentController
 
 	public function store(array $department)
 	{
+		if (!Csrf::validate($_POST['csrf_token'] ?? null)) {
+			view(403);
+			exit;
+		}
+
 		middleware('auth');
 		middleware('admin');
 
@@ -37,7 +43,7 @@ class CreateDepartmentController
 	{
 		middleware('auth');
 		middleware('admin');
-		
+
 		view('departments.create');
 	}
 }

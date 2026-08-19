@@ -310,7 +310,11 @@
 <body>
     <div class="page">
 
-        <?php view('header'); ?>
+        <?php
+
+use App\helpers\Csrf;
+
+ view('header'); ?>
 
         <div class="page-header">
 

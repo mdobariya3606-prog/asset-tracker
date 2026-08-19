@@ -111,6 +111,8 @@
                 id="createNoticeForm"
                 novalidate>
 
+                <?= App\helpers\Csrf::field() ?>
+
                 <div class="form-grid">
 
 
@@ -282,7 +284,7 @@
     <script>
         lucide.createIcons();
     </script>
-    
+
     <script>
         document.addEventListener('DOMContentLoaded', () => {
 

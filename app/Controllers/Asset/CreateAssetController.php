@@ -2,6 +2,7 @@
 
 namespace App\Controllers\Asset;
 
+use App\helpers\Csrf;
 use App\Models\Asset;
 use App\Models\Category;
 use App\Models\Vendor;
@@ -21,6 +22,11 @@ class CreateAssetController
 
 	public function store(array $data): void
 	{
+		if (!Csrf::validate($_POST['csrf_token'] ?? null)) {
+			view(403);
+			exit;
+		}
+
 		middleware('auth');
 		middleware('manager');
 
@@ -118,6 +124,11 @@ class CreateAssetController
 
 	public function update(int $id, array $inputData): void
 	{
+		if (!Csrf::validate($_POST['csrf_token'] ?? null)) {
+			view(403);
+			exit;
+		}
+
 		middleware('auth');
 		middleware('manager');
 

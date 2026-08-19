@@ -61,7 +61,11 @@
             <!-- ========================= -->
             <!-- General Validation Error -->
             <!-- ========================= -->
-            <?php if (!empty($errors['general'])): ?>
+            <?php
+
+            use App\helpers\Csrf;
+
+            if (!empty($errors['general'])): ?>
                 <div class="alert-error">
                     <i data-lucide="circle-alert"></i>
                     <?php echo htmlspecialchars($errors['general']); ?>
@@ -74,6 +78,8 @@
             <form action="index.php?route=assets/request&id=<?= (int)($_GET['id'] ?? 0); ?>" method="post"
                 id="requestAssetForm" novalidate>
                 <div class="form-grid">
+
+                    <?= Csrf::field() ?>
 
                     <!-- ========================= -->
                     <!-- Reason Field -->

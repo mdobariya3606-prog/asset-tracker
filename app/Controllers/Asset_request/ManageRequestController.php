@@ -2,6 +2,7 @@
 
 namespace App\Controllers\Asset_request;
 
+use App\helpers\Csrf;
 use App\Models\Asset;
 use App\Models\AssetRequest;
 use App\Models\AuditLog;
@@ -96,6 +97,11 @@ class ManageRequestController
 
 	public function update(int $requestId, array $inputAssetRequest)
 	{
+		if (!Csrf::validate($_POST['csrf_token'] ?? null)) {
+			view(403);
+			exit;
+		}
+
 		$assetRequest = $this->assetRequestModel->findOrFail($requestId);
 		$errors = $this->validate($inputAssetRequest);
 		$statusEnum = $this->getStatus();
@@ -167,12 +173,10 @@ class ManageRequestController
 
 			(new AuditLog($this->conn))->log('ASSET_ASSIGNMENT', $assetRequest['asset_id']);
 			(new Asset($this->conn))->updateStatus($assetRequest['asset_id'], 'ASSIGNED', $assetRequest['user_id']);
-
 		} elseif ($updatedStatus === 'RETURNED') {
 
 			(new AuditLog($this->conn))->log('ASSET_RETURN', $assetRequest['asset_id']);
 			(new Asset($this->conn))->updateStatus($assetRequest['asset_id'], 'AVAILABLE');
-			
 		} elseif ($updatedStatus === 'REJECTED') {
 
 			sendStatusNotice('rejected', $assetRequest);

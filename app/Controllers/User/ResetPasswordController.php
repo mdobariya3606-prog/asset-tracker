@@ -2,6 +2,7 @@
 
 namespace App\Controllers\User;
 
+use App\helpers\Csrf;
 use App\Models\User;
 use PDO;
 
@@ -76,6 +77,11 @@ class ResetPasswordController
 
 	public function store(array $getParams, array $postParams): void
 	{
+		if (!Csrf::validate($_POST['csrf_token'] ?? null)) {
+			view(403);
+			exit;
+		}
+
 		$id = (int)($getParams['id'] ?? 0);
 		$user = $this->user->find($id)[0] ?? null;
 		if ($user === null) {

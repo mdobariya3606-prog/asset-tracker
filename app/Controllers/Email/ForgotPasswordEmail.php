@@ -3,6 +3,7 @@
 namespace App\Controllers\Email;
 
 use App\Config\Mail;
+use App\helpers\Csrf;
 use App\Models\User;
 use DateTime;
 use Exception;
@@ -76,6 +77,10 @@ class ForgotPasswordEmail
     // data is coming from: POST:fp_mail
     public function sendForgotPasswordMail(array $data)
     {
+        if (!Csrf::validate($_POST['csrf_token'] ?? null)) {
+            http_response_code(403);
+            exit('Invalid CSRF token.');
+        }
         $email = $data['email'];
 
         if (empty($email)) {

@@ -1,4 +1,8 @@
-<!-- <?php var_dump($errors); ?> -->
+<!-- <?php
+
+        use App\helpers\Csrf;
+
+        var_dump($errors); ?> -->
 <!DOCTYPE html>
 <html lang="en">
 
@@ -62,13 +66,15 @@
                     <?php echo htmlspecialchars($errors['general']); ?>
                 </div>
             <?php endif; ?>
-            
+
             <!-- ========================= -->
             <!-- Edit User Form -->
             <!-- ========================= -->
             <form action="index.php?route=assets/edit&id=<?= (int)($_GET['id'] ?? 0) ?>" method="post"
                 enctype="multipart/form-data" id="editAssetForm" novalidate>
                 <div class="form-grid">
+
+                    <?= Csrf::field() ?>
 
                     <!-- ========================= -->
                     <!-- Name Field -->

@@ -44,7 +44,11 @@
 </head>
 
 <body>
-    <div class="edit-container<?php echo (!empty($_SESSION['user_role']) && $_SESSION['user_role'] === 'ADMIN') ? ' admin-edit' : ''; ?>">
+    <div class="edit-container<?php
+
+                                use App\helpers\Csrf;
+
+                                echo (!empty($_SESSION['user_role']) && $_SESSION['user_role'] === 'ADMIN') ? ' admin-edit' : ''; ?>">
         <div class="card">
             <!-- ========================= -->
             <!-- Card Header -->
@@ -84,6 +88,9 @@
             <!-- ========================= -->
             <form action="" method="post" id="forgotPasswordForm" novalidate>
                 <div class="form-grid">
+
+                    <?= Csrf::field() ?>
+
                     <!-- ========================= -->
                     <!-- Email Field -->
                     <!-- ========================= -->

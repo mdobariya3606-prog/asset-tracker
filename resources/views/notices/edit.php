@@ -107,6 +107,8 @@
             <?php endif; ?>
 
             <form action="index.php?route=notices/edit&id=<?= (int)$notice['id'] ?>" method="post" id="editNoticeForm" novalidate>
+
+                <?= App\helpers\Csrf::field() ?>
                 <div class="form-grid">
 
                     <!-- Notice Title -->
@@ -192,7 +194,7 @@
                 </div>
             </form>
 
-            <form id="deleteForm" action="index.php?route=notices/delete&id=<?= (int)$notice['id'] ?>" method="post" style="display: none;"></form>
+            <form id="deleteForm" action="index.php?route=notices/delete&id=<?= (int)$notice['id'] ?>" method="post" style="display: none;"><?= App\helpers\Csrf::field() ?></form>
 
         </div>
 

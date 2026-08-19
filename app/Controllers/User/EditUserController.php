@@ -2,6 +2,7 @@
 
 namespace App\Controllers\User;
 
+use App\helpers\Csrf;
 use App\Models\User;
 use Exception;
 use PDO;
@@ -134,6 +135,11 @@ class EditUserController
 
 	public function updateUser(array $getParams, array $postParams)
 	{
+		if (!Csrf::validate($_POST['csrf_token'] ?? null)) {
+			view(403);
+			exit;
+		}
+
 		middleware('auth');
 
 		$id = (int)($getParams['id'] ?? 0);
@@ -174,7 +180,7 @@ class EditUserController
 
 		// Execute update pipeline (handles validation, file moving, and DB update atomically)
 		$result = $this->update($id, $postParams, $file);
-		
+
 		if ($result['success']) {
 			if ($isOwnProfile) {
 				$_SESSION['user_name'] = trim($postParams['name']);

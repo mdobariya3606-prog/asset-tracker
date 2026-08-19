@@ -2,6 +2,7 @@
 
 namespace App\Controllers\Designation;
 
+use App\helpers\Csrf;
 use App\Models\Designation;
 use PDO;
 
@@ -18,6 +19,11 @@ class CreateDesignationController
 
 	public function store(array $designation)
 	{
+		if (!Csrf::validate($_POST['csrf_token'] ?? null)) {
+			view(403);
+			exit;
+		}
+
 		middleware('auth');
 		middleware('admin');
 

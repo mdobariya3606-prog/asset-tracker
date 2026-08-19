@@ -2,6 +2,7 @@
 
 namespace App\Controllers\User;
 
+use App\helpers\Csrf;
 use App\Models\User;
 use App\Services\Cache;
 use App\Services\RateLimiter;
@@ -39,7 +40,7 @@ class LoginController
 				(new AuditLog($this->conn))->log('LOGIN');
 				route('users');
 				exit;
-			} 
+			}
 
 			setcookie('remember_token', '', time() - 3600, '/');
 		}
@@ -62,6 +63,11 @@ class LoginController
 
 	public function login(array $postParams)
 	{
+		if (!Csrf::validate($_POST['csrf_token'] ?? null)) {
+			view(403);
+			exit;
+		}
+
 		$result = $this->authenticate($postParams);
 
 		if ($result['success']) {
@@ -104,7 +110,7 @@ class LoginController
 		$ipAddress = $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1';
 		$throttleComboKey = 'login_throttle:' . md5($ipAddress . '|' . $email);
 		$throttleIpKey = 'login_throttle_ip:' . md5($ipAddress);
-	
+
 		// 2) Check if IP-level block (10 attempts) has been exceeded
 		if ($this->limiter->tooManyAttempts($throttleIpKey, 10)) {
 			$seconds = $this->limiter->retriesIn($throttleIpKey);
@@ -201,6 +207,10 @@ class LoginController
 
 	public function signout()
 	{
+		if (!Csrf::validate($_POST['csrf_token'] ?? null)) {
+			view(403);
+			exit;
+		}
 		(new AuditLog($this->conn))->log('logout');
 		$this->logout();
 		route('login');
@@ -221,9 +231,14 @@ class LoginController
 		$_SESSION = [];
 		if (ini_get('session.use_cookies')) {
 			$params = session_get_cookie_params();
-			setcookie(session_name(), '', time() - 42000,
-				$params['path'], $params['domain'],
-				$params['secure'], $params['httponly']
+			setcookie(
+				session_name(),
+				'',
+				time() - 42000,
+				$params['path'],
+				$params['domain'],
+				$params['secure'],
+				$params['httponly']
 			);
 		}
 		session_destroy();

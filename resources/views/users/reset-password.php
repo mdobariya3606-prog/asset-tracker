@@ -24,7 +24,11 @@
                 </p>
             </div>
 
-            <?php if (!empty($errors['general'])): ?>
+            <?php
+
+            use App\helpers\Csrf;
+
+            if (!empty($errors['general'])): ?>
                 <div class="alert-error">
                     <i data-lucide="circle-alert"></i>
 
@@ -37,6 +41,8 @@
                 action="index.php?route=users/reset-password&id=<?= (int)$user['id'] ?>"
                 id="resetPasswordForm"
                 novalidate>
+
+                <?= Csrf::field() ?>
 
                 <div class="form-grid">
 

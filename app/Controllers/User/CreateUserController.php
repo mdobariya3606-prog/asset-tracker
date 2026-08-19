@@ -2,6 +2,7 @@
 
 namespace App\Controllers\User;
 
+use App\helpers\Csrf;
 use App\Models\AuditLog;
 use App\Models\User;
 use Exception;
@@ -20,9 +21,15 @@ class CreateUserController
 
 	public function store(array $postData): void
 	{
+		if (!Csrf::validate($_POST['csrf_token'] ?? null)) {
+			view(403);
+			exit;
+		}
+
+		middleware('auth');
+		middleware('admin');
+
 		try {
-			middleware('auth');
-			middleware('admin');
 
 			// Separate file data from post data
 			$file = $_FILES['profile_image'] ?? null;

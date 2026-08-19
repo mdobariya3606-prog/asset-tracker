@@ -53,7 +53,11 @@
 </head>
 
 <body>
-    <div class="edit-container<?php echo (!empty($_SESSION['user_role']) && $_SESSION['user_role'] === 'ADMIN') ? ' admin-edit' : ''; ?>">
+    <div class="edit-container<?php
+
+                                use App\helpers\Csrf;
+
+                                echo (!empty($_SESSION['user_role']) && $_SESSION['user_role'] === 'ADMIN') ? ' admin-edit' : ''; ?>">
         <div class="card">
             <!-- ========================= -->
             <!-- Card Header -->
@@ -92,6 +96,8 @@
             <!-- ========================= -->
             <form action="" method="post" id="resetPasswordForm" novalidate>
                 <input type="hidden" name="token" value="<?php echo htmlspecialchars($_GET['token'] ?? ''); ?>">
+
+                <?= Csrf::field() ?>
 
                 <div class="form-grid">
                     <!-- ========================= -->

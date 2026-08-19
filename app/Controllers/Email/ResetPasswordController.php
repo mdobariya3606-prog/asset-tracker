@@ -2,6 +2,7 @@
 
 namespace App\Controllers\Email;
 
+use App\helpers\Csrf;
 use App\Models\AuditLog;
 use App\Models\ForgotPassword;
 use App\Models\User;
@@ -52,6 +53,12 @@ class ResetPasswordController
         array $getData,
         array $postData
     ) {
+
+        if (!Csrf::validate($_POST['csrf_token'] ?? null)) {
+            http_response_code(403);
+            exit('Invalid CSRF token.');
+        }
+
         $id = (int) $getData['id'];
         $code = $getData['code'];
 

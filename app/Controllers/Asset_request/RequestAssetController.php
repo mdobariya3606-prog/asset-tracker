@@ -2,6 +2,7 @@
 
 namespace App\Controllers\Asset_request;
 
+use App\helpers\Csrf;
 use App\Models\Asset;
 use App\Models\AssetRequest;
 use PDO;
@@ -22,6 +23,11 @@ class RequestAssetController
 
 	public function store(int $asset_id, array $assetRequest)
 	{
+		if (!Csrf::validate($_POST['csrf_token'] ?? null)) {
+			view(403);
+			exit;
+		}
+
 		$this->validateRequest();
 
 		$errors = $this->assetRequestModel->validate($assetRequest);

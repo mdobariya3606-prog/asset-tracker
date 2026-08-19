@@ -29,7 +29,11 @@
 </head>
 
 <body>
-    <div class="edit-container<?php echo (!empty($_SESSION['user_role']) && $_SESSION['user_role'] === 'ADMIN') ? ' admin-edit' : ''; ?>">
+    <div class="edit-container<?php
+
+                                use App\helpers\Csrf;
+
+                                echo (!empty($_SESSION['user_role']) && $_SESSION['user_role'] === 'ADMIN') ? ' admin-edit' : ''; ?>">
         <div class="card">
             <!-- ========================= -->
             <!-- Card Header -->
@@ -81,6 +85,9 @@
             <!-- Edit User Form -->
             <!-- ========================= -->
             <form action="index.php?route=designations/create" method="post" id="addDesignationForm" novalidate>
+
+                <?= Csrf::field() ?>
+
                 <div class="form-grid">
                     <!-- ========================= -->
                     <!-- Name Field -->

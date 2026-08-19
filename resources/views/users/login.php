@@ -562,7 +562,11 @@
     <div class="login-container">
         <div class="card">
 
-            <?php if (!empty($_SESSION['user_id'])): ?>
+            <?php
+
+            use App\helpers\Csrf;
+
+            if (!empty($_SESSION['user_id'])): ?>
                 <!-- Already logged in -->
                 <div class="card-header">
                     <div class="icon">
@@ -590,6 +594,7 @@
                             View Users
                         </a>
                         <form action="index.php?route=logout" method="post">
+                            <?= App\helpers\Csrf::field() ?>
                             <button type="submit" class="btn-outline">
                                 <svg viewBox="0 0 24 24">
                                     <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
@@ -636,6 +641,8 @@
                 <?php endif; ?>
 
                 <form action="index.php?route=login" method="post" novalidate id="loginForm">
+
+                    <?= Csrf::field() ?>
 
                     <!-- Email -->
                     <div class="form-group <?= isset($errors['email']) ? 'has-error' : '' ?>">
@@ -726,7 +733,7 @@
         </div>
     </div>
 
-     <script>
+    <script>
         function togglePassword() {
             const input = document.getElementById('password');
             const eyeOpen = document.getElementById('eyeOpen');
@@ -849,7 +856,7 @@
             `;
             });
         });
-    </script> 
+    </script>
     <style>
         @keyframes spin {
             to {

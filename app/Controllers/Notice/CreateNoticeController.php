@@ -2,6 +2,7 @@
 
 namespace App\Controllers\Notice;
 
+use App\helpers\Csrf;
 use App\Models\Notice;
 use PDO;
 use Throwable;
@@ -30,6 +31,11 @@ class CreateNoticeController
 
     public function store(array $postData)
     {
+        if (!Csrf::validate($_POST['csrf_token'] ?? null)) {
+            http_response_code(403);
+            exit('Invalid CSRF token.');
+        }
+
         $errors = $this->validateNotice($postData);
 
         if (!empty($errors['errors'])) {

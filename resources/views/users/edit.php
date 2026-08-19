@@ -1,4 +1,8 @@
-<!-- <?php var_dump($errors); ?> -->
+<!-- <?php
+
+        use App\helpers\Csrf;
+
+        var_dump($errors); ?> -->
 <!DOCTYPE html>
 <html lang="en">
 
@@ -278,6 +282,8 @@
             <?php endif; ?>
 
             <form action="index.php?route=users/edit&id=<?= $user_id ?>" method="post" enctype="multipart/form-data" novalidate id="editForm">
+
+                <?= Csrf::field() ?>
 
                 <!-- Hidden file and delete status inputs -->
                 <input type="file" name="profile_image" id="profile_image" accept=".png,.jpg,.jpeg,.webp" style="display: none;">

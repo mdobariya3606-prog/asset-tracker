@@ -2,6 +2,7 @@
 
 namespace App\Controllers\Notice;
 
+use App\helpers\Csrf;
 use App\Models\Notice;
 use PDO;
 
@@ -42,6 +43,10 @@ class EditNoticeController
 
     public function update(array $getParams, array $postData)
     {
+        if (!Csrf::validate($_POST['csrf_token'] ?? null)) {
+            http_response_code(403);
+            exit('Invalid CSRF token.');
+        }
         middleware('auth');
         middleware('admin');
 
@@ -75,6 +80,11 @@ class EditNoticeController
 
     public function destroy(array $getParams)
     {
+        if (!Csrf::validate($_POST['csrf_token'] ?? null)) {
+            http_response_code(403);
+            exit('Invalid CSRF token.');
+        }
+
         middleware('auth');
         middleware('admin');
 

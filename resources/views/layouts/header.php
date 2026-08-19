@@ -356,6 +356,7 @@ $user = (new User($conn))->find($_SESSION['user_id'])[0];
         <?php
 
         use App\Config\Database;
+        use App\helpers\Csrf;
         use App\Models\AssetRequest;
         use App\Models\Notice;
 
@@ -405,6 +406,8 @@ $user = (new User($conn))->find($_SESSION['user_id'])[0];
                 action="index.php?route=logout"
                 method="POST"
                 style="margin: 0; margin-right: 10px;">
+
+                <?= Csrf::field() ?>
 
                 <button
                     type="submit"

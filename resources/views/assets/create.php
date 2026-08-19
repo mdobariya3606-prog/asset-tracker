@@ -34,7 +34,11 @@
     <!-- ========================= -->
     <!-- Edit User Page -->
     <!-- ========================= -->
-    <div class="edit-container<?php echo (!empty($_SESSION['user_role']) && $_SESSION['user_role'] === 'ADMIN') ? ' admin-edit' : ''; ?>">
+    <div class="edit-container<?php
+
+                                use App\helpers\Csrf;
+
+                                echo (!empty($_SESSION['user_role']) && $_SESSION['user_role'] === 'ADMIN') ? ' admin-edit' : ''; ?>">
         <div class="card">
             <!-- ========================= -->
             <!-- Card Header -->
@@ -59,6 +63,8 @@
             <form action="index.php?route=assets/create" method="post" enctype="multipart/form-data" id="addAssetForm"
                 novalidate>
                 <div class="form-grid">
+
+                    <?= Csrf::field() ?>
 
                     <!-- ========================= -->
                     <!-- Name Field -->
