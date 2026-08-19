@@ -402,6 +402,7 @@ class User
 	 * @param string $order 'asc' or 'desc'
 	 * @param int|null $departmentId Filter by department
 	 * @param int|null $designationId Filter by designation
+	 * @param string|null $role Filter by role
 	 */
 	public function paginate(
 		int $page,
@@ -410,7 +411,8 @@ class User
 		string $sort = 'id',
 		string $order = 'asc',
 		?int $departmentId = null,
-		?int $designationId = null
+		?int $designationId = null,
+		?string $role = null
 	): array {
 		$offset = ($page - 1) * $perPage;
 
@@ -451,6 +453,10 @@ class User
 			$whereClauses[] = 'u.designation_id = ?';
 			$params[] = $designationId;
 		}
+		if ($role !== null && trim($role) !== '') {
+			$whereClauses[] = 'u.role = ?';
+			$params[] = strtoupper(trim($role));
+		}
 		if (!empty($whereClauses)) {
 			$sql .= ' AND ' . implode(' AND ', $whereClauses);
 		}
@@ -472,13 +478,14 @@ class User
 	 * Count total users matching the same filters used in paginate(),
 	 * for computing total pages.
 	 */
-	public function count(string $search = '', ?int $departmentId = null, ?int $designationId = null): int
+	public function count(string $search = '', ?int $departmentId = null, ?int $designationId = null, ?string $role = null): int
 	{
 		$sql = "
             SELECT COUNT(*)
             FROM users u
             LEFT JOIN departments d ON u.department_id = d.id
             LEFT JOIN designations des ON u.designation_id = des.id
+			WHERE u.deleted_at IS NULL
         ";
 		$whereClauses = [];
 		$params = [];
@@ -495,8 +502,12 @@ class User
 			$whereClauses[] = 'u.designation_id = ?';
 			$params[] = $designationId;
 		}
+		if ($role !== null && trim($role) !== '') {
+			$whereClauses[] = 'u.role = ?';
+			$params[] = strtoupper(trim($role));
+		}
 		if (!empty($whereClauses)) {
-			$sql .= ' WHERE ' . implode(' AND ', $whereClauses);
+			$sql .= ' AND ' . implode(' AND ', $whereClauses);
 		}
 		$stmt = $this->conn->prepare($sql);
 		$index = 1;

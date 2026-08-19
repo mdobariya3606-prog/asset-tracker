@@ -43,6 +43,16 @@ class SelectUserController
 
 		$departmentId = isset($getParams['department_id']) && $getParams['department_id'] !== '' ? (int)$getParams['department_id'] : null;
 		$designationId = isset($getParams['designation_id']) && $getParams['designation_id'] !== '' ? (int)$getParams['designation_id'] : null;
+		
+		// Role filter is restricted to ADMIN only
+		$roleFilter = null;
+		if ($dashboardUserRole === 'ADMIN' && isset($getParams['role']) && trim($getParams['role']) !== '') {
+			$roleFilter = strtoupper(trim($getParams['role']));
+		}
+
+		$departments = (new Department($this->conn))->all();
+		$designations = (new Designation($this->conn))->all();
+		$roles = ['ADMIN', 'HR', 'MANAGER', 'EMPLOYEE'];
 
 		$activeDeptName = null;
 		if ($departmentId !== null) {
@@ -56,17 +66,17 @@ class SelectUserController
 			$activeDesigName = $activeDesign[0]['name'] ?? null;
 		}
 
-		$totalUsers = $this->userModel->count($search, $departmentId, $designationId);
+		$totalUsers = $this->userModel->count($search, $departmentId, $designationId, $roleFilter);
 		$totalPages = (int)ceil($totalUsers / $perPage);
 
 		if ($page > $totalPages && $totalPages > 0) {
 			$page = $totalPages;
 		}
 
-		$users = $this->userModel->paginate($page, $perPage, $search, $sort, $order, $departmentId, $designationId);
+		$users = $this->userModel->paginate($page, $perPage, $search, $sort, $order, $departmentId, $designationId, $roleFilter);
 
 		if (empty($users)) {
-			if ($search !== '' || $departmentId !== null || $designationId !== null) {
+			if ($search !== '' || $departmentId !== null || $designationId !== null || $roleFilter !== null) {
 				$message = "No users found matching your active filters or search query.";
 			} else {
 				$message = "Users not found";
@@ -83,6 +93,10 @@ class SelectUserController
 			'order' => $order,
 			'departmentId' => $departmentId,
 			'designationId' => $designationId,
+			'roleFilter' => $roleFilter,
+			'departments' => $departments,
+			'designations' => $designations,
+			'roles' => $roles,
 			'activeDeptName' => $activeDeptName,
 			'activeDesigName' => $activeDesigName,
 			'totalUsers' => $totalUsers,

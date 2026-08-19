@@ -16,6 +16,7 @@ fwrite($output, "\xEF\xBB\xBF");
 fputcsv($output, [
     'Asset ID',
     'Asset Name',
+    'Category',
     'Brand',
     'Model',
     'Cost',
@@ -37,6 +38,7 @@ foreach ($assets as $asset) {
     fputcsv($output, [
         $asset['id'] ?? 'N/A',
         $asset['name'] ?? 'N/A',
+        $asset['category_name'] ?? 'N/A',
         $asset['brand'] ?? 'N/A',
         $asset['model'] ?? 'N/A',
         $asset['cost'] ?? 'N/A',

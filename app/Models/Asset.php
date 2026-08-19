@@ -282,14 +282,41 @@ class Asset
 		return $stmt->execute([$id]);
 	}
 
-	public function all(): array
+	public function all(?int $categoryId = null, ?string $status = null, ?string $search = null): array
 	{
 		$sql = 'SELECT a.*, c.name AS category_name, v.name AS vendor_name
                 FROM assets a
                 LEFT JOIN categories c ON a.category_id = c.id
-                LEFT JOIN vendors v ON a.vendor_id = v.id
-                ORDER BY a.status';
-		$stmt = $this->conn->query($sql);
+                LEFT JOIN vendors v ON a.vendor_id = v.id';
+		$whereClauses = [];
+		$params = [];
+
+		if ($categoryId !== null && $categoryId > 0) {
+			$whereClauses[] = 'a.category_id = ?';
+			$params[] = $categoryId;
+		}
+
+		if ($status !== null && trim($status) !== '') {
+			$whereClauses[] = 'UPPER(a.status) = ?';
+			$params[] = strtoupper(trim($status));
+		}
+
+		if ($search !== null && trim($search) !== '') {
+			$whereClauses[] = '(a.name LIKE ? OR a.serial_number LIKE ? OR a.brand LIKE ? OR a.model LIKE ?)';
+			$searchTerm = '%' . trim($search) . '%';
+			$params[] = $searchTerm;
+			$params[] = $searchTerm;
+			$params[] = $searchTerm;
+			$params[] = $searchTerm;
+		}
+
+		if (!empty($whereClauses)) {
+			$sql .= ' WHERE ' . implode(' AND ', $whereClauses);
+		}
+
+		$sql .= ' ORDER BY a.status, a.id DESC';
+		$stmt = $this->conn->prepare($sql);
+		$stmt->execute($params);
 		return $stmt->fetchAll(PDO::FETCH_ASSOC);
 	}
 
@@ -314,6 +341,11 @@ class Asset
 			'Lost',
 			'Scrap'
 		];
+	}
+
+	public function getStatus(): array
+	{
+		return $this->statusEnum();
 	}
 
 	public function updateStatus(int $id, string $status, $assignee_id = null)
@@ -372,24 +404,21 @@ class Asset
 		return $stmt->rowCount() > 0;
 	}
 
-	public function export($option = 'pdf')
+	public function export($option = 'pdf', ?int $categoryId = null, ?string $status = null, ?string $search = null)
 	{
 		middleware('auth');
 
-		$stmt = $this->conn->query("
-			SELECT a.*,
-				c.name as category_name, 
-				v.name as vendor_name
-			FROM assets a
-			LEFT JOIN categories c
-			ON a.category_id = c.id
+		if ($categoryId === null && !empty($_GET['category_id'])) {
+			$categoryId = (int)$_GET['category_id'];
+		}
+		if ($status === null && !empty($_GET['status'])) {
+			$status = trim((string)$_GET['status']);
+		}
+		if ($search === null && !empty($_GET['search'])) {
+			$search = trim((string)$_GET['search']);
+		}
 
-			LEFT JOIN vendors v
-			ON a.vendor_id = v.id
-
-			ORDER BY status
-			");
-		$assets = $stmt->fetchAll(PDO::FETCH_ASSOC);
+		$assets = $this->all($categoryId, $status, $search);
 
 		$option = strtolower(trim($option));
 		if ($option === 'excel') {

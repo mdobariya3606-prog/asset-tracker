@@ -1,5 +1,5 @@
 <?php
-function getSortUrl(string $column, string $currentSort, string $currentOrder, string $search, int $page, ?int $deptId = null, ?int $desigId = null): string
+function getSortUrl(string $column, string $currentSort, string $currentOrder, string $search, int $page, ?int $deptId = null, ?int $desigId = null, ?string $role = null): string
 {
     $newOrder = ($currentSort === $column && $currentOrder === 'asc') ? 'desc' : 'asc';
     $url = "index.php?route=users&search=" . urlencode($search) . "&page={$page}&sort={$column}&order={$newOrder}";
@@ -8,6 +8,9 @@ function getSortUrl(string $column, string $currentSort, string $currentOrder, s
     }
     if ($desigId !== null) {
         $url .= "&designation_id={$desigId}";
+    }
+    if ($role !== null && $role !== '') {
+        $url .= "&role=" . urlencode($role);
     }
     return $url;
 }
@@ -178,6 +181,103 @@ function getSortIndicator(string $column, string $currentSort, string $currentOr
             color: #0f172a;
             transform: translateX(2px);
         }
+
+        /* ── Filters Bar ── */
+        .filters-container {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .filter-search-wrap {
+            position: relative;
+            flex: 1;
+            min-width: 240px;
+            max-width: 320px;
+        }
+
+        .filter-search-wrap input {
+            width: 100%;
+            padding: 9px 16px 9px 38px;
+            background: var(--white);
+            border: 1.5px solid var(--slate-200);
+            border-radius: var(--radius-sm);
+            font-family: inherit;
+            font-size: 13px;
+            color: var(--slate-800);
+            outline: none;
+            transition: all 0.2s;
+            box-sizing: border-box;
+        }
+
+        .filter-search-wrap input:focus {
+            border-color: var(--blue);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .filter-search-wrap svg {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 16px;
+            height: 16px;
+            stroke: var(--slate-400);
+            fill: none;
+            stroke-width: 2;
+            cursor: pointer;
+        }
+
+        .filter-select {
+            padding: 9px 34px 9px 12px;
+            background-color: var(--white);
+            border: 1.5px solid var(--slate-200);
+            border-radius: var(--radius-sm);
+            font-family: inherit;
+            font-size: 13px;
+            color: var(--slate-800);
+            outline: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            appearance: none;
+            -webkit-appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 6l4 4 4-4'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            min-width: 150px;
+        }
+
+        .filter-select:focus {
+            border-color: var(--blue);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .filter-status {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 24px;
+            padding: 2px 4px;
+        }
+
+        @media (max-width: 768px) {
+            .filters-container {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .filter-search-wrap {
+                max-width: 100%;
+                width: 100%;
+            }
+
+            .filter-select {
+                width: 100%;
+            }
+        }
     </style>
 </head>
 
@@ -297,55 +397,110 @@ function getSortIndicator(string $column, string $currentSort, string $currentOr
             </div>
         </div>
 
-        <!-- Search Box -->
-        <form action="index.php" method="get" class="search-container" id="searchForm">
+        <!-- Filters Form -->
+        <form action="index.php" method="get" class="filters-container" id="searchForm">
             <input type="hidden" name="route" value="users">
-            <?php if ($departmentId !== null): ?>
-                <input type="hidden" name="department_id" value="<?= htmlspecialchars($departmentId) ?>">
+
+            <!-- Search Input -->
+            <div class="filter-search-wrap">
+                <input type="text" name="search" id="searchInput" placeholder="Search by name, email, mobile..."
+                    value="<?= htmlspecialchars($search ?? '') ?>">
+                <svg viewBox="0 0 24 24" id="searchIcon" style="cursor: pointer;">
+                    <circle cx="11" cy="11" r="8" />
+                    <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                </svg>
+            </div>
+
+            <!-- Department Filter -->
+            <select name="department_id" id="departmentFilter" class="filter-select">
+                <option value="">All Departments</option>
+                <?php foreach ($departments ?? [] as $dept): ?>
+                    <option value="<?= (int)$dept['id'] ?>" <?= (isset($departmentId) && (int)$departmentId === (int)$dept['id']) ? 'selected' : '' ?>>
+                        <?= htmlspecialchars($dept['name']) ?>
+                    </option>
+                <?php endforeach; ?>
+            </select>
+
+            <!-- Designation Filter -->
+            <select name="designation_id" id="designationFilter" class="filter-select">
+                <option value="">All Designations</option>
+                <?php foreach ($designations ?? [] as $desig): ?>
+                    <option value="<?= (int)$desig['id'] ?>" <?= (isset($designationId) && (int)$designationId === (int)$desig['id']) ? 'selected' : '' ?>>
+                        <?= htmlspecialchars($desig['name']) ?>
+                    </option>
+                <?php endforeach; ?>
+            </select>
+
+            <!-- Role Filter (ADMIN ONLY) -->
+            <?php if ($dashboardUserRole === 'ADMIN'): ?>
+                <select name="role" id="roleFilter" class="filter-select">
+                    <option value="">All Roles</option>
+                    <?php foreach ($roles ?? [] as $roleOption): ?>
+                        <option value="<?= htmlspecialchars($roleOption) ?>" <?= (isset($roleFilter) && strcasecmp($roleFilter, $roleOption) === 0) ? 'selected' : '' ?>>
+                            <?= htmlspecialchars($roleOption) ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
             <?php endif; ?>
-            <?php if ($designationId !== null): ?>
-                <input type="hidden" name="designation_id" value="<?= htmlspecialchars($designationId) ?>">
-            <?php endif; ?>
-            <input type="text" name="search" id="searchInput" placeholder="Search by name, email, department..."
-                value="<?= htmlspecialchars($search ?? '') ?>">
-            <svg viewBox="0 0 24 24" style="cursor: pointer;" onclick="document.getElementById('searchForm').submit();">
-                <circle cx="11" cy="11" r="8" />
-                <line x1="21" y1="21" x2="16.65" y2="16.65" />
-            </svg>
         </form>
 
         <!-- Active Filters Feedback Section -->
-        <?php if ($departmentId !== null || $designationId !== null): ?>
-            <div class="filter-status"
-                style="display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; padding: 2px 4px;">
-                <span style="font-size: 13px; color: var(--slate-500); font-weight: 600; margin-right: 4px;">Active Filters:</span>
+        <div id="activeFiltersContainer">
+            <?php
+            $hasActiveDept = ($departmentId !== null && isset($activeDeptName));
+            $hasActiveDesig = ($designationId !== null && isset($activeDesigName));
+            $hasActiveRole = ($roleFilter !== null && $roleFilter !== '');
+            $hasActiveSearch = ($search !== '');
+            ?>
 
-                <?php if ($departmentId !== null && isset($activeDeptName)): ?>
-                    <span class="badge"
-                        style="background: #eff6ff; color: var(--blue); padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; border: 1px solid rgba(59, 130, 246, 0.2); display: inline-flex; align-items: center; gap: 8px;">
+            <?php if ($hasActiveDept || $hasActiveDesig || $hasActiveRole || $hasActiveSearch): ?>
+                <div class="filter-status">
+                    <span style="font-size: 13px; color: var(--slate-500); font-weight: 600; margin-right: 4px;">Active Filters:</span>
 
-                        Department: <?= htmlspecialchars($activeDeptName) ?>
+                    <?php if ($hasActiveSearch): ?>
+                        <span class="badge"
+                            style="background: #f8fafc; color: var(--slate-700); padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; border: 1px solid var(--slate-300); display: inline-flex; align-items: center; gap: 8px;">
+                            Search: "<?= htmlspecialchars($search) ?>"
+                            <a href="index.php?route=users<?= $hasActiveDept ? '&department_id=' . $departmentId : '' ?><?= $hasActiveDesig ? '&designation_id=' . $designationId : '' ?><?= $hasActiveRole ? '&role=' . urlencode($roleFilter) : '' ?>"
+                                style="color: var(--slate-500); text-decoration: none; font-size: 15px; font-weight: bold; line-height: 1; cursor: pointer;">&times;</a>
+                        </span>
+                    <?php endif; ?>
 
-                        <a href="index.php?route=users&search=<?= urlencode($search) ?><?php if ($designationId !== null) echo '&designation_id=' . $designationId; ?>"
-                            style="color: var(--blue); text-decoration: none; font-size: 15px; font-weight: bold; line-height: 1; cursor: pointer;">&times;</a>
-                    </span>
-                <?php endif; ?>
-                <?php if ($designationId !== null && isset($activeDesigName)): ?>
-                    <span class="badge"
-                        style="background: #ecfdf5; color: #10b981; padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; border: 1px solid rgba(16, 185, 129, 0.2); display: inline-flex; align-items: center; gap: 8px;">
+                    <?php if ($hasActiveDept): ?>
+                        <span class="badge"
+                            style="background: #eff6ff; color: var(--blue); padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; border: 1px solid rgba(59, 130, 246, 0.2); display: inline-flex; align-items: center; gap: 8px;">
+                            Department: <?= htmlspecialchars($activeDeptName) ?>
+                            <a href="index.php?route=users&search=<?= urlencode($search) ?><?= $hasActiveDesig ? '&designation_id=' . $designationId : '' ?><?= $hasActiveRole ? '&role=' . urlencode($roleFilter) : '' ?>"
+                                style="color: var(--blue); text-decoration: none; font-size: 15px; font-weight: bold; line-height: 1; cursor: pointer;">&times;</a>
+                        </span>
+                    <?php endif; ?>
 
-                        Designation: <?= htmlspecialchars($activeDesigName) ?>
-                        <a href="index.php?route=users&search=<?= urlencode($search) ?><?php if ($departmentId !== null) echo '&department_id=' . $departmentId; ?>"
-                            style="color: #10b981; text-decoration: none; font-size: 15px; font-weight: bold; line-height: 1; cursor: pointer;">&times;</a>
-                    </span>
-                <?php endif; ?>
-                <a href="index.php?route=users"
-                    style="font-size: 12px; color: var(--slate-400); text-decoration: none; font-weight: 600; margin-left: 8px; transition: color 0.15s ease;"
-                    onmouseover="this.style.color='var(--slate-700)'" onmouseout="this.style.color='var(--slate-400)'">
-                    Clear Filters
-                </a>
-            </div>
-        <?php endif; ?>
+                    <?php if ($hasActiveDesig): ?>
+                        <span class="badge"
+                            style="background: #ecfdf5; color: #10b981; padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; border: 1px solid rgba(16, 185, 129, 0.2); display: inline-flex; align-items: center; gap: 8px;">
+                            Designation: <?= htmlspecialchars($activeDesigName) ?>
+                            <a href="index.php?route=users&search=<?= urlencode($search) ?><?= $hasActiveDept ? '&department_id=' . $departmentId : '' ?><?= $hasActiveRole ? '&role=' . urlencode($roleFilter) : '' ?>"
+                                style="color: #10b981; text-decoration: none; font-size: 15px; font-weight: bold; line-height: 1; cursor: pointer;">&times;</a>
+                        </span>
+                    <?php endif; ?>
+
+                    <?php if ($hasActiveRole): ?>
+                        <span class="badge"
+                            style="background: #fdf2f8; color: #db2777; padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; border: 1px solid rgba(219, 39, 119, 0.2); display: inline-flex; align-items: center; gap: 8px;">
+                            Role: <?= htmlspecialchars($roleFilter) ?>
+                            <a href="index.php?route=users&search=<?= urlencode($search) ?><?= $hasActiveDept ? '&department_id=' . $departmentId : '' ?><?= $hasActiveDesig ? '&designation_id=' . $designationId : '' ?>"
+                                style="color: #db2777; text-decoration: none; font-size: 15px; font-weight: bold; line-height: 1; cursor: pointer;">&times;</a>
+                        </span>
+                    <?php endif; ?>
+
+                    <a href="index.php?route=users"
+                        style="font-size: 12px; color: var(--slate-400); text-decoration: none; font-weight: 600; margin-left: 8px; transition: color 0.15s ease;"
+                        onmouseover="this.style.color='var(--slate-700)'" onmouseout="this.style.color='var(--slate-400)'">
+                        Clear Filters
+                    </a>
+                </div>
+            <?php endif; ?>
+        </div>
 
         <!-- Listings Card -->
         <div class="card">
@@ -358,7 +513,7 @@ function getSortIndicator(string $column, string $currentSort, string $currentOr
                         <path d="M16 3.13a4 4 0 0 1 0 7.75" />
                     </svg>
                     <h3><?= isset($message) ? htmlspecialchars($message) : 'No Users Registered Yet' ?></h3>
-                    <p><?= ($search ?? '') !== '' ? 'Try clearing the search filter or using different keywords.' : 'Register a single user or add multiple users to populate the list.' ?></p>
+                    <p><?= ($search !== '' || $hasActiveDept || $hasActiveDesig || $hasActiveRole) ? 'Try clearing the active filters or using different keywords.' : 'Register a single user or add multiple users to populate the list.' ?></p>
                 </div>
             <?php else: ?>
                 <div class="table-responsive">
@@ -366,36 +521,45 @@ function getSortIndicator(string $column, string $currentSort, string $currentOr
                         <thead>
                             <tr>
                                 <th style="width: 100px;">
-                                    <a href="<?= getSortUrl('id', $sort, $order, $search, $page, $departmentId, $designationId) ?>"
+                                    <a href="<?= getSortUrl('id', $sort, $order, $search, $page, $departmentId, $designationId, $roleFilter) ?>"
                                         style="text-decoration: none; color: inherit; display: inline-flex; align-items: center; gap: 4px;">
                                         ID<?= getSortIndicator('id', $sort, $order) ?>
                                     </a>
                                 </th>
                                 <th>
-                                    <a href="<?= getSortUrl('name', $sort, $order, $search, $page, $departmentId, $designationId) ?>"
+                                    <a href="<?= getSortUrl('name', $sort, $order, $search, $page, $departmentId, $designationId, $roleFilter) ?>"
                                         style="text-decoration: none; color: inherit; display: inline-flex; align-items: center; gap: 4px;">
                                         User Name<?= getSortIndicator('name', $sort, $order) ?>
                                     </a>
                                 </th>
                                 <th>
-                                    <a href="<?= getSortUrl('mobile', $sort, $order, $search, $page, $departmentId, $designationId) ?>"
+                                    <a href="<?= getSortUrl('mobile', $sort, $order, $search, $page, $departmentId, $designationId, $roleFilter) ?>"
                                         style="text-decoration: none; color: inherit; display: inline-flex; align-items: center; gap: 4px;">
                                         Contact/Mobile<?= getSortIndicator('mobile', $sort, $order) ?>
                                     </a>
                                 </th>
 
                                 <th>
-                                    <a href="<?= getSortUrl('department', $sort, $order, $search, $page, $departmentId, $designationId) ?>"
+                                    <a href="<?= getSortUrl('department', $sort, $order, $search, $page, $departmentId, $designationId, $roleFilter) ?>"
                                         style="text-decoration: none; color: inherit; display: inline-flex; align-items: center; gap: 4px;">
                                         Department<?= getSortIndicator('department', $sort, $order) ?>
                                     </a>
                                 </th>
                                 <th>
-                                    <a href="<?= getSortUrl('designation', $sort, $order, $search, $page, $departmentId, $designationId) ?>"
+                                    <a href="<?= getSortUrl('designation', $sort, $order, $search, $page, $departmentId, $designationId, $roleFilter) ?>"
                                         style="text-decoration: none; color: inherit; display: inline-flex; align-items: center; gap: 4px;">
                                         Designation<?= getSortIndicator('designation', $sort, $order) ?>
                                     </a>
                                 </th>
+
+                                <?php if ($dashboardUserRole === 'ADMIN'): ?>
+                                    <th>
+                                        <a href="<?= getSortUrl('role', $sort, $order, $search, $page, $departmentId, $designationId, $roleFilter) ?>"
+                                            style="text-decoration: none; color: inherit; display: inline-flex; align-items: center; gap: 4px;">
+                                            Role<?= getSortIndicator('role', $sort, $order) ?>
+                                        </a>
+                                    </th>
+                                <?php endif; ?>
                             </tr>
                         </thead>
                         <tbody>
@@ -434,6 +598,13 @@ function getSortIndicator(string $column, string $currentSort, string $currentOr
                                             <?= htmlspecialchars($user['designation_name'] ?? 'N/A') ?>
                                         </span>
                                     </td>
+                                    <?php if ($dashboardUserRole === 'ADMIN'): ?>
+                                        <td class="user-role">
+                                            <span class="badge" style="background: #f1f5f9; color: var(--slate-700); font-weight: 600; font-size: 11px;">
+                                                <?= htmlspecialchars($user['role'] ?? 'EMPLOYEE') ?>
+                                            </span>
+                                        </td>
+                                    <?php endif; ?>
                                 </tr>
                             <?php endforeach; ?>
                         </tbody>
@@ -449,21 +620,21 @@ function getSortIndicator(string $column, string $currentSort, string $currentOr
                         </div>
                         <div class="pagination-list">
                             <?php if ($page > 1): ?>
-                                <a href="index.php?route=users&page=<?= $page - 1 ?>&search=<?= urlencode($search) ?>&sort=<?= urlencode($sort) ?>&order=<?= urlencode($order) ?><?php if ($departmentId !== null) echo '&department_id=' . $departmentId; ?><?php if ($designationId !== null) echo '&designation_id=' . $designationId; ?>"
+                                <a href="index.php?route=users&page=<?= $page - 1 ?>&search=<?= urlencode($search) ?>&sort=<?= urlencode($sort) ?>&order=<?= urlencode($order) ?><?php if ($departmentId !== null) echo '&department_id=' . $departmentId; ?><?php if ($designationId !== null) echo '&designation_id=' . $designationId; ?><?php if ($roleFilter !== null) echo '&role=' . urlencode($roleFilter); ?>"
                                     class="pagination-link">
                                     &laquo; Prev
                                 </a>
                             <?php endif; ?>
 
                             <?php for ($i = 1; $i <= $totalPages; $i++): ?>
-                                <a href="index.php?route=users&page=<?= $i ?>&search=<?= urlencode($search) ?>&sort=<?= urlencode($sort) ?>&order=<?= urlencode($order) ?><?php if ($departmentId !== null) echo '&department_id=' . $departmentId; ?><?php if ($designationId !== null) echo '&designation_id=' . $designationId; ?>"
+                                <a href="index.php?route=users&page=<?= $i ?>&search=<?= urlencode($search) ?>&sort=<?= urlencode($sort) ?>&order=<?= urlencode($order) ?><?php if ($departmentId !== null) echo '&department_id=' . $departmentId; ?><?php if ($designationId !== null) echo '&designation_id=' . $designationId; ?><?php if ($roleFilter !== null) echo '&role=' . urlencode($roleFilter); ?>"
                                     class="pagination-link <?= $i === $page ? 'active' : '' ?>">
                                     <?= $i ?>
                                 </a>
                             <?php endfor; ?>
 
                             <?php if ($page < $totalPages): ?>
-                                <a href="index.php?route=users&page=<?= $page + 1 ?>&search=<?= urlencode($search) ?>&sort=<?= urlencode($sort) ?>&order=<?= urlencode($order) ?><?php if ($departmentId !== null) echo '&department_id=' . $departmentId; ?><?php if ($designationId !== null) echo '&designation_id=' . $designationId; ?>"
+                                <a href="index.php?route=users&page=<?= $page + 1 ?>&search=<?= urlencode($search) ?>&sort=<?= urlencode($sort) ?>&order=<?= urlencode($order) ?><?php if ($departmentId !== null) echo '&department_id=' . $departmentId; ?><?php if ($designationId !== null) echo '&designation_id=' . $designationId; ?><?php if ($roleFilter !== null) echo '&role=' . urlencode($roleFilter); ?>"
                                     class="pagination-link">
                                     Next &raquo;
                                 </a>
@@ -487,6 +658,14 @@ function getSortIndicator(string $column, string $currentSort, string $currentOr
                 .toggle('active');
         }
 
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+            const dropdown = document.getElementById('exportDropdown');
+            if (dropdown && !dropdown.contains(event.target)) {
+                dropdown.classList.remove('active');
+            }
+        });
+
         function showExportLoader(message) {
             const loader = document.getElementById('exportLoader');
             const loaderText = document.getElementById('exportLoaderText');
@@ -497,6 +676,20 @@ function getSortIndicator(string $column, string $currentSort, string $currentOr
         function hideExportLoader() {
             const loader = document.getElementById('exportLoader');
             if (loader) loader.classList.remove('active');
+        }
+
+        function getFilterQueryParams() {
+            const params = new URLSearchParams();
+            const department = document.getElementById('departmentFilter')?.value;
+            const designation = document.getElementById('designationFilter')?.value;
+            const role = document.getElementById('roleFilter')?.value;
+            const search = document.getElementById('searchInput')?.value?.trim();
+            if (department) params.append('department_id', department);
+            if (designation) params.append('designation_id', designation);
+            if (role) params.append('role', role);
+            if (search) params.append('search', search);
+            const queryString = params.toString();
+            return queryString ? '&' + queryString : '';
         }
 
         function downloadFileWithLoader(url, defaultFilename, loaderText) {
@@ -558,24 +751,129 @@ function getSortIndicator(string $column, string $currentSort, string $currentOr
         }
 
         function exportPDF() {
+            const query = getFilterQueryParams();
             downloadFileWithLoader(
-                'index.php?route=users/pdf',
+                'index.php?route=users/pdf' + query,
                 'Users_Report.pdf',
                 'Generating PDF document...'
             );
         }
 
         function exportExcel() {
+            const query = getFilterQueryParams();
             downloadFileWithLoader(
-                'index.php?route=users/excel',
+                'index.php?route=users/excel' + query,
                 'Users_Report.xlsx',
                 'Preparing Excel spreadsheet...'
             );
         }
 
+        function performSearch(query = null) {
+            // Recover active sort and order parameters from current browser URL
+            const urlParams = new URL(window.location.href).searchParams;
+            const sort = urlParams.get('sort') || 'id';
+            const order = urlParams.get('order') || 'asc';
+            const searchVal = query !== null ? query : (document.getElementById('searchInput')?.value?.trim() || '');
+            const department_id = document.getElementById('departmentFilter')?.value || '';
+            const designation_id = document.getElementById('designationFilter')?.value || '';
+            const role = document.getElementById('roleFilter')?.value || '';
+
+            let url = `index.php?route=users&search=${encodeURIComponent(searchVal)}&page=1&sort=${sort}&order=${order}`;
+            if (department_id) {
+                url += `&department_id=${encodeURIComponent(department_id)}`;
+            }
+            if (designation_id) {
+                url += `&designation_id=${encodeURIComponent(designation_id)}`;
+            }
+            if (role) {
+                url += `&role=${encodeURIComponent(role)}`;
+            }
+            fetchData(url);
+        }
+
+        function fetchData(url, updateHistory = true) {
+            // Show loading state subtly in the table if possible
+            const tableBody = document.querySelector('tbody');
+            if (tableBody) {
+                tableBody.style.opacity = '0.5';
+                tableBody.style.transition = 'opacity 0.15s ease';
+            }
+
+            fetch(url)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.text();
+                })
+                .then(html => {
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(html, 'text/html');
+
+                    const newCard = doc.querySelector('.card');
+                    const oldCard = document.querySelector('.card');
+                    if (newCard && oldCard) {
+                        oldCard.innerHTML = newCard.innerHTML;
+                    }
+
+                    const newActiveFilters = doc.querySelector('#activeFiltersContainer');
+                    const oldActiveFilters = document.querySelector('#activeFiltersContainer');
+                    if (newActiveFilters && oldActiveFilters) {
+                        oldActiveFilters.innerHTML = newActiveFilters.innerHTML;
+                    }
+
+                    // Sync inputs with URL params if triggered by badge click / back button
+                    const urlObj = new URL(url, window.location.href);
+                    const activeDept = urlObj.searchParams.get('department_id') || '';
+                    const activeDesig = urlObj.searchParams.get('designation_id') || '';
+                    const activeRole = urlObj.searchParams.get('role') || '';
+                    const activeSearch = urlObj.searchParams.get('search') || '';
+
+                    const deptSelect = document.getElementById('departmentFilter');
+                    const desigSelect = document.getElementById('designationFilter');
+                    const roleSelect = document.getElementById('roleFilter');
+                    const searchInput = document.getElementById('searchInput');
+
+                    if (deptSelect && deptSelect.value !== activeDept) {
+                        deptSelect.value = activeDept;
+                    }
+                    if (desigSelect && desigSelect.value !== activeDesig) {
+                        desigSelect.value = activeDesig;
+                    }
+                    if (roleSelect && roleSelect.value !== activeRole) {
+                        roleSelect.value = activeRole;
+                    }
+                    if (searchInput && document.activeElement !== searchInput && searchInput.value !== activeSearch) {
+                        searchInput.value = activeSearch;
+                    }
+
+                    // Update URL history state without reloading the page
+                    if (updateHistory) {
+                        history.replaceState(null, '', url);
+                    }
+
+                    if (window.lucide) {
+                        window.lucide.createIcons();
+                    }
+                })
+                .catch(err => {
+                    console.error('Error fetching data:', err);
+                })
+                .finally(() => {
+                    const currentTableBody = document.querySelector('tbody');
+                    if (currentTableBody) {
+                        currentTableBody.style.opacity = '1';
+                    }
+                });
+        }
+
         document.addEventListener('DOMContentLoaded', function() {
             const searchForm = document.getElementById('searchForm');
             const searchInput = document.getElementById('searchInput');
+            const searchIcon = document.getElementById('searchIcon');
+            const departmentFilter = document.getElementById('departmentFilter');
+            const designationFilter = document.getElementById('designationFilter');
+            const roleFilter = document.getElementById('roleFilter');
             let debounceTimer;
 
             if (searchForm && searchInput) {
@@ -586,13 +884,41 @@ function getSortIndicator(string $column, string $currentSort, string $currentOr
                     performSearch(searchInput.value);
                 });
 
-                // Trigger dynamic search as the user types (with 400ms debounce)
+                // Trigger dynamic search as the user types (with 350ms debounce)
                 searchInput.addEventListener('input', function() {
                     clearTimeout(debounceTimer);
                     const query = this.value;
                     debounceTimer = setTimeout(() => {
                         performSearch(query);
-                    }, 400);
+                    }, 350);
+                });
+            }
+
+            if (searchIcon) {
+                searchIcon.addEventListener('click', function() {
+                    clearTimeout(debounceTimer);
+                    performSearch(searchInput?.value);
+                });
+            }
+
+            if (departmentFilter) {
+                departmentFilter.addEventListener('change', function() {
+                    clearTimeout(debounceTimer);
+                    performSearch();
+                });
+            }
+
+            if (designationFilter) {
+                designationFilter.addEventListener('change', function() {
+                    clearTimeout(debounceTimer);
+                    performSearch();
+                });
+            }
+
+            if (roleFilter) {
+                roleFilter.addEventListener('change', function() {
+                    clearTimeout(debounceTimer);
+                    performSearch();
                 });
             }
 
@@ -601,65 +927,29 @@ function getSortIndicator(string $column, string $currentSort, string $currentOr
             if (cardElement) {
                 cardElement.addEventListener('click', function(e) {
                     const link = e.target.closest('a');
-                    // Dynamically load only the users list links. Edit links must perform
-                    // a full page navigation so their page-specific stylesheet is applied.
                     const route = link?.href ? new URL(link.href).searchParams.get('route') : null;
-                    if (link && route === 'users' && !link.getAttribute('onclick')) {
+                    if (link && route === 'users' && !link.getAttribute('onclick') && !link.classList.contains('profile-link')) {
                         e.preventDefault();
                         fetchData(link.href);
                     }
                 });
             }
 
-            function performSearch(query) {
-                // Recover active sort and order parameters from current browser URL
-                const urlParams = new URL(window.location.href).searchParams;
-                const sort = urlParams.get('sort') || 'id';
-                const order = urlParams.get('order') || 'asc';
-                const department_id = urlParams.get('department_id') || '';
-                const designation_id = urlParams.get('designation_id') || '';
-
-                let url = `index.php?route=users&search=${encodeURIComponent(query)}&page=1&sort=${sort}&order=${order}`;
-                if (department_id) {
-                    url += `&department_id=${encodeURIComponent(department_id)}`;
-                }
-                if (designation_id) {
-                    url += `&designation_id=${encodeURIComponent(designation_id)}`;
-                }
-                fetchData(url);
+            // Intercept clicks on active filter removal links
+            const activeFiltersContainer = document.getElementById('activeFiltersContainer');
+            if (activeFiltersContainer) {
+                activeFiltersContainer.addEventListener('click', function(e) {
+                    const link = e.target.closest('a');
+                    if (link && link.href) {
+                        e.preventDefault();
+                        fetchData(link.href);
+                    }
+                });
             }
 
-            function fetchData(url) {
-                // Show loading state subtly in the table if possible
-                const tableBody = document.querySelector('tbody');
-                if (tableBody) {
-                    tableBody.style.opacity = '0.5';
-                    tableBody.style.transition = 'opacity 0.15s ease';
-                }
-
-                fetch(url)
-                    .then(response => response.text())
-                    .then(html => {
-                        const parser = new DOMParser();
-                        const doc = parser.parseFromString(html, 'text/html');
-
-                        const newCard = doc.querySelector('.card');
-                        const oldCard = document.querySelector('.card');
-
-                        if (newCard && oldCard) {
-                            oldCard.innerHTML = newCard.innerHTML;
-                        }
-
-                        // Update URL history state without reloading the page
-                        history.replaceState(null, '', url);
-                    })
-                    .catch(err => {
-                        console.error('Error fetching data:', err);
-                        if (tableBody) {
-                            tableBody.style.opacity = '1';
-                        }
-                    });
-            }
+            window.addEventListener('popstate', function() {
+                fetchData(window.location.href, false);
+            });
         });
     </script>
 

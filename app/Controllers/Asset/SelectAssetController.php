@@ -3,6 +3,7 @@
 namespace App\Controllers\Asset;
 
 use App\Models\Asset;
+use App\Models\Category;
 use App\Models\User;
 use PDO;
 
@@ -28,10 +29,22 @@ class SelectAssetController
 
 		$canManageAssets = $this->asset->canManageAssets($dashboardUserRole);
 		$canRequestAsset = $this->asset->canRequestAsset($dashboardUserRole);
-		$assets = $this->asset->all();
+
+		$categoryId = !empty($_GET['category_id']) ? (int)$_GET['category_id'] : null;
+		$status = !empty($_GET['status']) ? trim((string)$_GET['status']) : null;
+		$search = isset($_GET['search']) ? trim((string)$_GET['search']) : '';
+
+		$categories = (new Category($this->conn))->all();
+		$statuses = $this->asset->getStatus();
+		$assets = $this->asset->all($categoryId, $status, $search !== '' ? $search : null);
 
 		view('assets.select', [
 			'assets' => $assets,
+			'categories' => $categories,
+			'statuses' => $statuses,
+			'selectedCategoryId' => $categoryId,
+			'selectedStatus' => $status,
+			'search' => $search,
 			'canManageAssets' => $canManageAssets,
 			'canRequestAsset' => $canRequestAsset,
 		]);

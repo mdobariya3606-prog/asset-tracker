@@ -155,6 +155,87 @@
             transform: translateX(2px);
         }
 
+        /* ── Filter Bar Styles ── */
+        .filters-container {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .filter-search-wrap {
+            position: relative;
+            flex: 1;
+            min-width: 240px;
+            max-width: 340px;
+        }
+
+        .filter-search-wrap input {
+            width: 100%;
+            padding: 9px 16px 9px 38px;
+            background: var(--white);
+            border: 1.5px solid var(--slate-200);
+            border-radius: var(--radius-sm);
+            font-family: inherit;
+            font-size: 13px;
+            color: var(--slate-800);
+            outline: none;
+            transition: all 0.2s;
+            box-sizing: border-box;
+        }
+
+        .filter-search-wrap input:focus {
+            border-color: var(--blue);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .filter-search-wrap svg {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 16px;
+            height: 16px;
+            stroke: var(--slate-400);
+            fill: none;
+            stroke-width: 2;
+            cursor: pointer;
+        }
+
+        .filter-select {
+            padding: 9px 34px 9px 12px;
+            background-color: var(--white);
+            border: 1.5px solid var(--slate-200);
+            border-radius: var(--radius-sm);
+            font-family: inherit;
+            font-size: 13px;
+            color: var(--slate-800);
+            outline: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            appearance: none;
+            -webkit-appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 6l4 4 4-4'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            min-width: 160px;
+        }
+
+        .filter-select:focus {
+            border-color: var(--blue);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .filter-status {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 20px;
+            padding: 2px 4px;
+        }
+
         /* ── Mobile Responsive Adjustments ── */
         @media (max-width: 768px) {
             .page-header {
@@ -183,6 +264,20 @@
                 width: 100%;
                 min-width: 0;
                 box-sizing: border-box;
+            }
+
+            .filters-container {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .filter-search-wrap {
+                max-width: 100%;
+                width: 100%;
+            }
+
+            .filter-select {
+                width: 100%;
             }
 
             .card {
@@ -299,6 +394,99 @@
             <?php unset($_SESSION['general']); ?>
         <?php endif; ?>
 
+        <!-- Filter Form -->
+        <form action="index.php" method="get" class="filters-container" id="filterForm">
+            <input type="hidden" name="route" value="assets">
+
+            <!-- Search Input -->
+            <div class="filter-search-wrap">
+                <input type="text" name="search" id="searchInput" placeholder="Search by name, serial no, brand..."
+                    value="<?= htmlspecialchars($search ?? '') ?>">
+                <svg viewBox="0 0 24 24" id="searchIcon" style="cursor: pointer;">
+                    <circle cx="11" cy="11" r="8" />
+                    <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                </svg>
+            </div>
+
+            <!-- Category Filter -->
+            <select name="category_id" id="categoryFilter" class="filter-select">
+                <option value="">All Categories</option>
+                <?php foreach ($categories ?? [] as $category): ?>
+                    <option value="<?= (int)$category['id'] ?>" <?= (isset($selectedCategoryId) && (int)$selectedCategoryId === (int)$category['id']) ? 'selected' : '' ?>>
+                        <?= htmlspecialchars($category['name']) ?>
+                    </option>
+                <?php endforeach; ?>
+            </select>
+
+            <!-- Status Filter -->
+            <select name="status" id="statusFilter" class="filter-select">
+                <option value="">All Statuses</option>
+                <?php foreach ($statuses ?? [] as $statusOption): ?>
+                    <option value="<?= htmlspecialchars($statusOption) ?>" <?= (isset($selectedStatus) && strcasecmp($selectedStatus, $statusOption) === 0) ? 'selected' : '' ?>>
+                        <?= htmlspecialchars($statusOption) ?>
+                    </option>
+                <?php endforeach; ?>
+            </select>
+        </form>
+
+        <!-- Active Filters Feedback Section -->
+        <div id="activeFiltersContainer">
+            <?php
+            $hasActiveCategory = !empty($selectedCategoryId);
+            $hasActiveStatus = !empty($selectedStatus);
+            $hasActiveSearch = !empty($search);
+
+            $activeCategoryName = null;
+            if ($hasActiveCategory && !empty($categories)) {
+                foreach ($categories as $cat) {
+                    if ((int)$cat['id'] === (int)$selectedCategoryId) {
+                        $activeCategoryName = $cat['name'];
+                        break;
+                    }
+                }
+            }
+            ?>
+
+            <?php if ($hasActiveCategory || $hasActiveStatus || $hasActiveSearch): ?>
+                <div class="filter-status">
+                    <span style="font-size: 13px; color: var(--slate-500); font-weight: 600; margin-right: 4px;">Active Filters:</span>
+
+                    <?php if ($hasActiveSearch): ?>
+                        <span class="badge"
+                            style="background: #f8fafc; color: var(--slate-700); padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; border: 1px solid var(--slate-300); display: inline-flex; align-items: center; gap: 8px;">
+                            Search: "<?= htmlspecialchars($search) ?>"
+                            <a href="index.php?route=assets<?= $hasActiveCategory ? '&category_id=' . (int)$selectedCategoryId : '' ?><?= $hasActiveStatus ? '&status=' . urlencode($selectedStatus) : '' ?>"
+                                style="color: var(--slate-500); text-decoration: none; font-size: 15px; font-weight: bold; line-height: 1; cursor: pointer;">&times;</a>
+                        </span>
+                    <?php endif; ?>
+
+                    <?php if ($hasActiveCategory && $activeCategoryName): ?>
+                        <span class="badge"
+                            style="background: #eff6ff; color: var(--blue); padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; border: 1px solid rgba(59, 130, 246, 0.2); display: inline-flex; align-items: center; gap: 8px;">
+                            Category: <?= htmlspecialchars($activeCategoryName) ?>
+                            <a href="index.php?route=assets<?= $hasActiveSearch ? '&search=' . urlencode($search) : '' ?><?= $hasActiveStatus ? '&status=' . urlencode($selectedStatus) : '' ?>"
+                                style="color: var(--blue); text-decoration: none; font-size: 15px; font-weight: bold; line-height: 1; cursor: pointer;">&times;</a>
+                        </span>
+                    <?php endif; ?>
+
+                    <?php if ($hasActiveStatus): ?>
+                        <span class="badge"
+                            style="background: #ecfdf5; color: #10b981; padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; border: 1px solid rgba(16, 185, 129, 0.2); display: inline-flex; align-items: center; gap: 8px;">
+                            Status: <?= htmlspecialchars($selectedStatus) ?>
+                            <a href="index.php?route=assets<?= $hasActiveSearch ? '&search=' . urlencode($search) : '' ?><?= $hasActiveCategory ? '&category_id=' . (int)$selectedCategoryId : '' ?>"
+                                style="color: #10b981; text-decoration: none; font-size: 15px; font-weight: bold; line-height: 1; cursor: pointer;">&times;</a>
+                        </span>
+                    <?php endif; ?>
+
+                    <a href="index.php?route=assets"
+                        style="font-size: 12px; color: var(--slate-400); text-decoration: none; font-weight: 600; margin-left: 8px; transition: color 0.15s ease;"
+                        onmouseover="this.style.color='var(--slate-700)'" onmouseout="this.style.color='var(--slate-400)'">
+                        Clear Filters
+                    </a>
+                </div>
+            <?php endif; ?>
+        </div>
+
         <!-- Assets Table -->
         <div class="card">
 
@@ -308,6 +496,7 @@
                     <tr>
                         <th>Asset ID</th>
                         <th>Asset Name</th>
+                        <th>Category</th>
                         <th>Serial Number</th>
                         <th>Status</th>
                     </tr>
@@ -318,8 +507,8 @@
                     <?php if (empty($assets ?? [])): ?>
 
                         <tr>
-                            <td colspan="3" class="empty-state">
-                                No assets found yet.
+                            <td colspan="5" class="empty-state" style="text-align: center; padding: 36px 20px;">
+                                <?= ($hasActiveCategory || $hasActiveStatus || $hasActiveSearch) ? 'No assets found matching your filter criteria.' : 'No assets found yet.' ?>
                             </td>
                         </tr>
 
@@ -337,6 +526,10 @@
                                     <a class="asset-name-link" href="index.php?route=assets/show&id=<?= (int)($asset['id'] ?? 0) ?>">
                                         <?= htmlspecialchars($asset['name'] ?? '') ?>
                                     </a>
+                                </td>
+
+                                <td style="color: var(--slate-600); font-weight: 500;">
+                                    <?= htmlspecialchars($asset['category_name'] ?? 'N/A') ?>
                                 </td>
 
                                 <td style="color: var(--slate-600); font-weight: 600;">
@@ -370,6 +563,14 @@
             document.getElementById('exportDropdown').classList.toggle('active');
         }
 
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+            const dropdown = document.getElementById('exportDropdown');
+            if (dropdown && !dropdown.contains(event.target)) {
+                dropdown.classList.remove('active');
+            }
+        });
+
         function showExportLoader(message) {
             const loader = document.getElementById('exportLoader');
             const loaderText = document.getElementById('exportLoaderText');
@@ -381,6 +582,166 @@
             const loader = document.getElementById('exportLoader');
             if (loader) loader.classList.remove('active');
         }
+
+        function getFilterQueryParams() {
+            const params = new URLSearchParams();
+            const category = document.getElementById('categoryFilter')?.value;
+            const status = document.getElementById('statusFilter')?.value;
+            const search = document.getElementById('searchInput')?.value?.trim();
+            if (category) params.append('category_id', category);
+            if (status) params.append('status', status);
+            if (search) params.append('search', search);
+            const queryString = params.toString();
+            return queryString ? '&' + queryString : '';
+        }
+
+        function performSearch() {
+            const searchVal = document.getElementById('searchInput')?.value?.trim() || '';
+            const categoryVal = document.getElementById('categoryFilter')?.value || '';
+            const statusVal = document.getElementById('statusFilter')?.value || '';
+
+            const params = new URLSearchParams();
+            params.set('route', 'assets');
+            if (searchVal) params.set('search', searchVal);
+            if (categoryVal) params.set('category_id', categoryVal);
+            if (statusVal) params.set('status', statusVal);
+
+            const url = 'index.php?' + params.toString();
+            fetchData(url);
+        }
+
+        function fetchData(url, updateHistory = true) {
+            const tableBody = document.querySelector('tbody');
+            if (tableBody) {
+                tableBody.style.opacity = '0.5';
+                tableBody.style.transition = 'opacity 0.15s ease';
+            }
+
+            fetch(url)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.text();
+                })
+                .then(html => {
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(html, 'text/html');
+
+                    const newCard = doc.querySelector('.card');
+                    const oldCard = document.querySelector('.card');
+                    if (newCard && oldCard) {
+                        oldCard.innerHTML = newCard.innerHTML;
+                    }
+
+                    const newActiveFilters = doc.querySelector('#activeFiltersContainer');
+                    const oldActiveFilters = document.querySelector('#activeFiltersContainer');
+                    if (newActiveFilters && oldActiveFilters) {
+                        oldActiveFilters.innerHTML = newActiveFilters.innerHTML;
+                    }
+
+                    // Sync inputs with URL params if triggered by badge click / back button
+                    const urlObj = new URL(url, window.location.href);
+                    const activeCategory = urlObj.searchParams.get('category_id') || '';
+                    const activeStatus = urlObj.searchParams.get('status') || '';
+                    const activeSearch = urlObj.searchParams.get('search') || '';
+
+                    const categorySelect = document.getElementById('categoryFilter');
+                    const statusSelect = document.getElementById('statusFilter');
+                    const searchInput = document.getElementById('searchInput');
+
+                    if (categorySelect && categorySelect.value !== activeCategory) {
+                        categorySelect.value = activeCategory;
+                    }
+                    if (statusSelect && statusSelect.value !== activeStatus) {
+                        statusSelect.value = activeStatus;
+                    }
+                    if (searchInput && document.activeElement !== searchInput && searchInput.value !== activeSearch) {
+                        searchInput.value = activeSearch;
+                    }
+
+                    // Update URL in browser
+                    if (updateHistory) {
+                        history.replaceState(null, '', url);
+                    }
+
+                    if (window.lucide) {
+                        window.lucide.createIcons();
+                    }
+                })
+                .catch(err => {
+                    console.error('Error fetching assets:', err);
+                })
+                .finally(() => {
+                    const currentTableBody = document.querySelector('tbody');
+                    if (currentTableBody) {
+                        currentTableBody.style.opacity = '1';
+                    }
+                });
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const filterForm = document.getElementById('filterForm');
+            const searchInput = document.getElementById('searchInput');
+            const searchIcon = document.getElementById('searchIcon');
+            const categoryFilter = document.getElementById('categoryFilter');
+            const statusFilter = document.getElementById('statusFilter');
+            let debounceTimer;
+
+            if (filterForm) {
+                filterForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    clearTimeout(debounceTimer);
+                    performSearch();
+                });
+            }
+
+            if (searchInput) {
+                searchInput.addEventListener('input', function() {
+                    clearTimeout(debounceTimer);
+                    debounceTimer = setTimeout(() => {
+                        performSearch();
+                    }, 350);
+                });
+            }
+
+            if (searchIcon) {
+                searchIcon.addEventListener('click', function() {
+                    clearTimeout(debounceTimer);
+                    performSearch();
+                });
+            }
+
+            if (categoryFilter) {
+                categoryFilter.addEventListener('change', function() {
+                    clearTimeout(debounceTimer);
+                    performSearch();
+                });
+            }
+
+            if (statusFilter) {
+                statusFilter.addEventListener('change', function() {
+                    clearTimeout(debounceTimer);
+                    performSearch();
+                });
+            }
+
+            // Intercept clicks on active filter removal links
+            const activeFiltersContainer = document.getElementById('activeFiltersContainer');
+            if (activeFiltersContainer) {
+                activeFiltersContainer.addEventListener('click', function(e) {
+                    const link = e.target.closest('a');
+                    if (link && link.href) {
+                        e.preventDefault();
+                        fetchData(link.href);
+                    }
+                });
+            }
+
+            window.addEventListener('popstate', function() {
+                fetchData(window.location.href, false);
+            });
+        });
 
         function downloadFileWithLoader(url, defaultFilename, loaderText) {
             showExportLoader(loaderText);
@@ -437,24 +798,27 @@
         }
 
         function exportPDF() {
+            const query = getFilterQueryParams();
             downloadFileWithLoader(
-                'index.php?route=assets/pdf',
+                'index.php?route=assets/pdf' + query,
                 'Asset_Report.pdf',
                 'Generating PDF document...'
             );
         }
 
         function exportExcel() {
+            const query = getFilterQueryParams();
             downloadFileWithLoader(
-                'index.php?route=assets/excel',
+                'index.php?route=assets/excel' + query,
                 'Asset_Report.xlsx',
                 'Preparing Excel spreadsheet...'
             );
         }
 
         function exportCsv() {
+            const query = getFilterQueryParams();
             downloadFileWithLoader(
-                'index.php?route=assets/csv',
+                'index.php?route=assets/csv' + query,
                 'Assets_Report.csv',
                 'Preparing CSV file...'
             );
