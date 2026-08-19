@@ -801,12 +801,26 @@
                         showError(passInput, 'New password is required.');
                         valid = false;
                     } else {
-                        const rules = [
-                            { test: /^.{8,30}$/, message: 'Password must be 8–30 characters long.' },
-                            { test: /[A-Z]/, message: 'Password must contain at least 1 uppercase letter.' },
-                            { test: /[a-z]/, message: 'Password must contain at least 1 lowercase letter.' },
-                            { test: /[0-9]/, message: 'Password must contain at least 1 number.' },
-                            { test: /[^A-Za-z0-9]/, message: 'Password must contain at least 1 symbol.' }
+                        const rules = [{
+                                test: /^.{8,30}$/,
+                                message: 'Password must be 8–30 characters long.'
+                            },
+                            {
+                                test: /[A-Z]/,
+                                message: 'Password must contain at least 1 uppercase letter.'
+                            },
+                            {
+                                test: /[a-z]/,
+                                message: 'Password must contain at least 1 lowercase letter.'
+                            },
+                            {
+                                test: /[0-9]/,
+                                message: 'Password must contain at least 1 number.'
+                            },
+                            {
+                                test: /[^A-Za-z0-9]/,
+                                message: 'Password must contain at least 1 symbol.'
+                            }
                         ];
 
                         let passRulePassed = true;

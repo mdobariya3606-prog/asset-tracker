@@ -395,7 +395,13 @@ $canAdd = $role !== 'EMPLOYEE';
                                         text-decoration: none;
                                         font-weight: 600;
                                     ">
-                                    <?= htmlspecialchars($notice['title']) ?>
+                                    <?php if ($role === 'ADMIN'): ?>
+                                        <a href="index.php?route=notices/edit&id=<?= (int)$notice['id'] ?>" style="color: inherit; text-decoration: underline; text-underline-offset: 3px;" title="Click to edit notice">
+                                            <?= htmlspecialchars($notice['title']) ?>
+                                        </a>
+                                    <?php else: ?>
+                                        <?= htmlspecialchars($notice['title']) ?>
+                                    <?php endif; ?>
                                 </td>
 
 

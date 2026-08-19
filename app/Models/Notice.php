@@ -77,4 +77,29 @@ class Notice
 
         route('notices');
     }
+
+    public function find(int $id): ?array
+    {
+        $stmt = $this->conn->prepare('
+            SELECT n.*, nt.title as title_name 
+            FROM notices n
+            JOIN notice_titles nt ON n.title_id = nt.id
+            WHERE n.id = ?
+        ');
+        $stmt->execute([$id]);
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $result ?: null;
+    }
+
+    public function update(int $id, array $data): bool
+    {
+        $stmt = $this->conn->prepare('UPDATE notices SET title_id = ?, message = ? WHERE id = ?');
+        return $stmt->execute([$data['title_id'], trim($data['message']), $id]);
+    }
+
+    public function delete(int $id): bool
+    {
+        $stmt = $this->conn->prepare('DELETE FROM notices WHERE id = ?');
+        return $stmt->execute([$id]);
+    }
 }
