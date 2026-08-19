@@ -114,10 +114,10 @@ class AssetRequest
 			'approved_by' => $value('approved_by'),
 			'rejected_at' => $value('rejected_at'),
 			'rejected_by' => $value('rejected_by'),
-			'rejection_reason' => $updatedAssetRequest['rejection_reason'],
+			'rejection_reason' => $updatedAssetRequest['rejection_reason'] ?? '',
 			'issued_at' => $value('issued_at'),
 			'issued_by' => $value('issued_by'),
-			'remark' => $updatedAssetRequest['remark'],
+			'remark' => $updatedAssetRequest['remark'] ?? '',
 			'returned_at' => $value('returned_at'),
 			'id' => $id,
 		]);

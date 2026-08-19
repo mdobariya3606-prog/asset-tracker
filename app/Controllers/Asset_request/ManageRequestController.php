@@ -172,22 +172,12 @@ class ManageRequestController
 		);
 
 		if ($requestStatus === 'APPROVED') {
-
-			$asset['status'] = 'AVAILABLE';
-			$asset['assigne'] = null;
-			$this->assetModel->update($asset['id'], $asset);
-			$this->removeUserFromAsset($asset['id']);
+			$this->assetModel->updateStatus($assetRequest['asset_id'], 'AVAILABLE', null);
 		}
 
 		$_SESSION['success'] = 'Request cancelled successfully';
 		route('assets/requests');
 		exit;
-	}
-
-	private function removeUserFromAsset(int $assetId)
-	{
-		$stmt = $this->conn->prepare('UPDATE assets set user_id = null where id = ?');
-		$stmt->execute([$assetId]);
 	}
 
 	private function validate(array $assetRequest): array

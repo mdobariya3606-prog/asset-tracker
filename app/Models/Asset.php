@@ -72,7 +72,7 @@ class Asset
 		];
 	}
 
-	public function validate(array $asset, ?int $excludeId = null): array
+	public function validate(array $inputData, ?int $excludeId = null): array
 	{
 		try {
 			$category_ids = $this->conn->query('select id from categories')->fetchAll(PDO::FETCH_COLUMN);
@@ -83,7 +83,7 @@ class Asset
 			exit();
 		}
 
-		$normalized = $this->normalizeInput($asset);
+		$normalized = $this->normalizeInput($inputData);
 		$errors = [];
 		$requiredFields = ['name', 'category_id', 'brand', 'model', 'serial_number', 'purchase_date', 'warranty_date', 'vendor_id', 'cost', 'status'];
 
@@ -91,7 +91,11 @@ class Asset
 			if (($normalized[$field] ?? '') === '') {
 				$errors[$field] = ucfirst(str_replace('_', ' ', $field)) . ' is required.';
 			}
-		}	
+		}
+
+		if (($normalized['name'] ?? '') !== '' && !preg_match('/^[a-zA-Z0-9 -]+$/', $normalized['name'])) {
+			$errors['name'] = 'Asset name can contain only alphabets, numbers, spaces, and hyphens.';
+		}
 
 		if (($normalized['name'] ?? '') !== '' && mb_strlen($normalized['name']) > 150) {
 			$errors['name'] = 'Asset name must not exceed 150 characters.';
@@ -162,6 +166,24 @@ class Asset
 		return $errors;
 	}
 
+	public function validateStatus(array $normalized)
+	{
+		$stmt = $this->conn->prepare('select * from assets where serial_number = ?');
+		$stmt->execute([$normalized['serial_number']]);
+		$asset = $stmt->fetch(PDO::FETCH_ASSOC);
+		$errors = [];
+
+		if ($normalized['status'] === 'ASSIGNED' && $asset['status'] === 'AVAILABLE') {
+			$errors['status'] = 'This asset cannot be marked as assigned manually. It must be assigned through an asset request.';
+		}
+
+		if ($normalized['status'] === 'AVAILABLE' && $asset['status'] === 'ASSIGNED') {
+			$errors['status'] = 'This asset is currently assigned to a user and cannot be marked as available until it has been returned.';
+		}
+
+		return $errors;
+	}
+
 	private function isValidDate(string $value): bool
 	{
 		$value = trim($value);
@@ -203,7 +225,10 @@ class Asset
 	{
 		$normalized = $this->normalizeInput($asset);
 		$errors = $this->validate($normalized, $id);
-		if ($errors !== []) {
+
+		$errors = $this->validateStatus($normalized);
+
+		if (!empty($errors)) {
 			throw new InvalidArgumentException(implode(' ', $errors));
 		}
 
@@ -323,7 +348,7 @@ class Asset
 		return $stmt->fetch(PDO::FETCH_ASSOC) ?: [];
 	}
 
-	public function exists($assetId)
+	public function exists(int $assetId)
 	{
 		$sql = 'SELECT id
                 FROM assets 
@@ -335,7 +360,7 @@ class Asset
 		return $stmt->rowCount() > 0;
 	}
 
-	public function isAvailable($assetId)
+	public function isAvailable(int $assetId)
 	{
 		$sql = 'SELECT id
                 FROM assets 
@@ -450,7 +475,7 @@ class Asset
 		$subtotal = number_format($subtotal, 2);
 		$total = number_format($total, 2);
 		$gst = number_format($gst, 2);
-	
+
 		$html = <<<HTML
 <!DOCTYPE html>
 <html>

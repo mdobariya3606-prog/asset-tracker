@@ -1,3 +1,4 @@
+<!-- <?php var_dump($errors); ?> -->
 <!DOCTYPE html>
 <html lang="en">
 
