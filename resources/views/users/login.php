@@ -726,7 +726,7 @@
         </div>
     </div>
 
-    <!-- <script>
+     <script>
         function togglePassword() {
             const input = document.getElementById('password');
             const eyeOpen = document.getElementById('eyeOpen');
@@ -849,7 +849,7 @@
             `;
             });
         });
-    </script> -->
+    </script> 
     <style>
         @keyframes spin {
             to {

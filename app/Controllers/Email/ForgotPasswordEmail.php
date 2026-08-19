@@ -76,7 +76,7 @@ class ForgotPasswordEmail
 
         $user = $this->userModel->findByEmail($email);
         if (!$user) {
-            $errors['email'] = 'User not found.';
+            $errors['email'] = 'Mail already sent.';
             view('fp-mail', ['errors' => $errors]);
             exit;
         }

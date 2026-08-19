@@ -34,6 +34,7 @@ class LoginController
 				$_SESSION['user_email'] = $user['email'];
 				$_SESSION['user_role'] = $user['role'];
 				$_SESSION['profile_image'] = $user['profile_image'];
+				$_SESSION['last_activity'] = time();
 
 				(new AuditLog($this->conn))->log('LOGIN');
 				route('users');
@@ -167,6 +168,7 @@ class LoginController
 		$_SESSION['user_email'] = $user['email'];
 		$_SESSION['user_role'] = $user['role'];
 		$_SESSION['profile_image'] = $user['profile_image'];
+		$_SESSION['last_activity'] = time();
 
 		return [
 			'success' => true,
