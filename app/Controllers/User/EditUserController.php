@@ -340,6 +340,8 @@ class EditUserController
 			exit;
 		}
 
+		$this->user->clearApprovedRequests($id);
+
 		if ($deletePerm) {
 			$this->conn->beginTransaction();
 			try {

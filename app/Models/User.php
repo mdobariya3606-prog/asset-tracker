@@ -126,9 +126,23 @@ class User
 
 	public function hasIssuedAssets(int $id): bool
 	{
-		$stmt = $this->conn->prepare("SELECT COUNT(*) FROM assets WHERE assignee_id = ? AND status = 'ASSIGNED'");
+		$stmt = $this->conn->prepare("
+			SELECT COUNT(*) 
+			FROM asset_requests
+			WHERE user_id = ? AND status = 'ISSUED'
+		");
 		$stmt->execute([$id]);
 		return (int)$stmt->fetchColumn() > 0;
+	}
+
+	public function clearApprovedRequests(int $id): void
+	{
+		$stmt = $this->conn->prepare('UPDATE assets set status = "AVAILABLE" where assignee_id = ?');
+		$stmt->execute([$id]);
+
+		$stmt = $this->conn->prepare('
+		UPDATE asset_requests set status = "REJECTED", rejected_at = now(), rejected_by = ?, rejection_reason = "User deleted." where status = "APPROVED" and user_id = ?');
+		$stmt->execute([$_SESSION['user_id'], $id]);
 	}
 
 	/**

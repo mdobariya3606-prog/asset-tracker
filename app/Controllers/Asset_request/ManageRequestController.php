@@ -92,10 +92,16 @@ class ManageRequestController
 		}
 
 		// If status is being set to APPROVED, ensure the user is not deleted
-		if ($inputAssetRequest['status'] === 'APPROVED') {
+		if ($inputAssetRequest['status'] === 'APPROVED' || $inputAssetRequest['status'] === 'ISSUED') {
 			$user = (new User($this->conn))->find($assetRequest['user_id'])[0];
 			if ($user['deleted_at']) {
-				$errors['general'] = 'Cannot approve this request because the employee has been deleted.';
+
+				if ($inputAssetRequest['status'] === 'ISSUED') {
+					$stmt = $this->conn->prepare('update assets set status = "AVAILABLE" where id = ?');
+					$stmt->execute([$asset['id']]);
+				}
+
+				$errors['general'] = 'Cannot approve/issue this request because the employee has been deleted.';
 				view('asset.requests.manage', [
 					'assetRequest' => $assetRequest,
 					'errors' => $errors,
