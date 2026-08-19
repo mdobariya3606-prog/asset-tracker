@@ -29,6 +29,10 @@ class EditUserController
 		$isOwnProfile = $id === (int)$_SESSION['user_id'];
 		$viewerRole = strtoupper($_SESSION['user_role'] ?? 'EMPLOYEE');
 
+		// if (!$isOwnProfile) {
+		// 	middleware('hr');
+		// }
+
 		$formData = $this->showForm($id);
 
 		if (!$formData) {
@@ -110,7 +114,7 @@ class EditUserController
 			if ($isOwnProfile) {
 				return true;
 			}
-			return $targetRole !== 'ADMIN';
+			return false;
 		}
 
 		if ($viewerRole === 'HR') {
@@ -135,6 +139,10 @@ class EditUserController
 		$id = (int)($getParams['id'] ?? 0);
 		$isOwnProfile = $id === (int)$_SESSION['user_id'];
 		$viewerRole = strtoupper($_SESSION['user_role'] ?? 'EMPLOYEE');
+
+		if (!$isOwnProfile) {
+			middleware('hr');
+		}
 
 		$currentUser = $this->user->find($id)[0] ?? null;
 

@@ -36,7 +36,7 @@ class ProfileController
 		if ($viewerRole === 'ADMIN') {
 			$canManageResetOrDelete = true;
 		} elseif ($viewerRole === 'MANAGER') {
-			$canManageResetOrDelete = $targetRole !== 'ADMIN';
+			$canManageResetOrDelete = false;
 		} elseif ($viewerRole === 'HR') {
 			$canManageResetOrDelete = $targetRole === 'EMPLOYEE';
 		}
