@@ -334,6 +334,12 @@ class EditUserController
 			exit;
 		}
 
+		if ($this->user->hasIssuedAssets($id)) {
+			$_SESSION['login_error'] = 'Cannot delete user: This user currently has assigned/issued assets. Please return all assets before deleting.';
+			route('users');
+			exit;
+		}
+
 		if ($deletePerm) {
 			$this->conn->beginTransaction();
 			try {

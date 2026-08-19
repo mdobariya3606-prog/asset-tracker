@@ -124,6 +124,13 @@ class User
 		return false;
 	}
 
+	public function hasIssuedAssets(int $id): bool
+	{
+		$stmt = $this->conn->prepare("SELECT COUNT(*) FROM assets WHERE assignee_id = ? AND status = 'ASSIGNED'");
+		$stmt->execute([$id]);
+		return (int)$stmt->fetchColumn() > 0;
+	}
+
 	/**
 	 * Reset a user's password without requiring the previous password.
 	 * Used for "forgot password" / admin-initiated reset flows.

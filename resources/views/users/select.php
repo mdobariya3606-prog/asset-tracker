@@ -200,6 +200,20 @@ function getSortIndicator(string $column, string $currentSort, string $currentOr
         endif;
         ?>
 
+        <?php
+        if (isset($_SESSION['login_error'])): ?>
+            <div class="alert-error" style="background: #fef2f2; border: 1px solid #fecaca; color: #7f1d1d; border-radius: 12px; padding: 14px 18px; font-size: 14px; font-weight: 500; margin-bottom: 24px; display: flex; align-items: center; gap: 10px;">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#f87171" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10" />
+                    <line x1="12" y1="8" x2="12" y2="12" />
+                    <line x1="12" y1="16" x2="12.01" y2="16" />
+                </svg>
+                <div><?= htmlspecialchars($_SESSION['login_error']) ?></div>
+            </div>
+        <?php unset($_SESSION['login_error']);
+        endif;
+        ?>
+
         <!-- Header Actions -->
         <div class="page-header">
             <div>
@@ -252,7 +266,7 @@ function getSortIndicator(string $column, string $currentSort, string $currentOr
 
                     <div class="dropdown-menu">
 
-                        <?php if ($dashboardUserRole !== 'EMPLOYEE'): ?>
+                        <?php if ($dashboardUserRole !== 'MANAGER' && $dashboardUserRole !== 'EMPLOYEE'): ?>
 
                             <button type="button" onclick="registerUser()">
                                 <span>➕</span>
