@@ -507,7 +507,7 @@
                     <?php if (empty($assets ?? [])): ?>
 
                         <tr>
-                            <td colspan="5" class="empty-state" style="text-align: center; padding: 36px 20px;">
+                            <td colspan="6" class="empty-state" style="text-align: center; padding: 36px 20px;">
                                 <?= ($hasActiveCategory || $hasActiveStatus || $hasActiveSearch) ? 'No assets found matching your filter criteria.' : 'No assets found yet.' ?>
                             </td>
                         </tr>
@@ -542,7 +542,6 @@
                                         <?= htmlspecialchars($asset['status'] !== '' ? $asset['status'] : 'Available') ?>
                                     </span>
                                 </td>
-
                             </tr>
 
                         <?php endforeach; ?>

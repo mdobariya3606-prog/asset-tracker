@@ -13,6 +13,10 @@ switch ("$method:$route") {
         (new SelectAssetController($conn))->show((int)($_GET['id'] ?? 0));
         return true;
 
+    case 'GET:assets/history':
+        (new SelectAssetController($conn))->history((int)($_GET['id'] ?? 0));
+        return true;
+
     case 'GET:assets/create':
         (new CreateAssetController($conn))->create();
         return true;

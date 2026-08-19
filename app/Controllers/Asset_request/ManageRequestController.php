@@ -37,10 +37,14 @@ class ManageRequestController
 		}
 
 		$statusEnum = $this->getStatus();
+		$asset = $this->assetModel->find($assetRequest['asset_id']);
+		$warrantyWarning = $this->getWarrantyWarning($asset['warranty_date'] ?? null);
 
 		view('asset.requests.manage', [
 			'assetRequest' => $assetRequest,
-			'statusEnum' => $statusEnum
+			'statusEnum' => $statusEnum,
+			'asset' => $asset,
+			'warrantyWarning' => $warrantyWarning,
 		]);
 	}
 
@@ -55,29 +59,69 @@ class ManageRequestController
 		];
 	}
 
+	private function getWarrantyWarning(?string $warrantyDate): ?array
+	{
+		if (empty($warrantyDate)) {
+			return null;
+		}
+
+		$today = new \DateTime('today');
+		$wDate = new \DateTime($warrantyDate);
+		$diff = $today->diff($wDate);
+		$daysRemaining = (int)$diff->format('%r%a');
+
+		if ($daysRemaining < 0) {
+			$absDays = abs($daysRemaining);
+			return [
+				'type' => 'expired',
+				'days' => $absDays,
+				'date' => $warrantyDate,
+				'message' => "Warranty expired {$absDays} day" . ($absDays === 1 ? '' : 's') . " ago on " . date('M d, Y', strtotime($warrantyDate)) . "."
+			];
+		}
+
+		if ($daysRemaining <= 15) {
+			return [
+				'type' => 'expiring_soon',
+				'days' => $daysRemaining,
+				'date' => $warrantyDate,
+				'message' => $daysRemaining === 0
+					? "Warranty expires today (" . date('M d, Y', strtotime($warrantyDate)) . ")!"
+					: "Warranty is expiring in {$daysRemaining} day" . ($daysRemaining === 1 ? '' : 's') . " (on " . date('M d, Y', strtotime($warrantyDate)) . ")."
+			];
+		}
+
+		return null;
+	}
+
 	public function update(int $requestId, array $inputAssetRequest)
 	{
 		$assetRequest = $this->assetRequestModel->findOrFail($requestId);
 		$errors = $this->validate($inputAssetRequest);
 		$statusEnum = $this->getStatus();
+		$asset = $this->assetModel->find($assetRequest['asset_id']);
+		$warrantyWarning = $this->getWarrantyWarning($asset['warranty_date'] ?? null);
 
 		if (!empty($errors)) {
 			view('asset.requests.manage', [
 				'errors' => $errors,
 				'statusEnum' => $statusEnum,
 				'assetRequest' => $assetRequest,
+				'asset' => $asset,
+				'warrantyWarning' => $warrantyWarning,
 			]);
 			exit;
 		}
 
 		$inputAssetRequest = $this->normalize($inputAssetRequest);
-		$asset = $this->assetModel->findOrFail($assetRequest['asset_id']);
 
 		if ($errors['general'] = $this->alreadyAssigned($asset, $assetRequest, $inputAssetRequest)) {
 			view('asset.requests.manage', [
 				'assetRequest' => $assetRequest,
 				'errors' => $errors,
 				'statusEnum' => $statusEnum,
+				'asset' => $asset,
+				'warrantyWarning' => $warrantyWarning,
 			]);
 			exit;
 		}
@@ -87,6 +131,8 @@ class ManageRequestController
 				'assetRequest' => $assetRequest,
 				'errors' => $errors,
 				'statusEnum' => $statusEnum,
+				'asset' => $asset,
+				'warrantyWarning' => $warrantyWarning,
 			]);
 			exit;
 		}
@@ -106,6 +152,8 @@ class ManageRequestController
 					'assetRequest' => $assetRequest,
 					'errors' => $errors,
 					'statusEnum' => $statusEnum,
+					'asset' => $asset,
+					'warrantyWarning' => $warrantyWarning,
 				]);
 				exit;
 			}

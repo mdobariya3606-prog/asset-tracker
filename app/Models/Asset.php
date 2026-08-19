@@ -404,6 +404,35 @@ class Asset
 		return $stmt->rowCount() > 0;
 	}
 
+	public function getAssignmentHistory(int $assetId): array
+	{
+		$sql = 'SELECT 
+					ar.*,
+					u.name AS user_name,
+					u.email AS user_email,
+					u.profile_image AS user_profile_image,
+					u.mobile AS user_mobile,
+					d.name AS department_name,
+					des.name AS designation_name,
+					appr.name AS approved_by_name,
+					iss.name AS issued_by_name
+				FROM asset_requests ar
+				LEFT JOIN users u ON ar.user_id = u.id
+				LEFT JOIN departments d ON u.department_id = d.id
+				LEFT JOIN designations des ON u.designation_id = des.id
+				LEFT JOIN users appr ON ar.approved_by = appr.id
+				LEFT JOIN users iss ON ar.issued_by = iss.id
+				WHERE ar.asset_id = ?
+				  AND ar.status IN ("APPROVED", "ISSUED", "RETURNED")
+				ORDER BY 
+					COALESCE(ar.returned_at, ar.issued_at, ar.approved_at, ar.created_at) DESC,
+					ar.id DESC';
+
+		$stmt = $this->conn->prepare($sql);
+		$stmt->execute([$assetId]);
+		return $stmt->fetchAll(PDO::FETCH_ASSOC);
+	}
+
 	public function export($option = 'pdf', ?int $categoryId = null, ?string $status = null, ?string $search = null)
 	{
 		middleware('auth');

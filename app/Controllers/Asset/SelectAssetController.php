@@ -80,6 +80,26 @@ class SelectAssetController
 		]);
 	}
 
+	public function history(int $id): void
+	{
+		middleware('auth');
+
+		$asset = $this->asset->find($id);
+
+		if (empty($asset)) {
+			$_SESSION['login_error'] = 'Asset not found.';
+			route('assets');
+			exit;
+		}
+
+		$history = $this->asset->getAssignmentHistory($id);
+
+		view('assets.history', [
+			'asset' => $asset,
+			'history' => $history,
+		]);
+	}
+
 	public function isAlreadyRequested()
 	{
 		$stmt = $this->conn->prepare('

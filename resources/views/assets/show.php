@@ -140,44 +140,92 @@
         }
 
         .actions {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 12px;
             padding: 0 34px 30px;
         }
 
         .actions a,
-        .actions .disabled {
-            flex: 1 1 140px;
-            padding: 12px 16px;
+        .actions .disabled,
+        .document-dropdown summary {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 11px 14px;
             border-radius: 10px;
             font-size: 13px;
             font-weight: 600;
             text-align: center;
             text-decoration: none;
+            cursor: pointer;
+            box-sizing: border-box;
+            width: 100%;
+            height: 42px;
+            transition: all 0.2s ease;
+        }
+
+        .actions a:hover,
+        .document-dropdown summary:hover {
+            transform: translateY(-1px);
         }
 
         .edit {
             color: #fff;
             background: #133458;
+            border: 1.5px solid #133458;
+        }
+
+        .edit:hover {
+            background: #1e4976;
+            border-color: #1e4976;
         }
 
         .delete {
             color: #b91c1c;
             background: #fef2f2;
-            border: 1px solid #fecaca;
+            border: 1.5px solid #fecaca;
+        }
+
+        .delete:hover {
+            background: #fee2e2;
+            border-color: #fca5a5;
         }
 
         .request {
             color: #047857;
             background: #ecfdf3;
-            border: 1px solid #a7f3d0;
+            border: 1.5px solid #a7f3d0;
+        }
+
+        .request:hover {
+            background: #dcfce7;
+            border-color: #86efac;
         }
 
         .back {
             color: #475569;
-            background: #fff;
-            border: 1px solid #cbd5e1;
+            background: #ffffff;
+            border: 1.5px solid #cbd5e1;
+        }
+
+        .back:hover {
+            background: #f8fafc;
+            color: #1e293b;
+            border-color: #94a3b8;
+        }
+
+        .history-btn {
+            color: #0f766e;
+            background: #f0fdfa;
+            border: 1.5px solid #99f6e4;
+        }
+
+        .history-btn:hover {
+            background: #ccfbf1;
+            border-color: #5eead4;
+            color: #115e59;
         }
 
         /* Disabled state for "Already Requested" */
@@ -187,46 +235,28 @@
             pointer-events: none;
             background: #e2e8f0;
             color: #64748b;
-            border-color: #cbd5e1;
-        }
-
-        @media (max-width: 560px) {
-            .details {
-                grid-template-columns: 1fr;
-            }
-
-            .hero,
-            .details {
-                padding-left: 24px;
-                padding-right: 24px;
-            }
-
-            .actions {
-                padding-left: 24px;
-                padding-right: 24px;
-            }
+            border: 1.5px solid #cbd5e1;
         }
 
         .document-dropdown {
             position: relative;
-            flex: 1 1 140px;
+            width: 100%;
         }
 
         .document-dropdown summary {
-            padding: 12px 16px;
-            border-radius: 10px;
             color: #1d4ed8;
             background: #eff6ff;
-            border: 1px solid #bfdbfe;
-            font-size: 13px;
-            font-weight: 600;
-            text-align: center;
-            cursor: pointer;
+            border: 1.5px solid #bfdbfe;
             list-style: none;
         }
 
         .document-dropdown summary::-webkit-details-marker {
             display: none;
+        }
+
+        .document-dropdown summary:hover {
+            background: #dbeafe;
+            border-color: #93c5fd;
         }
 
         .document-menu {
@@ -243,16 +273,41 @@
         }
 
         .document-menu a {
-            display: block;
+            display: flex;
+            align-items: center;
+            gap: 8px;
             padding: 11px 14px;
             color: #1e293b;
             font-size: 13px;
             font-weight: 500;
             text-decoration: none;
+            height: auto;
+            border-radius: 0;
+            border: none;
+            text-align: left;
         }
 
         .document-menu a:hover {
             background: #f1f5f9;
+            transform: none;
+        }
+
+        @media (max-width: 560px) {
+            .details {
+                grid-template-columns: 1fr;
+            }
+
+            .hero,
+            .details {
+                padding-left: 24px;
+                padding-right: 24px;
+            }
+
+            .actions {
+                padding-left: 24px;
+                padding-right: 24px;
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
@@ -334,35 +389,65 @@
         </section>
 
         <nav class="actions">
-            <a class="back" href="index.php?route=assets">Back</a>
+            <a class="back" href="index.php?route=assets">
+                <i data-lucide="arrow-left" style="width: 15px; height: 15px;"></i>
+                Back
+            </a>
+
+            <a class="history-btn" href="index.php?route=assets/history&id=<?= (int)$asset['id'] ?>">
+                <i data-lucide="history" style="width: 15px; height: 15px;"></i>
+                History
+            </a>
 
             <?php if ($canManageAssets): ?>
-                <a class="edit" href="index.php?route=assets/edit&id=<?= (int)$asset['id'] ?>">Edit Asset</a>
+                <a class="edit" href="index.php?route=assets/edit&id=<?= (int)$asset['id'] ?>">
+                    <i data-lucide="edit-3" style="width: 15px; height: 15px;"></i>
+                    Edit Asset
+                </a>
                 <a class="delete" href="index.php?route=assets/delete&id=<?= (int)$asset['id'] ?>"
-                    onclick="return confirm('Are you sure you want to delete this asset?');">Delete Asset</a>
+                    onclick="return confirm('Are you sure you want to delete this asset?');">
+                    <i data-lucide="trash-2" style="width: 15px; height: 15px;"></i>
+                    Delete
+                </a>
             <?php elseif ($canRequestAsset && $isAvailable): ?>
                 <?php if ($isAlreadyRequested): ?>
-                    <span class="disabled">Already Requested</span>
+                    <span class="disabled">
+                        <i data-lucide="clock" style="width: 15px; height: 15px;"></i>
+                        Requested
+                    </span>
                 <?php else: ?>
-                    <a class="request" href="index.php?route=assets/request&id=<?= (int)$asset['id'] ?>">Request Asset</a>
+                    <a class="request" href="index.php?route=assets/request&id=<?= (int)$asset['id'] ?>">
+                        <i data-lucide="send" style="width: 15px; height: 15px;"></i>
+                        Request Asset
+                    </a>
                 <?php endif; ?>
             <?php endif; ?>
 
             <details class="document-dropdown">
-                <summary>Documents</summary>
+                <summary>
+                    <i data-lucide="file-text" style="width: 15px; height: 15px;"></i>
+                    Documents
+                </summary>
 
                 <div class="document-menu">
                     <a href="index.php?route=assets/invoice&id=<?= (int)$asset['id'] ?>">
+                        <i data-lucide="file-check" style="width: 14px; height: 14px; color: #64748b;"></i>
                         Invoice
                     </a>
 
                     <a href="index.php?route=assets/warranty&id=<?= (int)$asset['id'] ?>">
+                        <i data-lucide="shield" style="width: 14px; height: 14px; color: #64748b;"></i>
                         Warranty Card
                     </a>
                 </div>
             </details>
         </nav>
     </main>
+
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        lucide.createIcons();
+    </script>
 </body>
 
 </html>
