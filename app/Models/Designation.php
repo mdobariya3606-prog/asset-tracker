@@ -49,4 +49,42 @@ class Designation
 
 		return $errors;
 	}
+
+	public function getDesignations()
+	{
+		$departmentId = filter_input(
+			INPUT_GET,
+			'department_id',
+			FILTER_VALIDATE_INT
+		);
+
+		if (!$departmentId) {
+			http_response_code(400);
+			echo json_encode([
+				'error' => 'Invalid department.'
+			]);
+			exit;
+		}
+
+		$designations = $this->getByDepartmentId($departmentId);
+
+		header('Content-Type: application/json');
+
+		echo json_encode($designations);
+		exit;
+	}
+
+	public function getByDepartmentId(int $departmentId): array
+	{
+		$stmt = $this->conn->prepare('
+			SELECT id, name
+			FROM designations
+			WHERE department_id = ?
+			ORDER BY name ASC'
+		);
+
+		$stmt->execute([$departmentId]);
+
+		return $stmt->fetchAll(PDO::FETCH_ASSOC);
+	}
 }

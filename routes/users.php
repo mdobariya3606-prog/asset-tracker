@@ -6,6 +6,7 @@ use App\Controllers\User\ProfileController;
 use App\Controllers\User\ResetPasswordController;
 use App\Controllers\User\SelectUserController;
 use App\Controllers\User\UserTrashController;
+use App\Models\Designation;
 use App\Models\Route;
 
 switch ("$method:$route") {
@@ -55,6 +56,10 @@ switch ("$method:$route") {
 
     case 'GET:users/delete/per':
         (new EditUserController($conn))->destroy($_GET, true);
+        return true;
+
+    case 'GET:users/designations':
+        (new Designation($conn))->getDesignations();
         return true;
 
     case 'GET:chart':

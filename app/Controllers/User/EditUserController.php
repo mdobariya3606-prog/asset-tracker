@@ -161,7 +161,6 @@ class EditUserController
 		// Apply role-based parameter restrictions
 		if ($viewerRole === 'HR') {
 			$postParams['role'] = $currentUser['role'];
-			$postParams['designation_id'] = $currentUser['designation_id'];
 		} elseif (!$this->isAdmin($viewerRole) && $isOwnProfile) {
 			$postParams['department_id'] = $currentUser['department_id'];
 			$postParams['designation_id'] = $currentUser['designation_id'];

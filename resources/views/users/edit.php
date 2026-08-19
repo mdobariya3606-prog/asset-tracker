@@ -278,6 +278,7 @@
             <?php endif; ?>
 
             <form action="index.php?route=users/edit&id=<?= $user_id ?>" method="post" enctype="multipart/form-data" novalidate id="editForm">
+
                 <!-- Hidden file and delete status inputs -->
                 <input type="file" name="profile_image" id="profile_image" accept=".png,.jpg,.jpeg,.webp" style="display: none;">
                 <input type="hidden" name="delete_profile_image" id="delete_profile_image" value="0">
@@ -351,8 +352,8 @@
                     $isOwnProfile = (int)($user['id'] ?? 0) === (int)($_SESSION['user_id'] ?? 0);
                     $targetRole = strtoupper($old['role'] ?? $user['role'] ?? 'EMPLOYEE');
                     $canEditRole = $viewerSessionRole === 'ADMIN';
-                    $canEditDepartment = $viewerSessionRole === 'ADMIN' || (!$isOwnProfile && $viewerSessionRole !== 'EMPLOYEE');
-                    $canEditDesignation = $viewerSessionRole === 'ADMIN' || ($viewerSessionRole === 'MANAGER' && !$isOwnProfile && $targetRole !== 'ADMIN');
+                    $canEditDepartment = $canEditDesignation = ($viewerSessionRole === 'ADMIN' || $viewerSessionRole === 'HR');
+                    // $canEditDesignation = $viewerSessionRole === 'ADMIN' || ($viewerSessionRole === 'MANAGER' && !$isOwnProfile && $targetRole !== 'ADMIN');
                     ?>
 
                     <?php if ($canEditRole): ?>
@@ -390,6 +391,7 @@
                         <div class="form-group <?php echo isset($errors['department_id']) ? 'has-error' : ''; ?>">
                             <label for="department_id">Department <span class="required">*</span></label>
                             <div class="input-wrapper">
+
                                 <select name="department_id" id="department_id">
                                     <option value="">Select department</option>
                                     <?php $currentDept = $old['department_id'] ?? $user['department_id'] ?? ''; ?>
@@ -397,6 +399,7 @@
                                         <option value="<?php echo $department['id']; ?>" <?php echo ($currentDept == $department['id']) ? 'selected' : ''; ?>><?php echo htmlspecialchars($department['name']); ?></option>
                                     <?php endforeach; ?>
                                 </select>
+
                                 <svg class="input-icon" viewBox="0 0 24 24">
                                     <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
                                     <polyline points="9 22 9 12 15 12 15 22" />
@@ -935,6 +938,77 @@
             const designationInput = document.getElementById('designation_id');
             if (designationInput) {
                 designationInput.addEventListener('change', () => validateRequired(designationInput, 'Designation'));
+            }
+
+            // --- Dependent Designation Dropdown (mirrors register page) ---
+            // Only wires up when both selects are present on the page — a MANAGER
+            // won't see the designation select at all per $canEditDesignation, so
+            // this safely no-ops for them.
+            if (departmentInput && designationInput) {
+                // Current designation id, so we can re-select it after the AJAX
+                // list comes back — same pattern as the register page's oldDesignationId.
+                const currentDesignationId = <?php echo json_encode($old['designation_id'] ?? $user['designation_id'] ?? ''); ?>;
+
+                const loadDesignations = async (preselectId = '') => {
+                    const departmentId = departmentInput.value;
+
+                    designationInput.innerHTML = '<option value="">Loading...</option>';
+                    designationInput.disabled = true;
+
+                    if (!departmentId) {
+                        designationInput.innerHTML = '<option value="">Select department first</option>';
+                        return;
+                    }
+
+                    try {
+                        const response = await fetch(
+                            `index.php?route=users/designations&department_id=${encodeURIComponent(departmentId)}`
+                        );
+
+                        if (!response.ok) {
+                            throw new Error('Failed to load designations.');
+                        }
+
+                        const data = await response.json();
+
+                        designationInput.innerHTML = '<option value="">Select designation</option>';
+
+                        data.forEach(item => {
+                            const option = document.createElement('option');
+                            option.value = item.id;
+                            option.textContent = item.name;
+
+                            if (String(item.id) === String(preselectId)) {
+                                option.selected = true;
+                            }
+
+                            designationInput.appendChild(option);
+                        });
+
+                        designationInput.disabled = false;
+
+                    } catch (error) {
+                        console.error(error);
+                        designationInput.innerHTML = '<option value="">Unable to load designations</option>';
+                        designationInput.disabled = true;
+                    }
+                };
+
+                departmentInput.addEventListener('change', () => {
+                    validateRequired(departmentInput, 'Department');
+                    // A manual department change means the old designation no longer
+                    // applies to the new department — don't try to preselect it.
+                    loadDesignations();
+                });
+
+                // On page load: if a department is already selected (the normal case
+                // for an admin editing an existing user), fetch its designations via
+                // the same endpoint and preselect the user's current designation —
+                // instead of trusting the server-rendered $designations to already
+                // be scoped correctly.
+                if (departmentInput.value) {
+                    loadDesignations(currentDesignationId);
+                }
             }
 
             const oldPassInput = document.getElementById('old_password');

@@ -220,17 +220,35 @@ class User
 			if (!$isEdit) {
 				$this->errors['department_id'] = 'Department is required.';
 			}
-		} elseif (!is_numeric($department_id)) {
-			$this->errors['department_id'] = 'Please select a department.';
+		} elseif (!filter_var($department_id, FILTER_VALIDATE_INT)) {
+			$this->errors['department_id'] = 'Please select a valid department.';
 		}
+
 
 		// --- Designation validation ---
 		if (empty($designation_id)) {
 			if (!$isEdit) {
 				$this->errors['designation_id'] = 'Designation is required.';
 			}
-		} elseif (!is_numeric($designation_id)) {
-			$this->errors['designation_id'] = 'Please select a designation.';
+		} elseif (!filter_var($designation_id, FILTER_VALIDATE_INT)) {
+			$this->errors['designation_id'] = 'Please select a valid designation.';
+		}
+
+
+		// --- Department → Designation relationship validation ---
+		if (
+			!empty($department_id) &&
+			!empty($designation_id) &&
+			filter_var($department_id, FILTER_VALIDATE_INT) &&
+			filter_var($designation_id, FILTER_VALIDATE_INT)
+		) {
+			if (!$this->designationBelongsToDepartment(
+				(int) $designation_id,
+				(int) $department_id
+			)) {
+				$this->errors['designation_id'] =
+					'Selected designation does not belong to the selected department.';
+			}
 		}
 
 		// --- Role validation ---
@@ -331,6 +349,26 @@ class User
 		}
 
 		return $this->errors;
+	}
+
+	private function designationBelongsToDepartment(
+		int $designationId,
+		int $departmentId
+	): bool {
+		$stmt = $this->conn->prepare(
+			'SELECT id
+         FROM designations
+         WHERE id = ?
+         AND department_id = ?
+         LIMIT 1'
+		);
+
+		$stmt->execute([
+			$designationId,
+			$departmentId
+		]);
+
+		return (bool) $stmt->fetchColumn();
 	}
 
 	/**

@@ -104,9 +104,12 @@
                         <?php endif; ?>
                     </div>
 
+                    <!-- departments -->
+
                     <div class="form-group <?php echo isset($errors['department_id']) ? 'has-error' : ''; ?>">
                         <label for="department_id">Department <span class="required">*</span></label>
                         <div class="input-wrapper">
+
                             <select name="department_id" id="department_id">
                                 <option value="">Select department</option>
                                 <?php foreach ($departments ?? [] as $department): ?>
@@ -116,6 +119,7 @@
                                     </option>
                                 <?php endforeach; ?>
                             </select>
+
                             <svg class="input-icon" viewBox="0 0 24 24">
                                 <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
                                 <polyline points="9 22 9 12 15 12 15 22" />
@@ -133,17 +137,13 @@
                         <?php endif; ?>
                     </div>
 
+                    <!-- designations -->
+
                     <div class="form-group <?php echo isset($errors['designation_id']) ? 'has-error' : ''; ?>">
                         <label for="designation_id">Designation <span class="required">*</span></label>
                         <div class="input-wrapper">
-                            <select name="designation_id" id="designation_id">
-                                <option value="">Select designation</option>
-                                <?php foreach ($designations ?? [] as $designation): ?>
-                                    <option value="<?php echo $designation['id']; ?>"
-                                        <?php echo (isset($old['designation_id']) && $old['designation_id'] == $designation['id']) ? 'selected' : ''; ?>>
-                                        <?php echo htmlspecialchars($designation['name']); ?>
-                                    </option>
-                                <?php endforeach; ?>
+                            <select name="designation_id" id="designation_id" disabled>
+                                <option value="">Select department first</option>
                             </select>
                             <svg class="input-icon" viewBox="0 0 24 24">
                                 <rect x="2" y="7" width="20" height="14" rx="2" ry="2" />
@@ -479,13 +479,70 @@
             }
 
             const deptInput = document.getElementById('department_id');
-            if (deptInput) {
-                deptInput.addEventListener('change', () => validateRequired(deptInput, 'Department'));
-            }
-
             const desigInput = document.getElementById('designation_id');
-            if (desigInput) {
-                desigInput.addEventListener('change', () => validateRequired(desigInput, 'Designation'));
+            const oldDesignationId = <?php echo json_encode($old['designation_id'] ?? ''); ?>;
+
+            if (deptInput && desigInput) {
+                deptInput.addEventListener('change', async () => {
+                    validateRequired(deptInput, 'Department');
+
+                    const departmentId = deptInput.value;
+
+                    desigInput.innerHTML = '<option value="">Loading...</option>';
+                    desigInput.disabled = true;
+
+                    if (!departmentId) {
+                        desigInput.innerHTML = '<option value="">Select department first</option>';
+                        return;
+                    }
+
+                    try {
+                        const response = await fetch(
+                            `index.php?route=users/designations&department_id=${encodeURIComponent(departmentId)}`
+                        );
+
+                        if (!response.ok) {
+                            throw new Error('Failed to load designations.');
+                        }
+
+                        const data = await response.json();
+
+                        desigInput.innerHTML = '<option value="">Select designation</option>';
+
+                        data.forEach(item => {
+                            const option = document.createElement('option');
+                            option.value = item.id;
+                            option.textContent = item.name;
+
+                            if (String(item.id) === String(oldDesignationId)) {
+                                option.selected = true;
+                            }
+
+                            desigInput.appendChild(option);
+                        });
+
+                        desigInput.disabled = false;
+
+                        if (oldDesignationId) {
+                            validateRequired(desigInput, 'Designation');
+                        }
+
+                    } catch (error) {
+                        console.error(error);
+                        desigInput.innerHTML =
+                            '<option value="">Unable to load designations</option>';
+                        desigInput.disabled = true;
+                    }
+                });
+
+                desigInput.addEventListener('change', () =>
+                    validateRequired(desigInput, 'Designation')
+                );
+
+                // Load designations automatically when an old department exists.
+                if (deptInput.value) {
+                    deptInput.dispatchEvent(new Event('change'));
+                }
             }
 
             const roleInput = document.getElementById('role');
