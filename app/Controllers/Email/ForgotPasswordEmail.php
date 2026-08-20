@@ -6,8 +6,9 @@ use App\Config\Mail;
 use App\helpers\Csrf;
 use App\Models\User;
 use DateTime;
-use Exception;
 use PDO;
+use RuntimeException;
+use Throwable;
 
 class ForgotPasswordEmail
 {
@@ -74,22 +75,37 @@ class ForgotPasswordEmail
 
             $mailAddress = $user[0]['email'];
 
-            if ($mailAddress) {
-                $this->mail->send(
-                    $mailAddress,
-                    'Forgot password',
-                    $link
-                );
-            } else {
-                view(404);
+            if (empty($mailAddress) || !$this->mail->send(
+                $mailAddress,
+                'Forgot password',
+                $link
+            )) {
+                throw new RuntimeException('Password reset email could not be sent.');
             }
 
-            $_SESSION['success'] = 'Mail sent successfully.';
-
             $this->conn->commit();
-        } catch (Exception $e) {
-            $this->conn->rollBack();
-            throw $e;
+            $_SESSION['success'] = 'Mail sent successfully.';
+        } catch (Throwable $e) {
+            if ($this->conn->inTransaction()) {
+                $this->conn->rollBack();
+            }
+
+            logError($e, 'mail');
+            $message = 'The email could not be sent. No reset request was saved. Please try again later.';
+
+            if (empty($_SESSION['user_id'])) {
+                view('fp-mail', [
+                    'errors' => ['email' => $message],
+                ]);
+                exit;
+            }
+
+            $_SESSION['error'] = $message;
+            header(
+                'Location: index.php?route=users/edit&id=' .
+                    $_SESSION['user_id']
+            );
+            exit;
         }
 
         if (empty($_SESSION['user_id'])) {
@@ -110,8 +126,8 @@ class ForgotPasswordEmail
     public function sendForgotPasswordMail(array $data)
     {
         if (!Csrf::validate($_POST['csrf_token'] ?? null)) {
-            http_response_code(403);
-            exit('Invalid CSRF token.');
+            view(403);
+            exit;
         }
 
         $email = $data['email'];

@@ -59,7 +59,9 @@ class ResetPasswordService
             'password' => $password,
         ]);
 
-        (new AuditLog((new Database()->getConnection())))->log('PASSWORD_CHANGE', null, $userId);
+        $conn = (new Database())->getConnection();
+
+        ((new AuditLog($conn))->log('PASSWORD_CHANGE', null, $userId));
     }
 
     public function removeToken(int $id) {

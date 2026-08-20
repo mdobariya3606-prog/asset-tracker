@@ -2,8 +2,8 @@
 
 namespace App\Config;
 
-use Exception;
 use PHPMailer\PHPMailer\PHPMailer;
+use Throwable;
 
 class Mail
 {
@@ -40,16 +40,17 @@ class Mail
         string $to,
         string $subject,
         string $body
-    ) {
+    ): bool {
         try {
             $this->mailer->addAddress($to);
             $this->mailer->Subject = $subject;
             $this->mailer->Body = $body;
 
-            return $this->mailer->send();
-        } catch (Exception $e) {
-            view(500);
-            logError($e);
+            return (bool) $this->mailer->send();
+        } catch (Throwable $e) {
+            // Email is a secondary action. Do not break the primary request.
+            logError($e, 'mail');
+            return false;
         }
     }
 }

@@ -24,6 +24,7 @@ function view(int|string $viewFile, array $vars = []): void
         
         'notices.select' => $prefix . '/notices/select.php',
         'notices.create' => $prefix . '/notices/create.php',
+        'notices.create-custom' => $prefix . '/notices/create-custom.php',
         'notices.edit' => $prefix . '/notices/edit.php',
         
         'departments.create' => $prefix . '/departments/create.php',

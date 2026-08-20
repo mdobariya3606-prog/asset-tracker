@@ -71,8 +71,8 @@ class ResetPasswordController
         array $postData
     ) {
         if (!Csrf::validate($_POST['csrf_token'] ?? null)) {
-            http_response_code(403);
-            exit('Invalid CSRF token.');
+            view(403);
+            exit;
         }
 
         $id = (int) $getData['id'];
