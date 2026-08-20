@@ -639,14 +639,49 @@ class User
 		$sql = "SELECT u.*, d.name AS department_name, des.name AS designation_name
 				FROM users u
 				LEFT JOIN departments d ON u.department_id = d.id
-				LEFT JOIN designations des ON u.designation_id = des.id";
+				LEFT JOIN designations des ON u.designation_id = des.id
+				WHERE u.deleted_at IS NULL";
+		$params = [];
 
-		if (strtolower(trim($role)) == 'employee') {
-			$sql .= ' WHERE role = "EMPLOYEE"';
+		// The employee routes always remain employee-only. For the general
+		// report, role filtering follows the same ADMIN-only rule as the list.
+		$filterRole = strtolower(trim((string)$role)) === 'employee'
+			? 'EMPLOYEE'
+			: null;
+		if ($filterRole === null && strtoupper($this->dashboardUser()['role'] ?? '') === 'ADMIN') {
+			$requestedRole = strtoupper(trim((string)($_GET['role'] ?? '')));
+			if (in_array($requestedRole, ['ADMIN', 'HR', 'MANAGER', 'EMPLOYEE'], true)) {
+				$filterRole = $requestedRole;
+			}
 		}
-		$sql .= ' ORDER BY role';
 
-		$stmt = $this->conn->query($sql);
+		$search = trim((string)($_GET['search'] ?? ''));
+		if ($search !== '') {
+			$sql .= ' AND (u.name LIKE ? OR u.email LIKE ? OR u.mobile LIKE ? OR d.name LIKE ? OR des.name LIKE ?)';
+			$searchTerm = '%' . $search . '%';
+			$params = [$searchTerm, $searchTerm, $searchTerm, $searchTerm, $searchTerm];
+		}
+
+		$departmentId = filter_input(INPUT_GET, 'department_id', FILTER_VALIDATE_INT);
+		if ($departmentId !== false && $departmentId !== null && $departmentId > 0) {
+			$sql .= ' AND u.department_id = ?';
+			$params[] = $departmentId;
+		}
+
+		$designationId = filter_input(INPUT_GET, 'designation_id', FILTER_VALIDATE_INT);
+		if ($designationId !== false && $designationId !== null && $designationId > 0) {
+			$sql .= ' AND u.designation_id = ?';
+			$params[] = $designationId;
+		}
+
+		if ($filterRole !== null) {
+			$sql .= ' AND u.role = ?';
+			$params[] = $filterRole;
+		}
+
+		$sql .= ' ORDER BY u.role, u.name';
+		$stmt = $this->conn->prepare($sql);
+		$stmt->execute($params);
 
 		$users = $stmt->fetchAll(PDO::FETCH_ASSOC);
 

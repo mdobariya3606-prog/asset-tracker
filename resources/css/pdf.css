@@ -4,6 +4,11 @@
     padding: 0;
 }
 
+@page {
+    size: A4 landscape;
+    margin: 14mm;
+}
+
 body {
     /* Using clean, universally supported fallback fonts */
     font-family: Arial, Helvetica, "Segoe UI", sans-serif;
@@ -41,7 +46,11 @@ table {
     border-collapse: collapse;
     text-align: left;
     margin-top: 12px;
+    table-layout: fixed;
 }
+
+thead { display: table-header-group; }
+tr { page-break-inside: avoid; }
 
 th, td {
     padding: 10px 12px;
@@ -71,7 +80,10 @@ tbody tr:nth-child(even) {
 td {
     color: #334155;
     font-size: 11px;
+    overflow-wrap: anywhere;
 }
+
+.empty-state { text-align: center; color: #64748b; }
 
 /* Monospace font for IDs and Timestamps to make them sharp */
 td.id-cell, td.date-cell {

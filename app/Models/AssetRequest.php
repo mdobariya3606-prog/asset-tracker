@@ -136,19 +136,40 @@ class AssetRequest
 		return $this->conn->query($sql)->fetchColumn();
 	}
 
+	/**
+	 * Return requests using the same filters as the requests directory.
+	 * HR and employees can only see their own requests.
+	 */
+	public function filtered(?string $status = null): array
+	{
+		$sql = 'SELECT ar.*, a.name AS asset_name
+				FROM asset_requests ar
+				LEFT JOIN assets a ON ar.asset_id = a.id
+				WHERE 1 = 1';
+		$params = [];
+
+		$role = strtoupper((string)($_SESSION['user_role'] ?? 'EMPLOYEE'));
+		if (in_array($role, ['HR', 'EMPLOYEE'], true)) {
+			$sql .= ' AND ar.user_id = ?';
+			$params[] = (int)$_SESSION['user_id'];
+		}
+
+		$status = strtoupper(trim((string)$status));
+		if ($status !== '') {
+			$sql .= ' AND UPPER(ar.status) = ?';
+			$params[] = $status;
+		}
+
+		$sql .= ' ORDER BY ar.status, ar.id DESC';
+		$stmt = $this->conn->prepare($sql);
+		$stmt->execute($params);
+		return $stmt->fetchAll(PDO::FETCH_ASSOC);
+	}
+
 	public function export($option = 'pdf')
 	{
 		middleware('auth');
-		$stmt = $this->conn->query('select * from asset_requests order by status');
-
-		$role = $_SESSION['user_role'];
-
-		if ($role === 'HR' || $role === 'EMPLOYEE') {
-			$stmt = $this->conn->prepare('select * from asset_requests where user_id = ? order by status');
-			$stmt->execute([$_SESSION['user_id']]);
-		}
-
-		$requests = $stmt->fetchAll(PDO::FETCH_ASSOC);
+		$requests = $this->filtered($_GET['status'] ?? null);
 
 		if (strtolower(trim($option)) == 'excel') {
 			view('asset.requests.excel', ['requests' => $requests]);

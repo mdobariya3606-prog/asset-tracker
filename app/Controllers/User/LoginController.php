@@ -222,6 +222,11 @@ class LoginController
 	 */
 	public function logout(): void
 	{
+		if (!Csrf::validate($_POST['csrf_token'] ?? null)) {
+			view(403);
+			exit;
+		}
+
 		if (isset($_COOKIE['remember_token'])) {
 			$this->user->removeRememberToken($_COOKIE['remember_token']);
 

@@ -23,16 +23,14 @@ class SelectAssetRequestController
 	public function index()
 	{
 		middleware('auth');
-
-		if ($_SESSION['user_role'] === 'HR' || $_SESSION['user_role'] === 'EMPLOYEE') {
-			$requests = $this->myRequests();
-			view('asset.requests.select', ['requests' => $requests]);
-			exit;
-		}
-
-		$stmt = $this->conn->query('select * from asset_requests order by status');
-		$requests = $stmt->fetchAll(PDO::FETCH_ASSOC);
-		view('asset.requests.select', ['requests' => $requests]);
+		$status = trim((string)($_GET['status'] ?? ''));
+		$requests = $this->assetRequest->filtered($status);
+		$statuses = ['PENDING', 'APPROVED', 'REJECTED', 'ISSUED', 'RETURNED', 'CANCELLED'];
+		view('asset.requests.select', [
+			'requests' => $requests,
+			'selectedStatus' => $status,
+			'statuses' => $statuses,
+		]);
 		exit;
 	}
 

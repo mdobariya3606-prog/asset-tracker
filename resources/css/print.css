@@ -1,0 +1,19 @@
+@media print {
+    @page { size: auto; margin: 12mm; }
+
+    html, body { background: #fff !important; color: #111827 !important; }
+    body { padding: 0 !important; font-size: 10pt !important; }
+    .navbar, .page-header-actions, .export-loader-overlay, .print-hidden,
+    button, a.btn, .pagination, .alert-success, .alert-error { display: none !important; }
+    .page { width: 100% !important; max-width: none !important; margin: 0 !important; padding: 0 !important; }
+    .page-header { margin: 0 0 12pt !important; }
+    .page-header h2 { font-size: 18pt !important; color: #111827 !important; }
+    .page-header p { color: #4b5563 !important; }
+    .card { border: 0 !important; box-shadow: none !important; overflow: visible !important; }
+    table { width: 100% !important; min-width: 0 !important; border-collapse: collapse !important; }
+    thead { display: table-header-group; }
+    tr { page-break-inside: avoid; break-inside: avoid; }
+    th { background: #e5e7eb !important; color: #111827 !important; }
+    th, td { padding: 6pt 5pt !important; border-bottom: 1px solid #d1d5db !important; }
+    a { color: #111827 !important; text-decoration: none !important; }
+}

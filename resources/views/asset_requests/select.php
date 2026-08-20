@@ -8,6 +8,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="resources/css/style.css">
     <link rel="stylesheet" href="resources/css/user.css">
+    <link rel="stylesheet" href="resources/css/print.css">
 
     <style>
         /* Export Loading Overlay */
@@ -198,6 +199,13 @@
             }
         }
 
+        /* Filter bar — matches the Assets directory */
+        .filters-container { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 20px; }
+        .filter-select { padding: 9px 34px 9px 12px; background-color: var(--white); border: 1.5px solid var(--slate-200); border-radius: var(--radius-sm); font-family: inherit; font-size: 13px; color: var(--slate-800); outline: none; cursor: pointer; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%2394a3b8' stroke-width='2'%3E%3Cpath d='M4 6l4 4 4-4'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 10px center; min-width: 160px; }
+        .filter-select:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(59,130,246,.1); }
+        .filter-status { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; padding: 2px 4px; }
+        @media (max-width: 768px) { .filters-container { flex-direction: column; align-items: stretch; } .filter-select { width: 100%; } }
+
         @media (max-width: 480px) {
             .page-header-actions {
                 flex-direction: column;
@@ -264,6 +272,29 @@
                         Add Asset</a>
                 <?php endif; ?>
             </div>
+        </div>
+
+        <form class="filters-container print-hidden" method="get" action="index.php" id="filterForm">
+            <input type="hidden" name="route" value="assets/requests">
+            <select name="status" id="statusFilter" class="filter-select" aria-label="Filter by status">
+                <option value="">All Statuses</option>
+                <?php foreach (($statuses ?? []) as $statusOption): ?>
+                    <option value="<?= htmlspecialchars($statusOption) ?>" <?= strtoupper((string)($selectedStatus ?? '')) === $statusOption ? 'selected' : '' ?>><?= htmlspecialchars($statusOption) ?></option>
+                <?php endforeach; ?>
+            </select>
+        </form>
+
+        <div id="activeFiltersContainer">
+            <?php $hasActiveStatus = !empty($selectedStatus); ?>
+            <?php if ($hasActiveStatus): ?>
+                <div class="filter-status">
+                    <span style="font-size:13px;color:var(--slate-500);font-weight:600;margin-right:4px;">Active Filters:</span>
+                    <?php if ($hasActiveStatus): ?>
+                        <span class="badge" style="background:#ecfdf5;color:#10b981;padding:5px 12px;border-radius:20px;font-size:12px;font-weight:600;border:1px solid rgba(16,185,129,.2);display:inline-flex;align-items:center;gap:8px;">Status: <?= htmlspecialchars($selectedStatus) ?><a href="index.php?route=assets/requests" style="color:#10b981;text-decoration:none;font-size:15px;font-weight:bold;line-height:1;">&times;</a></span>
+                    <?php endif; ?>
+                    <a href="index.php?route=assets/requests" style="font-size:12px;color:var(--slate-400);text-decoration:none;font-weight:600;margin-left:8px;">Clear Filters</a>
+                </div>
+            <?php endif; ?>
         </div>
 
         <!-- Success Message Banner -->
@@ -419,20 +450,76 @@
         }
 
         function exportPDF() {
+            const query = getFilterQueryParams();
             downloadFileWithLoader(
-                'index.php?route=assets/requests/pdf',
+                'index.php?route=assets/requests/pdf' + query,
                 'asset_requests.pdf',
                 'Generating PDF document...'
             );
         }
 
         function exportExcel() {
+            const query = getFilterQueryParams();
             downloadFileWithLoader(
-                'index.php?route=assets/requests/excel',
+                'index.php?route=assets/requests/excel' + query,
                 'asset_requests.xlsx',
                 'Preparing Excel spreadsheet...'
             );
         }
+
+        function getFilterQueryParams() {
+            const params = new URLSearchParams();
+            const status = document.getElementById('statusFilter')?.value;
+            if (status) params.set('status', status);
+            const value = params.toString();
+            return value ? '&' + value : '';
+        }
+
+        function applyStatusFilter() {
+            const params = new URLSearchParams({ route: 'assets/requests' });
+            const status = document.getElementById('statusFilter')?.value;
+            if (status) params.set('status', status);
+            fetchData('index.php?' + params.toString());
+        }
+
+        function fetchData(url, updateHistory = true) {
+            const tableBody = document.querySelector('tbody');
+            if (tableBody) tableBody.style.opacity = '0.5';
+
+            fetch(url)
+                .then(response => response.text())
+                .then(html => {
+                    const doc = new DOMParser().parseFromString(html, 'text/html');
+                    const newCard = doc.querySelector('.card');
+                    const oldCard = document.querySelector('.card');
+                    if (newCard && oldCard) oldCard.innerHTML = newCard.innerHTML;
+
+                    const newFilters = doc.querySelector('#activeFiltersContainer');
+                    const oldFilters = document.querySelector('#activeFiltersContainer');
+                    if (newFilters && oldFilters) oldFilters.innerHTML = newFilters.innerHTML;
+
+                    const params = new URL(url, window.location.href).searchParams;
+                    const statusFilter = document.getElementById('statusFilter');
+                    if (statusFilter) statusFilter.value = params.get('status') || '';
+                    if (updateHistory) history.replaceState(null, '', url);
+                })
+                .catch(error => console.error('Error fetching asset requests:', error))
+                .finally(() => { if (tableBody) tableBody.style.opacity = '1'; });
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('filterForm');
+            const status = document.getElementById('statusFilter');
+            form?.addEventListener('submit', event => { event.preventDefault(); applyStatusFilter(); });
+            status?.addEventListener('change', applyStatusFilter);
+            document.getElementById('activeFiltersContainer')?.addEventListener('click', event => {
+                const link = event.target.closest('a');
+                if (link?.href) { event.preventDefault(); fetchData(link.href); }
+            });
+            window.addEventListener('popstate', () => fetchData(window.location.href, false));
+        });
+
+        function printTable() { window.print(); }
     </script>
 
     <!-- Exporting Overlay -->

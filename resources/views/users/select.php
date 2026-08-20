@@ -35,6 +35,7 @@ function getSortIndicator(string $column, string $currentSort, string $currentOr
     <title>Users Dashboard — AssetTracker</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="resources/css/user.css">
+    <link rel="stylesheet" href="resources/css/print.css">
 
     <style>
         /* Export Loading Overlay */
@@ -766,6 +767,10 @@ function getSortIndicator(string $column, string $currentSort, string $currentOr
                 'Users_Report.xlsx',
                 'Preparing Excel spreadsheet...'
             );
+        }
+
+        function printTable() {
+            window.print();
         }
 
         function performSearch(query = null) {
