@@ -22,21 +22,19 @@ class ResetPasswordController
 	{
 		$id = (int)($getParams['id'] ?? 0);
 		$user = $this->user->find($id)[0] ?? null;
+
 		if ($user === null) {
 			$_SESSION['login_error'] = 'User not found.';
-			route('users');;
+			route('users');
 			exit;
 		}
 
 		$this->authorizePrivileged($user['role'] ?? 'EMPLOYEE');
 
-		$errors = [];
-		$old = [];
-
 		view('users.reset-password', [
 			'user' => $user,
-			'errors' => $errors,
-			'old' => $old,
+			'errors' => [],
+			'old' => [],
 		]);
 		exit;
 	}
@@ -61,6 +59,7 @@ class ResetPasswordController
 				view(403);
 				exit;
 			}
+
 			return;
 		}
 
@@ -69,6 +68,7 @@ class ResetPasswordController
 				view(403);
 				exit;
 			}
+
 			return;
 		}
 
@@ -85,6 +85,7 @@ class ResetPasswordController
 
 		$id = (int)($getParams['id'] ?? 0);
 		$user = $this->user->find($id)[0] ?? null;
+
 		if ($user === null) {
 			$_SESSION['login_error'] = 'User not found.';
 			route('users');
@@ -118,21 +119,27 @@ class ResetPasswordController
 		}
 
 		if (!empty($errors)) {
-			$old = $postParams;
-			view('users.reset-password', ['errors' => $errors, 'old' => $old]);
+			view('users.reset-password', [
+				'errors' => $errors,
+				'old' => $postParams,
+			]);
 			return;
 		}
 
 		if (!$this->user->resetPassword($id, $password)) {
-			$errors['general'] = 'Failed to reset the password.';
-			$old = [];
-			view('users.reset-password', ['errors' => $errors, 'old' => $old]);
+			view('users.reset-password', [
+				'errors' => [
+					'general' => 'Failed to reset the password.',
+				],
+				'old' => [],
+			]);
 			return;
 		}
 
 		(new AuditLog($this->conn))->log('password_change', null, $id);
 
 		$_SESSION['success'] = 'Password reset successfully for ' . $user['name'] . '.';
+
 		route('users');
 		exit;
 	}

@@ -33,8 +33,8 @@ switch ("$method:$route") {
         (new CreateAssetController($conn))->update((int)($_GET['id'] ?? 0), $_POST);
         return true;
 
-    case 'GET:assets/delete':
-        (new CreateAssetController($conn))->delete((int)($_GET['id'] ?? 0));
+    case 'POST:assets/delete':
+        (new CreateAssetController($conn))->delete();
         return true;
 
     case 'GET:assets/invoice':

@@ -13,13 +13,22 @@ use RuntimeException;
 
 class ResetPasswordController
 {
+    /* =========================================================
+	 * PROPERTIES
+	 * ========================================================= */
+
     private PDO $conn;
     private ResetPasswordService $resetPasswordService;
     private ResetPasswordValidator $validator;
 
+    /* =========================================================
+	 * CONSTRUCTOR
+	 * ========================================================= */
+
     public function __construct(PDO $conn)
     {
         $this->conn = $conn;
+
         $userModel = new User($conn);
         $forgotPasswordModel = new ForgotPassword($conn);
 
@@ -30,6 +39,10 @@ class ResetPasswordController
 
         $this->validator = new ResetPasswordValidator();
     }
+
+    /* =========================================================
+	 * RESET PASSWORD
+	 * ========================================================= */
 
     public function resetPassword(array $data)
     {
@@ -49,11 +62,14 @@ class ResetPasswordController
         exit;
     }
 
+    /* =========================================================
+	 * UPDATE PASSWORD
+	 * ========================================================= */
+
     public function updatePassword(
         array $getData,
         array $postData
     ) {
-
         if (!Csrf::validate($_POST['csrf_token'] ?? null)) {
             http_response_code(403);
             exit('Invalid CSRF token.');
@@ -104,7 +120,12 @@ class ResetPasswordController
         $this->resetPasswordService->removeToken($id);
 
         $_SESSION['success'] = 'Password updated successfully.';
-        (new AuditLog($this->conn))->log('PASSWORD_CHANGE', null, $reset['user_id']);
+
+        (new AuditLog($this->conn))->log(
+            'PASSWORD_CHANGE',
+            null,
+            $reset['user_id']
+        );
 
         route(
             $_SESSION['user_id']

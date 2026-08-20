@@ -8,8 +8,16 @@ use PDO;
 
 class EditNoticeController
 {
+    /* =========================================================
+	 * PROPERTIES
+	 * ========================================================= */
+
     private PDO $conn;
     private Notice $notice;
+
+    /* =========================================================
+	 * CONSTRUCTOR
+	 * ========================================================= */
 
     public function __construct(PDO $conn)
     {
@@ -17,12 +25,16 @@ class EditNoticeController
         $this->notice = new Notice($conn);
     }
 
+    /* =========================================================
+	 * EDIT NOTICE
+	 * ========================================================= */
+
     public function edit(array $getParams)
     {
         middleware('auth');
         middleware('admin');
 
-        $id = (int)($getParams['id'] ?? 0);
+        $id = (int) ($getParams['id'] ?? 0);
         $notice = $this->notice->find($id);
 
         if (!$notice) {
@@ -38,8 +50,13 @@ class EditNoticeController
             'errors' => [],
             'old' => [],
         ]);
+
         exit;
     }
+
+    /* =========================================================
+	 * UPDATE NOTICE
+	 * ========================================================= */
 
     public function update(array $getParams, array $postData)
     {
@@ -47,10 +64,11 @@ class EditNoticeController
             http_response_code(403);
             exit('Invalid CSRF token.');
         }
+
         middleware('auth');
         middleware('admin');
 
-        $id = (int)($getParams['id'] ?? 0);
+        $id = (int) ($getParams['id'] ?? 0);
         $notice = $this->notice->find($id);
 
         if (!$notice) {
@@ -62,12 +80,14 @@ class EditNoticeController
 
         if (!empty($validation['errors'])) {
             $noticeTitles = $this->notice->getTitles();
+
             view('notices.edit', [
                 'notice' => $notice,
                 'noticeTitles' => $noticeTitles,
                 'errors' => $validation['errors'],
                 'old' => $validation['old'],
             ]);
+
             exit;
         }
 
@@ -77,6 +97,10 @@ class EditNoticeController
         route('notices');
         exit;
     }
+
+    /* =========================================================
+	 * DELETE NOTICE
+	 * ========================================================= */
 
     public function destroy(array $getParams)
     {
@@ -88,7 +112,7 @@ class EditNoticeController
         middleware('auth');
         middleware('admin');
 
-        $id = (int)($getParams['id'] ?? 0);
+        $id = (int) ($getParams['id'] ?? 0);
         $notice = $this->notice->find($id);
 
         if (!$notice) {
@@ -103,26 +127,43 @@ class EditNoticeController
         exit;
     }
 
+    /* =========================================================
+	 * VALIDATION
+	 * ========================================================= */
+
     private function validateNotice(array $notice): array
     {
-        $titleId = (int)($notice['title_id'] ?? 0);
+        $titleId = (int) ($notice['title_id'] ?? 0);
         $message = trim($notice['message'] ?? '');
+
         $errors = [];
-        $old = ['title_id' => $titleId, 'message' => $message];
+        $old = [
+            'title_id' => $titleId,
+            'message' => $message,
+        ];
 
         if (empty($message)) {
             $errors['message'] = 'Message is required.';
         } elseif (strlen($message) < 5) {
-            $errors['message'] = 'Message must be at least 5 characters.';
+            $errors['message'] =
+                'Message must be at least 5 characters.';
         }
 
         if ($titleId === 0) {
-            $errors['title_id'] = 'Please select a notice title.';
+            $errors['title_id'] =
+                'Please select a notice title.';
         } else {
-            $stmt = $this->conn->prepare('SELECT id FROM notice_titles WHERE id = ?');
+            $stmt = $this->conn->prepare(
+                'SELECT id
+				FROM notice_titles
+				WHERE id = ?'
+            );
+
             $stmt->execute([$titleId]);
+
             if ($stmt->rowCount() === 0) {
-                $errors['title_id'] = 'Invalid notice title.';
+                $errors['title_id'] =
+                    'Invalid notice title.';
             }
         }
 

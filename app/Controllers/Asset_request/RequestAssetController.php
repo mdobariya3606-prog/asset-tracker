@@ -10,9 +10,13 @@ use Throwable;
 
 class RequestAssetController
 {
+	/* =========================================================
+	 * PROPERTIES
+	 * ========================================================= */
+
 	private \PDO $conn;
-	private AssetRequest $assetRequestModel;
 	private Asset $assetModel;
+	private AssetRequest $assetRequestModel;
 
 	public function __construct(\PDO $conn)
 	{
@@ -21,26 +25,34 @@ class RequestAssetController
 		$this->assetRequestModel = new AssetRequest($conn);
 	}
 
-	public function store(int $asset_id, array $assetRequest)
+	/* =========================================================
+	 * REQUEST ACTIONS
+	 * ========================================================= */
+
+	public function store(int $assetId, array $assetRequest)
 	{
 		if (!Csrf::validate($_POST['csrf_token'] ?? null)) {
 			view(403);
 			exit;
 		}
 
-		$this->validateRequest();
+		middleware('auth');
+
+		$this->validateRequest($assetId);
 
 		$errors = $this->assetRequestModel->validate($assetRequest);
 
 		if (!empty($errors)) {
-			view('asset.requests.create', ['errors' => $errors]);
+			view('asset.requests.create', [
+				'errors' => $errors,
+			]);
 			exit;
 		}
 
 		try {
 			$this->conn->beginTransaction();
 
-			// Lock the asset row until this transaction finishes
+			// Prevent concurrent requests from modifying this asset.
 			$stmt = $this->conn->prepare("
 				SELECT *
 				FROM assets
@@ -49,7 +61,7 @@ class RequestAssetController
 			");
 
 			$stmt->execute([
-				'asset_id' => $asset_id
+				'asset_id' => $assetId,
 			]);
 
 			$asset = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -57,29 +69,32 @@ class RequestAssetController
 			if (empty($asset)) {
 				$this->conn->rollBack();
 
-				$errors['reason'] = "Asset does not exist.";
-				view('asset.requests.create', ['errors' => $errors]);
+				$errors['reason'] = 'Asset does not exist.';
+
+				view('asset.requests.create', [
+					'errors' => $errors,
+				]);
 				exit;
 			}
 
 			$stmt = $this->conn->prepare("
-            INSERT INTO asset_requests
-                (user_id, asset_id, asset_name, reason, due_date)
-            VALUES
-                (:user_id, :asset_id, :asset_name, :reason, :due_date)
-        ");
+				INSERT INTO asset_requests
+					(user_id, asset_id, asset_name, reason, due_date)
+				VALUES
+					(:user_id, :asset_id, :asset_name, :reason, :due_date)
+			");
 
 			$stmt->execute([
-				'user_id'   => $_SESSION['user_id'],
-				'asset_id'  => $asset_id,
+				'user_id' => $_SESSION['user_id'],
+				'asset_id' => $assetId,
 				'asset_name' => $asset['name'],
-				'reason'    => $assetRequest['reason'],
-				'due_date'  => $assetRequest['due_date'],
+				'reason' => $assetRequest['reason'],
+				'due_date' => $assetRequest['due_date'],
 			]);
 
 			$this->conn->commit();
 
-			$_SESSION['success'] = "Request sent successfully";
+			$_SESSION['success'] = 'Request sent successfully';
 			route('assets');
 		} catch (Throwable $e) {
 			if ($this->conn->inTransaction()) {
@@ -90,29 +105,37 @@ class RequestAssetController
 		}
 	}
 
-	private function validateRequest()
-	{
-		$assetModel = (new Asset($this->conn));
-		$assetId = $_GET['id'] ?? null;
+	/* =========================================================
+	 * VALIDATION
+	 * ========================================================= */
 
-		if (!$assetModel->isAvailable($assetId)) {
-			$_SESSION['general'] = 'Asset #' . $assetId . ' is not available for request.';
+	private function validateRequest(int $assetId): void
+	{
+		if (!$this->assetModel->isAvailable($assetId)) {
+			$_SESSION['general'] =
+				'Asset #' . $assetId . ' is not available for request.';
+
 			route('assets');
 			exit;
 		}
 
 		$stmt = $this->conn->prepare('
-		SELECT id FROM asset_requests 
-		WHERE user_id = ? 
-			AND asset_id = ? 
-			AND status != "CANCELLED" 
-			AND status != "RETURNED"
-			AND status != "REJECTED"');
+			SELECT id
+			FROM asset_requests
+			WHERE user_id = ?
+				AND asset_id = ?
+				AND status != "CANCELLED"
+				AND status != "RETURNED"
+				AND status != "REJECTED"
+		');
 
-		$stmt->execute([$_SESSION['user_id'], $assetId]);
+		$stmt->execute([
+			$_SESSION['user_id'],
+			$assetId,
+		]);
 
 		if ($stmt->rowCount() > 0) {
-			$_SESSION['success'] = 'Request already sent.';
+			$_SESSION['error'] = 'Request already sent.';
 			route('assets/requests');
 			exit;
 		}

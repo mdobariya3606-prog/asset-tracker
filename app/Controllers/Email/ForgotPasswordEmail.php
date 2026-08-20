@@ -11,9 +11,17 @@ use PDO;
 
 class ForgotPasswordEmail
 {
+    /* =========================================================
+	 * PROPERTIES
+	 * ========================================================= */
+
     private PDO $conn;
     private User $userModel;
     private Mail $mail;
+
+    /* =========================================================
+	 * CONSTRUCTOR
+	 * ========================================================= */
 
     public function __construct(PDO $conn)
     {
@@ -21,6 +29,10 @@ class ForgotPasswordEmail
         $this->userModel = new User($conn);
         $this->mail = new Mail();
     }
+
+    /* =========================================================
+	 * SEND RESET PASSWORD MAIL
+	 * ========================================================= */
 
     public function sendResetPasswordMail($user_id = null)
     {
@@ -33,11 +45,17 @@ class ForgotPasswordEmail
 
         if ($this->isSent($user_id)) {
             $_SESSION['success'] = 'Mail already sent.';
-            header('Location: index.php?route=users/edit&id=' . $_SESSION['user_id']);
+
+            header(
+                'Location: index.php?route=users/edit&id=' .
+                    $_SESSION['user_id']
+            );
+
             exit;
         }
 
         $user = $this->userModel->find($user_id);
+
         if (!$user) {
             view(404);
             exit;
@@ -47,17 +65,25 @@ class ForgotPasswordEmail
 
         try {
             $generatedCode = $this->generateFPHash($user_id);
-    
-            $link = "http://localhost/AssetTracker/index.php?route=reset-password&id={$generatedCode['id']}&code=" . urlencode($generatedCode['code']);
-    
+
+            $link =
+                "http://localhost/AssetTracker/index.php" .
+                "?route=reset-password" .
+                "&id={$generatedCode['id']}" .
+                "&code=" . urlencode($generatedCode['code']);
+
             $mailAddress = $user[0]['email'];
-    
+
             if ($mailAddress) {
-                $this->mail->send($mailAddress, 'Forgot password', $link);
+                $this->mail->send(
+                    $mailAddress,
+                    'Forgot password',
+                    $link
+                );
             } else {
                 view(404);
             }
-    
+
             $_SESSION['success'] = 'Mail sent successfully.';
 
             $this->conn->commit();
@@ -70,40 +96,61 @@ class ForgotPasswordEmail
             view('fp-mail');
             exit;
         }
-        header('Location: index.php?route=users/edit&id=' . $_SESSION['user_id']);
+
+        header(
+            'Location: index.php?route=users/edit&id=' .
+                $_SESSION['user_id']
+        );
     }
 
+    /* =========================================================
+	 * SEND FORGOT PASSWORD MAIL
+	 * ========================================================= */
 
-    // data is coming from: POST:fp_mail
     public function sendForgotPasswordMail(array $data)
     {
         if (!Csrf::validate($_POST['csrf_token'] ?? null)) {
             http_response_code(403);
             exit('Invalid CSRF token.');
         }
+
         $email = $data['email'];
 
         if (empty($email)) {
             $errors['email'] = 'Email Address is required.';
-            view('fp-mail', ['errors' => $errors]);
+
+            view('fp-mail', [
+                'errors' => $errors,
+            ]);
+
             exit;
         }
 
         $user = $this->userModel->findByEmail($email);
+
         if (!$user) {
             $errors['email'] = 'Mail already sent.';
-            view('fp-mail', ['errors' => $errors]);
+
+            view('fp-mail', [
+                'errors' => $errors,
+            ]);
+
             exit;
         }
 
         if ($this->isSent($user['id'])) {
             $_SESSION['success'] = 'Mail already sent.';
+
             view('fp-mail');
             exit;
         }
 
         $this->sendResetPasswordMail($user['id']);
     }
+
+    /* =========================================================
+	 * RESET CODE
+	 * ========================================================= */
 
     private function generateFPHash($user_id)
     {
@@ -114,8 +161,17 @@ class ForgotPasswordEmail
             ->modify('+5 minutes')
             ->format('Y-m-d H:i:s');
 
-        $stmt = $this->conn->prepare('insert into forgot_password (user_id, hash, expires_at) values (?, ?, ?)');
-        $stmt->execute([$user_id, $hash, $expiresAt]);
+        $stmt = $this->conn->prepare(
+            'insert into forgot_password
+				(user_id, hash, expires_at)
+			values (?, ?, ?)'
+        );
+
+        $stmt->execute([
+            $user_id,
+            $hash,
+            $expiresAt,
+        ]);
 
         return [
             'id' => $this->conn->lastInsertId(),
@@ -123,9 +179,19 @@ class ForgotPasswordEmail
         ];
     }
 
+    /* =========================================================
+	 * CHECK RESET MAIL STATUS
+	 * ========================================================= */
+
     public function isSent($user_id)
     {
-        $stmt = $this->conn->prepare('select count(*) from forgot_password where user_id = ? and expires_at > now()');
+        $stmt = $this->conn->prepare(
+            'select count(*)
+			from forgot_password
+			where user_id = ?
+				and expires_at > now()'
+        );
+
         $stmt->execute([$user_id]);
 
         return (int) $stmt->fetchColumn() > 0;

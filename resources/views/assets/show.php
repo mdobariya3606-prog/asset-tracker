@@ -148,6 +148,7 @@
 
         .actions a,
         .actions .disabled,
+        .actions button,
         .document-dropdown summary {
             display: inline-flex;
             align-items: center;
@@ -164,6 +165,12 @@
             width: 100%;
             height: 42px;
             transition: all 0.2s ease;
+        }
+
+        .actions button {
+            font-family: inherit;
+            -webkit-appearance: none;
+            appearance: none;
         }
 
         .actions a:hover,
@@ -317,7 +324,11 @@
     <main class="card">
         <section class="hero">
             <div class="avatar">
-                <?php if (!empty($asset['image'])): ?>
+                <?php
+
+            use App\helpers\Csrf;
+
+ if (!empty($asset['image'])): ?>
                     <img class="avatar-image"
                         src="<?= htmlspecialchars($asset['image']) ?>"
                         alt="<?= htmlspecialchars($asset['name'] ?? 'Asset image') ?>">
@@ -404,11 +415,18 @@
                     <i data-lucide="edit-3" style="width: 15px; height: 15px;"></i>
                     Edit Asset
                 </a>
-                <a class="delete" href="index.php?route=assets/delete&id=<?= (int)$asset['id'] ?>"
-                    onclick="return confirm('Are you sure you want to delete this asset?');">
-                    <i data-lucide="trash-2" style="width: 15px; height: 15px;"></i>
-                    Delete
-                </a>
+
+                <form action="index.php?route=assets/delete" method="POST"
+                    onsubmit="return confirm('Are you sure you want to delete this asset?');"
+                    style="display: contents;">
+                    <input type="hidden" name="id" value="<?= (int)$asset['id'] ?>">
+                    <?= Csrf::field(); ?>
+                    <button type="submit" class="delete">
+                        <i data-lucide="trash-2" style="width: 15px; height: 15px;"></i>
+                        Delete
+                    </button>
+                </form>
+
             <?php elseif ($canRequestAsset && $isAvailable): ?>
                 <?php if ($isAlreadyRequested): ?>
                     <span class="disabled">

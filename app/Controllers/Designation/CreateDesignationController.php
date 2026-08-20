@@ -8,14 +8,39 @@ use PDO;
 
 class CreateDesignationController
 {
+	/* =========================================================
+	 * PROPERTIES
+	 * ========================================================= */
+
 	public Designation $designation;
 	private PDO $conn;
+
+	/* =========================================================
+	 * CONSTRUCTOR
+	 * ========================================================= */
 
 	public function __construct(PDO $conn)
 	{
 		$this->conn = $conn;
 		$this->designation = new Designation($conn);
 	}
+
+	/* =========================================================
+	 * CREATE DESIGNATION
+	 * ========================================================= */
+
+	public function create()
+	{
+		middleware('auth');
+		middleware('admin');
+
+		view('designations.create');
+		exit;
+	}
+
+	/* =========================================================
+	 * STORE DESIGNATION
+	 * ========================================================= */
 
 	public function store(array $designation)
 	{
@@ -30,21 +55,15 @@ class CreateDesignationController
 		$errors = $this->designation->validate($designation);
 
 		if (!empty($errors)) {
-			view('designations.create', ['errors' => $errors]);
+			view('designations.create', [
+				'errors' => $errors,
+			]);
 			exit;
 		}
 
 		$this->designation->create($designation);
+
 		route('designations');
-		exit;
-	}
-
-	public function create()
-	{
-		middleware('auth');
-		middleware('admin');
-
-		view('designations.create');
 		exit;
 	}
 }

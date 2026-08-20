@@ -22,21 +22,25 @@ class ProfileController
 
 		$id = (int)($getParams['id'] ?? 0);
 		$user = $this->user->find($id)[0] ?? null;
+
 		if ($user === null) {
 			$_SESSION['login_error'] = 'User not found.';
-			route('users');;
+			route('users');
 			exit;
 		}
 
 		$targetRole = strtoupper($user['role'] ?? 'EMPLOYEE');
-		$canEditProfile = $viewerRole === 'ADMIN' || ($viewerRole === 'MANAGER' && $targetRole !== 'ADMIN');
+		$canEditProfile = (
+			$viewerRole === 'ADMIN' ||
+			($viewerRole === 'MANAGER' && $targetRole !== 'ADMIN')
+		);
+
 		$isDeleted = $user['deleted_at'];
 
 		$canManageResetOrDelete = false;
+
 		if ($viewerRole === 'ADMIN') {
 			$canManageResetOrDelete = true;
-		} elseif ($viewerRole === 'MANAGER') {
-			$canManageResetOrDelete = false;
 		} elseif ($viewerRole === 'HR') {
 			$canManageResetOrDelete = $targetRole === 'EMPLOYEE';
 		}

@@ -31,7 +31,10 @@ class ManageRequestController
 
 		$assetRequest = $this->assetRequestModel->findOrFail($assetRequestId);
 
-		if ($assetRequest['status'] === 'RETURNED' || $assetRequest['status'] === 'CANCELLED') {
+		if (
+			$assetRequest['status'] === 'RETURNED'
+			|| $assetRequest['status'] === 'CANCELLED'
+		) {
 			view(403, [
 				'message' => "This asset/request has been $assetRequest[status]"
 			]);
@@ -44,7 +47,9 @@ class ManageRequestController
 			'assetRequest' => $assetRequest,
 			'statusEnum' => $this->getStatus(),
 			'asset' => $asset,
-			'warrantyWarning' => $this->getWarrantyWarning($asset['warranty_date'] ?? null),
+			'warrantyWarning' => $this->getWarrantyWarning(
+				$asset['warranty_date'] ?? null
+			),
 		]);
 	}
 
@@ -57,6 +62,7 @@ class ManageRequestController
 
 		$assetRequest = $this->assetRequestModel->findOrFail($requestId);
 		$asset = $this->assetModel->find($assetRequest['asset_id']);
+
 		$errors = $this->validate($inputAssetRequest);
 
 		if (!empty($errors)) {
@@ -66,35 +72,77 @@ class ManageRequestController
 
 		$inputAssetRequest = $this->normalize($inputAssetRequest);
 
-		if ($generalError = $this->alreadyAssigned($asset, $assetRequest, $inputAssetRequest)) {
-			$this->renderManageForm($assetRequest, $asset, ['general' => $generalError]);
+		if (
+			$generalError = $this->alreadyAssigned(
+				$asset,
+				$assetRequest,
+				$inputAssetRequest
+			)
+		) {
+			$this->renderManageForm(
+				$assetRequest,
+				$asset,
+				['general' => $generalError]
+			);
 			exit;
 		}
 
-		if ($generalError = $this->validateStatus($assetRequest, $inputAssetRequest)) {
-			$this->renderManageForm($assetRequest, $asset, ['general' => $generalError]);
+		if (
+			$generalError = $this->validateStatus(
+				$assetRequest,
+				$inputAssetRequest
+			)
+		) {
+			$this->renderManageForm(
+				$assetRequest,
+				$asset,
+				['general' => $generalError]
+			);
 			exit;
 		}
 
-		// If status is being set to APPROVED/ISSUED, ensure the user is not deleted
-		if (in_array($inputAssetRequest['status'], ['APPROVED', 'ISSUED'], true)) {
-			$user = (new User($this->conn))->find($assetRequest['user_id'])[0];
+		// A deleted employee cannot have an asset request approved or issued.
+		if (
+			in_array(
+				$inputAssetRequest['status'],
+				['APPROVED', 'ISSUED'],
+				true
+			)
+		) {
+			$user = (new User($this->conn))
+				->find($assetRequest['user_id'])[0];
 
 			if ($user['deleted_at']) {
 				if ($inputAssetRequest['status'] === 'ISSUED') {
-					$stmt = $this->conn->prepare('update assets set status = "AVAILABLE" where id = ?');
+					$stmt = $this->conn->prepare(
+						'update assets set status = "AVAILABLE" where id = ?'
+					);
 					$stmt->execute([$asset['id']]);
 				}
 
-				$this->renderManageForm($assetRequest, $asset, [
-					'general' => 'Cannot approve/issue this request because the employee has been deleted.'
-				]);
+				$this->renderManageForm(
+					$assetRequest,
+					$asset,
+					[
+						'general' =>
+						'Cannot approve/issue this request because the employee has been deleted.'
+					]
+				);
 				exit;
 			}
 		}
 
-		$this->assetRequestModel->update($requestId, $inputAssetRequest, $assetRequest);
-		$this->applyStatusSideEffects($inputAssetRequest['status'], $assetRequest, $asset);
+		$this->assetRequestModel->update(
+			$requestId,
+			$inputAssetRequest,
+			$assetRequest
+		);
+
+		$this->applyStatusSideEffects(
+			$inputAssetRequest['status'],
+			$assetRequest,
+			$asset
+		);
 
 		$_SESSION['success'] = 'Asset request updated successfully.';
 		route('assets/requests');
@@ -109,7 +157,7 @@ class ManageRequestController
 			exit;
 		}
 
-		$id = (int)$_GET['id'];
+		$id = (int) $_GET['id'];
 		$assetRequest = $this->assetRequestModel->findOrFail($id);
 
 		middleware('assetOwner', [
@@ -118,7 +166,13 @@ class ManageRequestController
 
 		$requestStatus = $assetRequest['status'];
 
-		if (in_array($requestStatus, ['CANCELLED', 'REJECTED', 'ISSUED', 'RETURNED'], true)) {
+		if (
+			in_array(
+				$requestStatus,
+				['CANCELLED', 'REJECTED', 'ISSUED', 'RETURNED'],
+				true
+			)
+		) {
 			view(404);
 			exit;
 		}
@@ -130,7 +184,11 @@ class ManageRequestController
 		);
 
 		if ($requestStatus === 'APPROVED') {
-			$this->assetModel->updateStatus($assetRequest['asset_id'], 'AVAILABLE', null);
+			$this->assetModel->updateStatus(
+				$assetRequest['asset_id'],
+				'AVAILABLE',
+				null
+			);
 		}
 
 		$_SESSION['success'] = 'Request cancelled successfully';
@@ -139,33 +197,63 @@ class ManageRequestController
 	}
 
 	/* =========================================================
-	 * RENDER / SIDE-EFFECT HELPERS
+	 * RENDER HELPERS
 	 * ========================================================= */
 
-	private function renderManageForm(array $assetRequest, array $asset, array $errors): void
-	{
+	private function renderManageForm(
+		array $assetRequest,
+		array $asset,
+		array $errors
+	): void {
 		view('asset.requests.manage', [
 			'assetRequest' => $assetRequest,
 			'asset' => $asset,
 			'errors' => $errors,
 			'statusEnum' => $this->getStatus(),
-			'warrantyWarning' => $this->getWarrantyWarning($asset['warranty_date'] ?? null),
+			'warrantyWarning' => $this->getWarrantyWarning(
+				$asset['warranty_date'] ?? null
+			),
 		]);
 	}
 
-	private function applyStatusSideEffects(string $updatedStatus, array $assetRequest, array $asset): void
-	{
+	/* =========================================================
+	 * STATUS SIDE EFFECTS
+	 * ========================================================= */
+
+	private function applyStatusSideEffects(
+		string $updatedStatus,
+		array $assetRequest,
+		array $asset
+	): void {
 		switch ($updatedStatus) {
 			case 'APPROVED':
-				(new Asset($this->conn))->updateStatus($assetRequest['asset_id'], 'ASSIGNED', $assetRequest['user_id']);
+				(new Asset($this->conn))->updateStatus(
+					$assetRequest['asset_id'],
+					'ASSIGNED',
+					$assetRequest['user_id']
+				);
 				break;
+
 			case 'RETURNED':
-				(new AuditLog($this->conn))->log('ASSET_RETURN', $assetRequest['asset_id']);
-				(new Asset($this->conn))->updateStatus($assetRequest['asset_id'], 'AVAILABLE');
+				(new AuditLog($this->conn))->log(
+					'ASSET_RETURN',
+					$assetRequest['asset_id']
+				);
+
+				(new Asset($this->conn))->updateStatus(
+					$assetRequest['asset_id'],
+					'AVAILABLE'
+				);
 				break;
+
 			case 'ISSUED':
-				(new AuditLog($this->conn))->log('ASSET_ASSIGNMENT', $asset['id'], $asset['assignee_id']);
+				(new AuditLog($this->conn))->log(
+					'ASSET_ASSIGNMENT',
+					$asset['id'],
+					$asset['assignee_id']
+				);
 				break;
+
 			case 'REJECTED':
 				sendStatusNotice('rejected', $assetRequest);
 				break;
@@ -173,12 +261,18 @@ class ManageRequestController
 	}
 
 	/* =========================================================
-	 * STATIC DATA / DISPLAY HELPERS
+	 * STATUS & WARRANTY
 	 * ========================================================= */
 
 	private function getStatus(): array
 	{
-		return ['PENDING', 'APPROVED', 'REJECTED', 'ISSUED', 'RETURNED'];
+		return [
+			'PENDING',
+			'APPROVED',
+			'REJECTED',
+			'ISSUED',
+			'RETURNED',
+		];
 	}
 
 	private function getWarrantyWarning(?string $warrantyDate): ?array
@@ -190,15 +284,21 @@ class ManageRequestController
 		$today = new \DateTime('today');
 		$wDate = new \DateTime($warrantyDate);
 		$diff = $today->diff($wDate);
-		$daysRemaining = (int)$diff->format('%r%a');
+		$daysRemaining = (int) $diff->format('%r%a');
 
 		if ($daysRemaining < 0) {
 			$absDays = abs($daysRemaining);
+
 			return [
 				'type' => 'expired',
 				'days' => $absDays,
 				'date' => $warrantyDate,
-				'message' => "Warranty expired {$absDays} day" . ($absDays === 1 ? '' : 's') . " ago on " . date('M d, Y', strtotime($warrantyDate)) . "."
+				'message' =>
+				"Warranty expired {$absDays} day" .
+					($absDays === 1 ? '' : 's') .
+					" ago on " .
+					date('M d, Y', strtotime($warrantyDate)) .
+					"."
 			];
 		}
 
@@ -208,8 +308,14 @@ class ManageRequestController
 				'days' => $daysRemaining,
 				'date' => $warrantyDate,
 				'message' => $daysRemaining === 0
-					? "Warranty expires today (" . date('M d, Y', strtotime($warrantyDate)) . ")!"
-					: "Warranty is expiring in {$daysRemaining} day" . ($daysRemaining === 1 ? '' : 's') . " (on " . date('M d, Y', strtotime($warrantyDate)) . ")."
+					? "Warranty expires today (" .
+					date('M d, Y', strtotime($warrantyDate)) .
+					")!"
+					: "Warranty is expiring in {$daysRemaining} day" .
+					($daysRemaining === 1 ? '' : 's') .
+					" (on " .
+					date('M d, Y', strtotime($warrantyDate)) .
+					")."
 			];
 		}
 
@@ -217,7 +323,7 @@ class ManageRequestController
 	}
 
 	/* =========================================================
-	 * VALIDATION HELPERS (update() flow)
+	 * VALIDATION
 	 * ========================================================= */
 
 	private function validate(array $assetRequest): array
@@ -227,18 +333,31 @@ class ManageRequestController
 
 		if (empty($status)) {
 			$errors['status'] = 'Status is required.';
-		} elseif (!in_array(strtoupper($status), $this->getStatus(), true)) {
+		} elseif (
+			!in_array(
+				strtoupper($status),
+				$this->getStatus(),
+				true
+			)
+		) {
 			$errors['status'] = 'Status is not valid.';
 		}
 
 		return $errors;
 	}
 
-	private function alreadyAssigned(array $asset, array $assetRequest, array $inputAssetRequest): ?string
-	{
+	private function alreadyAssigned(
+		array $asset,
+		array $assetRequest,
+		array $inputAssetRequest
+	): ?string {
 		if (
 			$asset['status'] === 'ASSIGNED'
-			&& in_array($inputAssetRequest['status'], ['APPROVED', 'ISSUED', 'RETURNED'], true)
+			&& in_array(
+				$inputAssetRequest['status'],
+				['APPROVED', 'ISSUED', 'RETURNED'],
+				true
+			)
 			&& $assetRequest['user_id'] !== $asset['assignee_id']
 		) {
 			return "This asset is already been assigned to #{$asset['assignee_id']} {$asset['user_name']}.";
@@ -247,48 +366,70 @@ class ManageRequestController
 		return null;
 	}
 
-	private function validateStatus(array $assetRequest, array $input): ?string
-	{
+	private function validateStatus(
+		array $assetRequest,
+		array $input
+	): ?string {
 		$assetRequestStatus = $assetRequest['status'];
 		$inputStatus = $input['status'];
 
 		switch ($assetRequestStatus) {
-			// can approve/reject only
+			// A pending request cannot be issued or returned directly.
 			case 'PENDING':
 				if ($inputStatus === 'ISSUED') {
 					return 'This asset request is not approved yet.';
 				}
+
 				if ($inputStatus === 'RETURNED') {
 					return 'This asset is not issued yet.';
 				}
+
 				break;
 
-			// can issue only
+			// An approved request cannot be moved back to pending/rejected
+			// and cannot be returned before being issued.
 			case 'APPROVED':
-				if (in_array($inputStatus, ['PENDING', 'REJECTED'], true)) {
+				if (
+					in_array(
+						$inputStatus,
+						['PENDING', 'REJECTED'],
+						true
+					)
+				) {
 					return 'This asset request has been approved.';
 				}
+
 				if ($inputStatus === 'RETURNED') {
 					return 'This asset has not issued yet.';
 				}
+
 				break;
 
 			case 'ISSUED':
-				if (in_array($inputStatus, ['PENDING', 'APPROVED', 'REJECTED'], true)) {
+				if (
+					in_array(
+						$inputStatus,
+						['PENDING', 'APPROVED', 'REJECTED'],
+						true
+					)
+				) {
 					return 'This asset request is already issued';
 				}
+
 				break;
 
 			case 'REJECTED':
 				if ($inputStatus !== 'REJECTED') {
 					return 'This request is already rejected.';
 				}
+
 				break;
 
 			case 'OVERDUE':
 				if ($inputStatus !== 'RETURNED') {
 					return 'This request is already issued.';
 				}
+
 				break;
 		}
 
@@ -296,7 +437,7 @@ class ManageRequestController
 	}
 
 	/* =========================================================
-	 * DATA TRANSFORM HELPERS
+	 * DATA NORMALIZATION
 	 * ========================================================= */
 
 	private function normalize(array $request): array
@@ -304,19 +445,50 @@ class ManageRequestController
 		return [
 			'status' => $request['status'],
 
-			'approved_by' => $request['status'] === 'APPROVED' ? $_SESSION['user_id'] : null,
-			'approved_at' => $request['status'] === 'APPROVED' ? date('Y-m-d H:i:s') : null,
+			'approved_by' =>
+			$request['status'] === 'APPROVED'
+				? $_SESSION['user_id']
+				: null,
 
-			'rejected_by' => $request['status'] === 'REJECTED' ? $_SESSION['user_id'] : null,
-			'rejected_at' => $request['status'] === 'REJECTED' ? date('Y-m-d H:i:s') : null,
+			'approved_at' =>
+			$request['status'] === 'APPROVED'
+				? date('Y-m-d H:i:s')
+				: null,
 
-			'rejection_reason' => empty($request['rejection_reason']) ? null : $request['rejection_reason'],
+			'rejected_by' =>
+			$request['status'] === 'REJECTED'
+				? $_SESSION['user_id']
+				: null,
 
-			'issued_by' => $request['status'] === 'ISSUED' ? $_SESSION['user_id'] : null,
-			'issued_at' => $request['status'] === 'ISSUED' ? date('Y-m-d H:i:s') : null,
+			'rejected_at' =>
+			$request['status'] === 'REJECTED'
+				? date('Y-m-d H:i:s')
+				: null,
 
-			'remark' => empty($request['remark']) ? null : $request['remark'],
-			'returned_at' => $request['status'] === 'RETURNED' ? date('Y-m-d H:i:s') : null,
+			'rejection_reason' =>
+			empty($request['rejection_reason'])
+				? null
+				: $request['rejection_reason'],
+
+			'issued_by' =>
+			$request['status'] === 'ISSUED'
+				? $_SESSION['user_id']
+				: null,
+
+			'issued_at' =>
+			$request['status'] === 'ISSUED'
+				? date('Y-m-d H:i:s')
+				: null,
+
+			'remark' =>
+			empty($request['remark'])
+				? null
+				: $request['remark'],
+
+			'returned_at' =>
+			$request['status'] === 'RETURNED'
+				? date('Y-m-d H:i:s')
+				: null,
 		];
 	}
 }

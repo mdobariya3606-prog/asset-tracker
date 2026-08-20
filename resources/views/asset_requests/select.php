@@ -200,11 +200,55 @@
         }
 
         /* Filter bar — matches the Assets directory */
-        .filters-container { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 20px; }
-        .filter-select { padding: 9px 34px 9px 12px; background-color: var(--white); border: 1.5px solid var(--slate-200); border-radius: var(--radius-sm); font-family: inherit; font-size: 13px; color: var(--slate-800); outline: none; cursor: pointer; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%2394a3b8' stroke-width='2'%3E%3Cpath d='M4 6l4 4 4-4'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 10px center; min-width: 160px; }
-        .filter-select:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(59,130,246,.1); }
-        .filter-status { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; padding: 2px 4px; }
-        @media (max-width: 768px) { .filters-container { flex-direction: column; align-items: stretch; } .filter-select { width: 100%; } }
+        .filters-container {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .filter-select {
+            padding: 9px 34px 9px 12px;
+            background-color: var(--white);
+            border: 1.5px solid var(--slate-200);
+            border-radius: var(--radius-sm);
+            font-family: inherit;
+            font-size: 13px;
+            color: var(--slate-800);
+            outline: none;
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%2394a3b8' stroke-width='2'%3E%3Cpath d='M4 6l4 4 4-4'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            min-width: 160px;
+        }
+
+        .filter-select:focus {
+            border-color: var(--blue);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, .1);
+        }
+
+        .filter-status {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 20px;
+            padding: 2px 4px;
+        }
+
+        @media (max-width: 768px) {
+            .filters-container {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .filter-select {
+                width: 100%;
+            }
+        }
 
         @media (max-width: 480px) {
             .page-header-actions {
@@ -310,6 +354,18 @@
         <?php unset($_SESSION['success']);
         endif;
         ?>
+
+        <!-- Error Message Banner -->
+        <?php if (isset($_SESSION['error'])): ?>
+            <div class="alert-error">
+                <svg viewBox="0 0 24 24">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                    <polyline points="22 4 12 14.01 9 11.01" />
+                </svg>
+                <div style="color: red;"><?= htmlspecialchars($_SESSION['error']) ?></div>
+            </div>
+            <?php unset($_SESSION['error']); ?>
+        <?php endif; ?>
 
         <div class="card">
             <table>
@@ -476,7 +532,9 @@
         }
 
         function applyStatusFilter() {
-            const params = new URLSearchParams({ route: 'assets/requests' });
+            const params = new URLSearchParams({
+                route: 'assets/requests'
+            });
             const status = document.getElementById('statusFilter')?.value;
             if (status) params.set('status', status);
             fetchData('index.php?' + params.toString());
@@ -504,22 +562,32 @@
                     if (updateHistory) history.replaceState(null, '', url);
                 })
                 .catch(error => console.error('Error fetching asset requests:', error))
-                .finally(() => { if (tableBody) tableBody.style.opacity = '1'; });
+                .finally(() => {
+                    if (tableBody) tableBody.style.opacity = '1';
+                });
         }
 
         document.addEventListener('DOMContentLoaded', function() {
             const form = document.getElementById('filterForm');
             const status = document.getElementById('statusFilter');
-            form?.addEventListener('submit', event => { event.preventDefault(); applyStatusFilter(); });
+            form?.addEventListener('submit', event => {
+                event.preventDefault();
+                applyStatusFilter();
+            });
             status?.addEventListener('change', applyStatusFilter);
             document.getElementById('activeFiltersContainer')?.addEventListener('click', event => {
                 const link = event.target.closest('a');
-                if (link?.href) { event.preventDefault(); fetchData(link.href); }
+                if (link?.href) {
+                    event.preventDefault();
+                    fetchData(link.href);
+                }
             });
             window.addEventListener('popstate', () => fetchData(window.location.href, false));
         });
 
-        function printTable() { window.print(); }
+        function printTable() {
+            window.print();
+        }
     </script>
 
     <!-- Exporting Overlay -->

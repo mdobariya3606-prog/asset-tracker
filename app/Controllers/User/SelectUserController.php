@@ -26,27 +26,39 @@ class SelectUserController
 			exit;
 		}
 
-		// Render dashboard identity and access controls from the latest database
-		// record instead of relying on values saved at sign-in.
 		$dashboardUser = $this->userModel->dashboardUser();
 		$dashboardUserRole = strtoupper($dashboardUser['role'] ?? 'EMPLOYEE');
 
 		$search = trim($getParams['search'] ?? '');
 		$page = (int)($getParams['page'] ?? 1);
-		if ($page < 1) {
-			$page = 1;
-		}
+		$page = max($page, 1);
+
 		$perPage = 5;
 
 		$sort = trim($getParams['sort'] ?? 'id');
 		$order = trim($getParams['order'] ?? 'asc');
 
-		$departmentId = isset($getParams['department_id']) && $getParams['department_id'] !== '' ? (int)$getParams['department_id'] : null;
-		$designationId = isset($getParams['designation_id']) && $getParams['designation_id'] !== '' ? (int)$getParams['designation_id'] : null;
-		
-		// Role filter is restricted to ADMIN only
+		$departmentId = (
+			isset($getParams['department_id']) &&
+			$getParams['department_id'] !== ''
+		)
+			? (int)$getParams['department_id']
+			: null;
+
+		$designationId = (
+			isset($getParams['designation_id']) &&
+			$getParams['designation_id'] !== ''
+		)
+			? (int)$getParams['designation_id']
+			: null;
+
 		$roleFilter = null;
-		if ($dashboardUserRole === 'ADMIN' && isset($getParams['role']) && trim($getParams['role']) !== '') {
+
+		if (
+			$dashboardUserRole === 'ADMIN' &&
+			isset($getParams['role']) &&
+			trim($getParams['role']) !== ''
+		) {
 			$roleFilter = strtoupper(trim($getParams['role']));
 		}
 
@@ -55,31 +67,55 @@ class SelectUserController
 		$roles = ['ADMIN', 'HR', 'MANAGER', 'EMPLOYEE'];
 
 		$activeDeptName = null;
+
 		if ($departmentId !== null) {
 			$activeDept = (new Department($this->conn))->find($departmentId);
 			$activeDeptName = $activeDept[0]['name'] ?? null;
 		}
 
 		$activeDesigName = null;
+
 		if ($designationId !== null) {
 			$activeDesign = (new Designation($this->conn))->find($designationId);
 			$activeDesigName = $activeDesign[0]['name'] ?? null;
 		}
 
-		$totalUsers = $this->userModel->count($search, $departmentId, $designationId, $roleFilter);
+		$totalUsers = $this->userModel->count(
+			$search,
+			$departmentId,
+			$designationId,
+			$roleFilter
+		);
+
 		$totalPages = (int)ceil($totalUsers / $perPage);
 
 		if ($page > $totalPages && $totalPages > 0) {
 			$page = $totalPages;
 		}
 
-		$users = $this->userModel->paginate($page, $perPage, $search, $sort, $order, $departmentId, $designationId, $roleFilter);
+		$users = $this->userModel->paginate(
+			$page,
+			$perPage,
+			$search,
+			$sort,
+			$order,
+			$departmentId,
+			$designationId,
+			$roleFilter
+		);
+
+		$message = null;
 
 		if (empty($users)) {
-			if ($search !== '' || $departmentId !== null || $designationId !== null || $roleFilter !== null) {
-				$message = "No users found matching your active filters or search query.";
+			if (
+				$search !== '' ||
+				$departmentId !== null ||
+				$designationId !== null ||
+				$roleFilter !== null
+			) {
+				$message = 'No users found matching your active filters or search query.';
 			} else {
-				$message = "Users not found";
+				$message = 'Users not found';
 			}
 		}
 
@@ -102,7 +138,7 @@ class SelectUserController
 			'totalUsers' => $totalUsers,
 			'totalPages' => $totalPages,
 			'users' => $users,
-			'message' => $message ?? null,
+			'message' => $message,
 		]);
 	}
 }

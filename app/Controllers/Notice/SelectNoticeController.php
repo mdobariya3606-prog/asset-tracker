@@ -7,14 +7,26 @@ use PDO;
 
 class SelectNoticeController
 {
-    private $conn;
+    /* =========================================================
+	 * PROPERTIES
+	 * ========================================================= */
+
+    private PDO $conn;
     private Notice $notice;
+
+    /* =========================================================
+	 * CONSTRUCTOR
+	 * ========================================================= */
 
     public function __construct(PDO $conn)
     {
         $this->conn = $conn;
         $this->notice = new Notice($conn);
     }
+
+    /* =========================================================
+	 * NOTICE LIST
+	 * ========================================================= */
 
     public function index()
     {
@@ -24,8 +36,9 @@ class SelectNoticeController
         $this->notice->markSeen();
 
         view('notices.select', [
-            'notices' => $notices
+            'notices' => $notices,
         ]);
+
         exit;
     }
 }

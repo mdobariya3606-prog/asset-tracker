@@ -22,18 +22,23 @@ class UserTrashController
         middleware('hr');
 
         $stmt = $this->conn->query('
-			select u.id, u.name, u.email, dep.name as department, des.name as designation
-			from users u
-
-			join departments dep
-			on u.department_id = dep.id
-			join designations des
-			on u.designation_id = des.id
-
-			where deleted_at is not null
+			SELECT
+				u.id,
+				u.name,
+				u.email,
+				dep.name AS department,
+				des.name AS designation
+			FROM users u
+			JOIN departments dep ON u.department_id = dep.id
+			JOIN designations des ON u.designation_id = des.id
+			WHERE u.deleted_at IS NOT NULL
 		');
+
         $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        view('users.deleted', ['users' => $users]);
+
+        view('users.deleted', [
+            'users' => $users,
+        ]);
     }
 
     public function restore(int $userId)
@@ -43,13 +48,17 @@ class UserTrashController
             exit;
         }
 
-        $stmt = $this->conn->prepare('UPDATE users set deleted_at = null where id = ?');
+        $stmt = $this->conn->prepare(
+            'UPDATE users SET deleted_at = NULL WHERE id = ?'
+        );
+
         if (!$stmt->execute([$userId])) {
             view(404);
             exit;
         }
 
         $_SESSION['success'] = "User #{$userId} restored successfully.";
+
         route('users');
     }
 }

@@ -7,8 +7,16 @@ use App\Models\User;
 
 class SelectDepartmentController
 {
+	/* =========================================================
+	 * PROPERTIES
+	 * ========================================================= */
+
 	private \PDO $conn;
 	private Department $department;
+
+	/* =========================================================
+	 * CONSTRUCTOR
+	 * ========================================================= */
 
 	public function __construct(\PDO $conn)
 	{
@@ -16,15 +24,23 @@ class SelectDepartmentController
 		$this->department = new Department($conn);
 	}
 
+	/* =========================================================
+	 * DEPARTMENT LIST
+	 * ========================================================= */
+
 	public function index(array $getParams)
 	{
 		if (empty($_SESSION['user_id'])) {
-			$_SESSION['login_error'] = 'Please sign in to view departments.';
+			$_SESSION['login_error'] =
+				'Please sign in to view departments.';
+
 			route('login');
 			exit;
 		}
+
 		if (isset($getParams['id'])) {
 			$departments = $this->department->find($getParams['id']);
+
 			if (empty($departments)) {
 				$message = "Department {$getParams['id']} does not exists.";
 			}
@@ -32,10 +48,11 @@ class SelectDepartmentController
 			$departments = $this->department->all();
 		}
 
-		// Render dashboard identity and access controls from the latest database
-		// record instead of relying on values saved at sign-in.
+		// Use the latest role from the database for dashboard access.
 		$dashboardUser = (new User($this->conn))->dashboardUser();
-		$dashboardUserRole = strtoupper($dashboardUser['role'] ?? 'EMPLOYEE');
+		$dashboardUserRole = strtoupper(
+			$dashboardUser['role'] ?? 'EMPLOYEE'
+		);
 
 		$role = $_SESSION['user_role'];
 
