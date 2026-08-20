@@ -15,8 +15,13 @@ class Designation
 
 	public function create(array $designation)
 	{
-		$stmt = $this->conn->prepare('insert into designations (name) values (:name)');
-		$stmt->execute(['name' => $designation['name']]);
+		$stmt = $this->conn->prepare(
+			'insert into designations (name, department_id) values (:name, :department_id)'
+		);
+		$stmt->execute([
+			'name' => trim($designation['name']),
+			'department_id' => (int) $designation['department_id'],
+		]);
 	}
 
 	public function all()
@@ -40,8 +45,30 @@ class Designation
 			$errors['name'] = 'Name is required';
 		}
 
-		$stmt = $this->conn->prepare('select * from designations where name = :name');
-		$stmt->execute(['name' => $designation['name']]);
+		$departmentId = filter_var(
+			$designation['department_id'] ?? null,
+			FILTER_VALIDATE_INT
+		);
+		if (!$departmentId || $departmentId < 1) {
+			$errors['department_id'] = 'Department is required';
+		} else {
+			$departmentStmt = $this->conn->prepare(
+				'SELECT id FROM departments WHERE id = ?'
+			);
+			$departmentStmt->execute([$departmentId]);
+			if (!$departmentStmt->fetchColumn()) {
+				$errors['department_id'] = 'Please select a valid department';
+			}
+		}
+
+		$stmt = $this->conn->prepare(
+			'select * from designations
+			 where name = :name and department_id = :department_id'
+		);
+		$stmt->execute([
+			'name' => trim((string) ($designation['name'] ?? '')),
+			'department_id' => (int) $departmentId,
+		]);
 
 		if ($stmt->rowCount() > 0) {
 			$errors['name'] = 'Designation already exists';

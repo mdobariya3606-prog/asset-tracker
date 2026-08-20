@@ -90,6 +90,35 @@
 
                 <div class="form-grid">
                     <!-- ========================= -->
+                    <!-- Department Field -->
+                    <!-- ========================= -->
+                    <div class="form-group <?php echo isset($errors['department_id']) ? 'has-error' : ''; ?>">
+                        <label for="department_id">Department <span class="required">*</span></label>
+                        <div class="input-wrapper">
+                            <select name="department_id" id="department_id" required>
+                                <option value="">Select department</option>
+                                <?php $selectedDepartment = (int)($old['department_id'] ?? 0); ?>
+                                <?php foreach ($departments ?? [] as $department): ?>
+                                    <option value="<?= (int)$department['id'] ?>"
+                                        <?= $selectedDepartment === (int)$department['id'] ? 'selected' : '' ?>>
+                                        <?= htmlspecialchars($department['name']) ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                            <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+                                <polyline points="9 22 9 12 15 12 15 22" />
+                            </svg>
+                        </div>
+                        <?php if (isset($errors['department_id'])): ?>
+                            <div class="error-text">
+                                <i data-lucide="circle-alert"></i>
+                                <?= htmlspecialchars($errors['department_id']) ?>
+                            </div>
+                        <?php endif; ?>
+                    </div>
+
+                    <!-- ========================= -->
                     <!-- Name Field -->
                     <!-- ========================= -->
                     <div class="form-group full-width <?php echo isset($errors['name']) ? 'has-error' : ''; ?>">
@@ -138,6 +167,7 @@
             if (!form) return;
 
             const nameInput = document.getElementById('name');
+            const departmentInput = document.getElementById('department_id');
             const submitBtn = document.getElementById('submitBtn');
 
             // SVG Helper template for client-side errors
@@ -216,15 +246,27 @@
                 return true;
             };
 
+            const validateDepartment = () => {
+                if (!departmentInput.value) {
+                    showError(departmentInput, 'Department is required.');
+                    return false;
+                }
+                clearError(departmentInput);
+                return true;
+            };
+
             // Live validation listeners
             nameInput.addEventListener('input', validateName);
             nameInput.addEventListener('blur', validateName);
+            departmentInput.addEventListener('change', validateDepartment);
 
             // Form submission guard
             form.addEventListener('submit', (e) => {
-                if (!validateName()) {
+                const validDepartment = validateDepartment();
+                const validName = validateName();
+                if (!validDepartment || !validName) {
                     e.preventDefault();
-                    nameInput.focus();
+                    (validDepartment ? nameInput : departmentInput).focus();
                     return;
                 }
 

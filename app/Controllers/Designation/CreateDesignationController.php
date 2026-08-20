@@ -3,6 +3,7 @@
 namespace App\Controllers\Designation;
 
 use App\helpers\Csrf;
+use App\Models\Department;
 use App\Models\Designation;
 use PDO;
 
@@ -34,7 +35,9 @@ class CreateDesignationController
 		middleware('auth');
 		middleware('admin');
 
-		view('designations.create');
+		view('designations.create', [
+			'departments' => (new Department($this->conn))->all(),
+		]);
 		exit;
 	}
 
@@ -57,6 +60,8 @@ class CreateDesignationController
 		if (!empty($errors)) {
 			view('designations.create', [
 				'errors' => $errors,
+				'old' => $designation,
+				'departments' => (new Department($this->conn))->all(),
 			]);
 			exit;
 		}
