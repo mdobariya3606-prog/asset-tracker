@@ -19,11 +19,7 @@ class AssetRequest
 
 	public function create(int $id)
 	{
-		if (!$this->assetModel->isAvailable($id)) {
-			$_SESSION['general'] = 'Asset #' . $id . ' is not available for request.';
-			route('assets');
-			exit;
-		}
+		$this->assetModel->checkAvailabity($id);
 		
 		$isAlreadyRequested = (new SelectAssetController($this->conn))->isAlreadyRequested();
 		if ($isAlreadyRequested) {

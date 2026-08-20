@@ -115,6 +115,342 @@ function getSortIndicator(string $column, string $currentSort, string $currentOr
             font-weight: 600;
         }
 
+        .dashboard-panel {
+            margin-bottom: 28px;
+        }
+
+        .dashboard-heading {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 14px;
+            margin-bottom: 16px;
+        }
+
+        .dashboard-heading h2 {
+            margin: 0;
+            color: var(--slate-900);
+            font-size: 20px;
+        }
+
+        .dashboard-heading p {
+            margin: 5px 0 0;
+            color: var(--slate-500);
+            font-size: 13px;
+        }
+
+        .dashboard-refresh {
+            border: 1px solid var(--slate-200);
+            background: #fff;
+            color: var(--slate-700);
+            border-radius: 8px;
+            padding: 8px 12px;
+            font: inherit;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .dashboard-refresh:disabled {
+            opacity: .6;
+            cursor: wait;
+        }
+
+        .dashboard-refresh-error {
+            display: none;
+            margin: 0 0 14px;
+            padding: 10px 12px;
+            border: 1px solid #fecaca;
+            border-radius: 8px;
+            background: #fef2f2;
+            color: #991b1b;
+            font-size: 12px;
+        }
+
+        .dashboard-refresh-error.active {
+            display: block;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(5, minmax(0, 1fr));
+            gap: 14px;
+            margin-bottom: 18px;
+        }
+
+        .summary-card {
+            padding: 16px;
+            border: 1px solid var(--slate-200);
+            border-radius: 12px;
+            background: #fff;
+        }
+
+        .summary-card span {
+            display: block;
+            color: var(--slate-500);
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .summary-card strong {
+            display: block;
+            margin-top: 8px;
+            color: var(--slate-900);
+            font-size: 25px;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 18px;
+        }
+
+        .dashboard-card {
+            min-width: 0;
+            padding: 18px;
+            border: 1px solid var(--slate-200);
+            border-radius: 12px;
+            background: #fff;
+        }
+
+        .dashboard-card h3 {
+            margin: 0 0 14px;
+            color: var(--slate-800);
+            font-size: 14px;
+        }
+
+        .dashboard-toggle {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 0;
+            border: 0;
+            background: transparent;
+            color: var(--slate-800);
+            font: inherit;
+            font-size: 14px;
+            font-weight: 700;
+            text-align: left;
+            cursor: pointer;
+        }
+
+        .dashboard-toggle::after {
+            content: '+';
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 22px;
+            height: 22px;
+            border: 1px solid var(--slate-200);
+            border-radius: 6px;
+            color: var(--slate-500);
+            font-size: 18px;
+            font-weight: 400;
+            line-height: 1;
+        }
+
+        .dashboard-toggle[aria-expanded="true"]::after {
+            content: '−';
+        }
+
+        .dashboard-collapsible {
+            display: none;
+            padding-top: 16px;
+        }
+
+        .dashboard-collapsible.active {
+            display: block;
+        }
+
+        .dashboard-modal {
+            position: fixed;
+            inset: 0;
+            z-index: 10000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background: rgba(15, 23, 42, .58);
+        }
+
+        .dashboard-modal.active {
+            display: flex;
+            animation: dashboardModalFade .2s ease-out;
+        }
+
+        .dashboard-modal-card {
+            position: relative;
+            width: min(900px, 100%);
+            max-height: min(680px, 92vh);
+            overflow: auto;
+            padding: 24px;
+            border-radius: 16px;
+            background: #fff;
+            box-shadow: 0 24px 70px rgba(15, 23, 42, .28);
+            animation: dashboardModalRise .24s cubic-bezier(.2, .8, .2, 1);
+        }
+
+        @keyframes dashboardModalFade {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes dashboardModalRise {
+            from { opacity: 0; transform: translateY(18px) scale(.97); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .dashboard-modal-title {
+            margin: 0 36px 20px 0;
+            color: var(--slate-900);
+            font-size: 18px;
+        }
+
+        .dashboard-modal-close {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            width: 30px;
+            height: 30px;
+            border: 1px solid var(--slate-200);
+            border-radius: 8px;
+            background: #fff;
+            color: var(--slate-600);
+            font-size: 22px;
+            line-height: 1;
+            cursor: pointer;
+        }
+
+        .dashboard-modal-content {
+            display: none;
+        }
+
+        .dashboard-modal-content.active {
+            display: block;
+            animation: dashboardContentReveal .25s ease-out;
+        }
+
+        @keyframes dashboardContentReveal {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .dashboard-modal-loading {
+            position: absolute;
+            inset: 0;
+            z-index: 2;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            border-radius: 16px;
+            background: rgba(255, 255, 255, .86);
+        }
+
+        .dashboard-modal-loading.active {
+            display: flex;
+        }
+
+        .dashboard-modal-spinner {
+            width: 26px;
+            height: 26px;
+            border: 3px solid #dbeafe;
+            border-top-color: var(--blue);
+            border-radius: 50%;
+            animation: spin .7s linear infinite;
+        }
+
+        .dashboard-modal-loading span {
+            color: var(--slate-600);
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .dashboard-chart {
+            display: block;
+            width: 100%;
+            height: 220px;
+        }
+
+        .activity-list {
+            display: grid;
+            gap: 10px;
+        }
+
+        .activity-row {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) auto;
+            gap: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--slate-100);
+        }
+
+        .activity-row:last-child {
+            padding-bottom: 0;
+            border-bottom: 0;
+        }
+
+        .activity-main strong,
+        .activity-main span,
+        .activity-meta {
+            display: block;
+        }
+
+        .activity-main strong {
+            color: var(--slate-800);
+            font-size: 13px;
+        }
+
+        .activity-main span,
+        .activity-meta {
+            color: var(--slate-500);
+            font-size: 11px;
+            margin-top: 3px;
+        }
+
+        .activity-operation {
+            align-self: center;
+            padding: 4px 8px;
+            border-radius: 999px;
+            font-size: 10px;
+            font-weight: 700;
+        }
+
+        .activity-operation.assignment {
+            color: #166534;
+            background: #dcfce7;
+        }
+
+        .activity-operation.return {
+            color: #1d4ed8;
+            background: #dbeafe;
+        }
+
+        .dashboard-empty {
+            color: var(--slate-500);
+            font-size: 12px;
+        }
+
+        @media (max-width: 1000px) {
+            .summary-grid {
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 700px) {
+            .dashboard-heading {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .summary-grid,
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
 
         .page-header-actions {
             display: flex;
@@ -349,6 +685,79 @@ function getSortIndicator(string $column, string $currentSort, string $currentOr
         <?php unset($_SESSION['login_error']);
         endif;
         ?>
+
+        <?php if ($dashboardUserRole === 'ADMIN'): ?>
+            <?php $summary = $dashboardData['summary'] ?? []; ?>
+            <section class="dashboard-panel" id="dashboardPanel">
+                <div class="dashboard-heading">
+                    <div>
+                        <h2>Asset Dashboard</h2>
+                        <p>Live inventory, assignment, and return activity.</p>
+                    </div>
+                    <button type="button" class="dashboard-refresh" id="dashboardRefresh">Refresh dashboard</button>
+                </div>
+                <div class="dashboard-refresh-error" id="dashboardRefreshError"></div>
+                <div class="summary-grid">
+                    <div class="summary-card"><span>Employees</span><strong id="dashboardEmployees"><?= (int)($summary['employees'] ?? 0) ?></strong></div>
+                    <div class="summary-card"><span>Total Assets</span><strong id="dashboardAssets"><?= (int)($summary['assets'] ?? 0) ?></strong></div>
+                    <div class="summary-card"><span>Available Assets</span><strong id="dashboardAvailable"><?= (int)($summary['available_assets'] ?? 0) ?></strong></div>
+                    <div class="summary-card"><span>Assigned Assets</span><strong id="dashboardAssigned"><?= (int)($summary['assigned_assets'] ?? 0) ?></strong></div>
+                    <div class="summary-card"><span>Under Repair</span><strong id="dashboardRepair"><?= (int)($summary['repair_assets'] ?? 0) ?></strong></div>
+                </div>
+                <div class="dashboard-grid">
+                    <div class="dashboard-card">
+                        <button type="button" class="dashboard-toggle" data-dashboard-modal="department">
+                            Assets by Department
+                        </button>
+                    </div>
+                    <div class="dashboard-card">
+                        <button type="button" class="dashboard-toggle" data-dashboard-modal="monthly">
+                            Monthly Assignments and Returns (<?= (int)($dashboardData['year'] ?? date('Y')) ?>)
+                        </button>
+                    </div>
+                    <div class="dashboard-card">
+                        <button type="button" class="dashboard-toggle" data-dashboard-modal="activity">
+                            Recent Assignments and Returns
+                        </button>
+                    </div>
+                </div>
+                <div class="dashboard-modal" id="dashboardModal" aria-hidden="true">
+                    <div class="dashboard-modal-card" role="dialog" aria-modal="true">
+                        <div class="dashboard-modal-loading" id="dashboardModalLoading">
+                            <div class="dashboard-modal-spinner"></div>
+                            <span>Loading dashboard data…</span>
+                        </div>
+                        <button type="button" class="dashboard-modal-close" id="dashboardModalClose" aria-label="Close dashboard detail">&times;</button>
+                        <h2 class="dashboard-modal-title" id="dashboardModalTitle"></h2>
+                        <div class="dashboard-modal-content" data-dashboard-content="department">
+                            <canvas class="dashboard-chart" id="departmentAssetsChart"></canvas>
+                        </div>
+                        <div class="dashboard-modal-content" data-dashboard-content="monthly">
+                            <canvas class="dashboard-chart" id="monthlyActivityChart"></canvas>
+                        </div>
+                        <div class="dashboard-modal-content" data-dashboard-content="activity">
+                            <div class="activity-list" id="dashboardActivityList"></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        <?php else: ?>
+            <?php $summary = $dashboardData['summary'] ?? []; ?>
+            <section class="dashboard-panel" id="dashboardPanel">
+                <div class="dashboard-heading">
+                    <div>
+                        <h2>My Asset Summary</h2>
+                        <p>Your assigned assets and active requests.</p>
+                    </div>
+                    <button type="button" class="dashboard-refresh" id="dashboardRefresh">Refresh</button>
+                </div>
+                <div class="dashboard-refresh-error" id="dashboardRefreshError"></div>
+                <div class="summary-grid" style="grid-template-columns:repeat(2,minmax(0,1fr));max-width:520px;">
+                    <div class="summary-card"><span>Assigned Assets</span><strong id="dashboardAssigned"><?= (int)($summary['assigned_assets'] ?? 0) ?></strong></div>
+                    <div class="summary-card"><span>Active Requests</span><strong id="dashboardRequests"><?= (int)($summary['active_requests'] ?? 0) ?></strong></div>
+                </div>
+            </section>
+        <?php endif; ?>
 
         <!-- Header Actions -->
         <div class="page-header">
@@ -998,6 +1407,267 @@ function getSortIndicator(string $column, string $currentSort, string $currentOr
 
             window.addEventListener('popstate', function() {
                 fetchData(window.location.href, false);
+            });
+        });
+    </script>
+
+    <script>
+        const dashboardInitialData = <?= json_encode($dashboardData ?? [], JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) ?>;
+        let currentDashboardData = dashboardInitialData;
+
+        function dashboardEscape(value) {
+            return String(value ?? '').replace(/[&<>"']/g, character => ({
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#039;'
+            } [character]));
+        }
+
+        function setDashboardLoading(loading) {
+            const button = document.getElementById('dashboardRefresh');
+            if (!button) return;
+            button.disabled = loading;
+            button.textContent = loading ? 'Refreshing…' : 'Refresh dashboard';
+        }
+
+        function showDashboardError(message) {
+            const error = document.getElementById('dashboardRefreshError');
+            if (!error) return;
+            error.textContent = message || '';
+            error.classList.toggle('active', Boolean(message));
+        }
+
+        function updateDashboardSummary(summary) {
+            const values = {
+                dashboardEmployees: summary.employees,
+                dashboardAssets: summary.assets,
+                dashboardAvailable: summary.available_assets,
+                dashboardAssigned: summary.assigned_assets,
+                dashboardRepair: summary.repair_assets,
+                dashboardRequests: summary.active_requests
+            };
+            Object.entries(values).forEach(([id, value]) => {
+                const element = document.getElementById(id);
+                if (element && value !== undefined) element.textContent = Number(value).toLocaleString();
+            });
+        }
+
+        function renderActivity(items) {
+            const list = document.getElementById('dashboardActivityList');
+            if (!list) return;
+            if (!items || items.length === 0) {
+                list.innerHTML = '<div class="dashboard-empty">No assignment or return activity yet.</div>';
+                return;
+            }
+            list.innerHTML = items.map(item => {
+                const operation = String(item.operation || '').toLowerCase();
+                const date = item.event_at ? new Date(item.event_at.replace(' ', 'T')).toLocaleString() : 'N/A';
+                return '<div class="activity-row">' +
+                    '<div class="activity-main"><strong>' +
+                    dashboardEscape(item.asset_name) + ' (#' + dashboardEscape(item.asset_id) + ')' +
+                    '</strong><span>' + dashboardEscape(item.employee_name || 'Unknown employee') +
+                    '</span></div><div><span class="activity-operation ' + operation + '">' +
+                    dashboardEscape(item.operation) + '</span><span class="activity-meta">' +
+                    dashboardEscape(date) + '</span></div></div>';
+            }).join('');
+        }
+
+        function prepareCanvas(canvas) {
+            if (!canvas) return null;
+            const ratio = window.devicePixelRatio || 1;
+            const width = Math.max(canvas.clientWidth, 280);
+            const height = 220;
+            canvas.width = width * ratio;
+            canvas.height = height * ratio;
+            const context = canvas.getContext('2d');
+            context.setTransform(ratio, 0, 0, ratio, 0, 0);
+            context.clearRect(0, 0, width, height);
+            return {
+                context,
+                width,
+                height
+            };
+        }
+
+        function drawDepartmentChart(items) {
+            const chart = prepareCanvas(document.getElementById('departmentAssetsChart'));
+            if (!chart) return;
+            const {
+                context,
+                width,
+                height
+            } = chart;
+            const padding = {
+                top: 18,
+                right: 16,
+                bottom: 48,
+                left: 32
+            };
+            const values = (items || []).map(item => Number(item.count) || 0);
+            const max = Math.max(...values, 1);
+            const slot = (width - padding.left - padding.right) / Math.max(items.length, 1);
+            const barWidth = Math.max(12, slot * .58);
+            context.font = '11px Arial';
+            context.textAlign = 'center';
+            items.forEach((item, index) => {
+                const barHeight = (values[index] / max) * (height - padding.top - padding.bottom);
+                const x = padding.left + slot * index + (slot - barWidth) / 2;
+                const y = height - padding.bottom - barHeight;
+                context.fillStyle = '#2563eb';
+                context.fillRect(x, y, barWidth, barHeight);
+                context.fillStyle = '#475569';
+                context.fillText(String(values[index]), x + barWidth / 2, y - 5);
+                context.save();
+                context.translate(x + barWidth / 2, height - 13);
+                context.rotate(-Math.PI / 5);
+                context.fillText(String(item.name).slice(0, 18), 0, 0);
+                context.restore();
+            });
+        }
+
+        function drawMonthlyChart(assignments, returns) {
+            const chart = prepareCanvas(document.getElementById('monthlyActivityChart'));
+            if (!chart) return;
+            const {
+                context,
+                width,
+                height
+            } = chart;
+            const padding = {
+                top: 24,
+                right: 18,
+                bottom: 30,
+                left: 30
+            };
+            const labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            const first = (assignments || []).map(Number);
+            const second = (returns || []).map(Number);
+            const max = Math.max(...first, ...second, 1);
+            const plotWidth = width - padding.left - padding.right;
+            const plotHeight = height - padding.top - padding.bottom;
+            const x = index => padding.left + (plotWidth * index / 11);
+            const y = value => padding.top + plotHeight - (value / max * plotHeight);
+
+            context.strokeStyle = '#e2e8f0';
+            context.lineWidth = 1;
+            for (let step = 0; step <= 4; step++) {
+                const lineY = padding.top + plotHeight * step / 4;
+                context.beginPath();
+                context.moveTo(padding.left, lineY);
+                context.lineTo(width - padding.right, lineY);
+                context.stroke();
+            }
+
+            function drawLine(values, color) {
+                context.strokeStyle = color;
+                context.lineWidth = 2;
+                context.beginPath();
+                values.forEach((value, index) => {
+                    const pointX = x(index);
+                    const pointY = y(value || 0);
+                    index === 0 ? context.moveTo(pointX, pointY) : context.lineTo(pointX, pointY);
+                });
+                context.stroke();
+                context.fillStyle = color;
+                values.forEach((value, index) => {
+                    context.beginPath();
+                    context.arc(x(index), y(value || 0), 3, 0, Math.PI * 2);
+                    context.fill();
+                });
+            }
+
+            drawLine(first, '#2563eb');
+            drawLine(second, '#16a34a');
+            context.fillStyle = '#64748b';
+            context.font = '10px Arial';
+            context.textAlign = 'center';
+            labels.forEach((label, index) => context.fillText(label, x(index), height - 10));
+            context.textAlign = 'left';
+            context.fillStyle = '#2563eb';
+            context.fillText('Assignments', padding.left, 12);
+            context.fillStyle = '#16a34a';
+            context.fillText('Returns', padding.left + 85, 12);
+        }
+
+        function renderDashboard(data) {
+            currentDashboardData = data;
+            updateDashboardSummary(data.summary || {});
+            renderActivity(data.recentActivity || []);
+            if (data.role === 'ADMIN') {
+                drawDepartmentChart(data.departmentAssets || []);
+                drawMonthlyChart(data.monthlyAssignments || [], data.monthlyReturns || []);
+            }
+        }
+
+        function refreshDashboard() {
+            setDashboardLoading(true);
+            showDashboardError('');
+            fetch('index.php?route=users/dashboard-data', {
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                })
+                .then(response => response.ok ?
+                    response.json() :
+                    response.json().then(body => Promise.reject(new Error(body.error || 'Dashboard refresh failed.'))))
+                .then(renderDashboard)
+                .catch(error => {
+                    console.error('Dashboard refresh failed:', error);
+                    showDashboardError(error.message || 'Unable to refresh dashboard.');
+                })
+                .finally(() => setDashboardLoading(false));
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            renderDashboard(currentDashboardData);
+            document.getElementById('dashboardRefresh')?.addEventListener('click', refreshDashboard);
+            const dashboardModal = document.getElementById('dashboardModal');
+            const dashboardModalTitle = document.getElementById('dashboardModalTitle');
+            const dashboardModalLoading = document.getElementById('dashboardModalLoading');
+            const closeDashboardModal = () => {
+                dashboardModal?.classList.remove('active');
+                dashboardModal?.setAttribute('aria-hidden', 'true');
+            };
+            document.querySelectorAll('.dashboard-toggle').forEach(button => {
+                button.addEventListener('click', () => {
+                    const target = button.dataset.dashboardModal;
+                    const titles = {
+                        department: 'Assets by Department',
+                        monthly: 'Monthly Assignments and Returns',
+                        activity: 'Recent Assignments and Returns'
+                    };
+                    document.querySelectorAll('[data-dashboard-content]').forEach(content => {
+                        content.classList.toggle('active', content.dataset.dashboardContent === target);
+                    });
+                    if (dashboardModalTitle) dashboardModalTitle.textContent = titles[target] || 'Dashboard details';
+                    dashboardModal?.classList.add('active');
+                    dashboardModal?.setAttribute('aria-hidden', 'false');
+                    dashboardModalLoading?.classList.add('active');
+                    requestAnimationFrame(() => {
+                        if (target === 'department') drawDepartmentChart(currentDashboardData.departmentAssets || []);
+                        if (target === 'monthly') drawMonthlyChart(
+                            currentDashboardData.monthlyAssignments || [],
+                            currentDashboardData.monthlyReturns || []
+                        );
+                        window.setTimeout(() => dashboardModalLoading?.classList.remove('active'), 220);
+                    });
+                });
+            });
+            document.getElementById('dashboardModalClose')?.addEventListener('click', closeDashboardModal);
+            dashboardModal?.addEventListener('click', event => {
+                if (event.target === dashboardModal) closeDashboardModal();
+            });
+            document.addEventListener('keydown', event => {
+                if (event.key === 'Escape') closeDashboardModal();
+            });
+            window.addEventListener('resize', () => {
+                if (currentDashboardData?.role === 'ADMIN' && dashboardModal?.classList.contains('active')) {
+                    const active = document.querySelector('[data-dashboard-content].active')?.dataset.dashboardContent;
+                    if (active === 'department') drawDepartmentChart(currentDashboardData.departmentAssets || []);
+                    if (active === 'monthly') drawMonthlyChart(currentDashboardData.monthlyAssignments || [], currentDashboardData.monthlyReturns || []);
+                }
             });
         });
     </script>

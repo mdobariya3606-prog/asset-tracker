@@ -4,6 +4,7 @@ namespace App\Controllers\User;
 
 use App\Models\Department;
 use App\Models\Designation;
+use App\Models\Dashboard;
 use App\Models\User;
 use PDO;
 
@@ -28,6 +29,10 @@ class SelectUserController
 
 		$dashboardUser = $this->userModel->dashboardUser();
 		$dashboardUserRole = strtoupper($dashboardUser['role'] ?? 'EMPLOYEE');
+		$dashboardData = (new Dashboard($this->conn))->data(
+			(int) $dashboardUser['id'],
+			$dashboardUserRole
+		);
 
 		$search = trim($getParams['search'] ?? '');
 		$page = (int)($getParams['page'] ?? 1);
@@ -139,6 +144,7 @@ class SelectUserController
 			'totalPages' => $totalPages,
 			'users' => $users,
 			'message' => $message,
+			'dashboardData' => $dashboardData,
 		]);
 	}
 }

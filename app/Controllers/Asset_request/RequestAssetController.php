@@ -111,13 +111,7 @@ class RequestAssetController
 
 	private function validateRequest(int $assetId): void
 	{
-		if (!$this->assetModel->isAvailable($assetId)) {
-			$_SESSION['general'] =
-				'Asset #' . $assetId . ' is not available for request.';
-
-			route('assets');
-			exit;
-		}
+		$this->assetModel->checkAvailabity($assetId);
 
 		$stmt = $this->conn->prepare('
 			SELECT id

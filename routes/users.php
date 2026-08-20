@@ -6,10 +6,15 @@ use App\Controllers\User\ProfileController;
 use App\Controllers\User\ResetPasswordController;
 use App\Controllers\User\SelectUserController;
 use App\Controllers\User\UserTrashController;
+use App\Controllers\DashboardController;
 use App\Models\Designation;
 use App\Models\Route;
 
 switch ("$method:$route") {
+    case 'GET:users/dashboard-data':
+        (new DashboardController($conn))->data();
+        return true;
+
     case 'GET:users':
         (new SelectUserController($conn))->index($_GET);
         return true;

@@ -7,7 +7,7 @@ if (!isset($_SESSION['user_id'])) {
 }
 
 // Session timeout duration: 30 minutes (1800 seconds)
-$timeout = 1800;
+$timeout = (60 * 30);
 
 if (isset($_SESSION['last_activity']) && (time() - $_SESSION['last_activity']) > $timeout) {
     // 1. Destroy existing active session completely

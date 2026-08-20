@@ -392,16 +392,27 @@ class Asset
 		return $stmt->rowCount() > 0;
 	}
 
-	public function isAvailable(int $assetId)
+	public function checkAvailabity(int $assetId)
 	{
-		$sql = 'SELECT id
+		$sql = 'SELECT name, status
                 FROM assets 
-                WHERE id = ? and status = "AVAILABLE"';
+                WHERE id = ?';
 
 		$stmt = $this->conn->prepare($sql);
 		$stmt->execute([$assetId]);
 
-		return $stmt->rowCount() > 0;
+		$asset = $stmt->fetch(PDO::FETCH_ASSOC);
+
+		if (!$asset) {
+			view(404);
+			exit;
+		}
+
+		if ($asset['status'] !== 'AVAILABLE') {
+			$_SESSION['general'] = $asset['name'] . ' is not available for request.';
+			route('assets');
+			exit;
+		}
 	}
 
 	public function getAssignmentHistory(int $assetId): array
