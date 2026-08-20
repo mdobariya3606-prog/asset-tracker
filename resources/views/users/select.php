@@ -80,6 +80,41 @@ function getSortIndicator(string $column, string $currentSort, string $currentOr
             }
         }
 
+        .users-loading-overlay {
+            position: absolute;
+            inset: 0;
+            z-index: 5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.72);
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+            transition: opacity 0.18s ease, visibility 0.18s ease;
+        }
+
+        .users-loading-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .users-loading-spinner {
+            width: 24px;
+            height: 24px;
+            border: 3px solid #dbeafe;
+            border-top-color: var(--blue);
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+        }
+
+        .users-loading-text {
+            color: var(--slate-600);
+            font-size: 13px;
+            font-weight: 600;
+        }
+
 
         .page-header-actions {
             display: flex;
@@ -504,7 +539,11 @@ function getSortIndicator(string $column, string $currentSort, string $currentOr
         </div>
 
         <!-- Listings Card -->
-        <div class="card">
+        <div class="card" id="usersCard" style="position:relative;">
+            <div class="users-loading-overlay" id="usersLoadingOverlay" aria-live="polite" aria-busy="false">
+                <div class="users-loading-spinner"></div>
+                <span class="users-loading-text">Applying filters...</span>
+            </div>
             <?php if (empty($users)): ?>
                 <div class="empty-state">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
@@ -601,7 +640,8 @@ function getSortIndicator(string $column, string $currentSort, string $currentOr
                                     </td>
                                     <?php if ($dashboardUserRole === 'ADMIN'): ?>
                                         <td class="user-role">
-                                            <span class="badge" style="background: #f1f5f9; color: var(--slate-700); font-weight: 600; font-size: 11px;">
+                                            <?php $userRole = strtolower((string)($user['role'] ?? 'employee')); ?>
+                                            <span class="badge badge-role-<?= htmlspecialchars($userRole) ?>">
                                                 <?= htmlspecialchars($user['role'] ?? 'EMPLOYEE') ?>
                                             </span>
                                         </td>
@@ -797,12 +837,7 @@ function getSortIndicator(string $column, string $currentSort, string $currentOr
         }
 
         function fetchData(url, updateHistory = true) {
-            // Show loading state subtly in the table if possible
-            const tableBody = document.querySelector('tbody');
-            if (tableBody) {
-                tableBody.style.opacity = '0.5';
-                tableBody.style.transition = 'opacity 0.15s ease';
-            }
+            setUsersLoading(true);
 
             fetch(url)
                 .then(response => {
@@ -865,11 +900,20 @@ function getSortIndicator(string $column, string $currentSort, string $currentOr
                     console.error('Error fetching data:', err);
                 })
                 .finally(() => {
-                    const currentTableBody = document.querySelector('tbody');
-                    if (currentTableBody) {
-                        currentTableBody.style.opacity = '1';
-                    }
+                    setUsersLoading(false);
                 });
+        }
+
+        function setUsersLoading(isLoading) {
+            const card = document.getElementById('usersCard');
+            const overlay = document.getElementById('usersLoadingOverlay');
+            if (overlay) {
+                overlay.classList.toggle('active', isLoading);
+                overlay.setAttribute('aria-busy', isLoading ? 'true' : 'false');
+            }
+            if (card) {
+                card.setAttribute('aria-busy', isLoading ? 'true' : 'false');
+            }
         }
 
         document.addEventListener('DOMContentLoaded', function() {

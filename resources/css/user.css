@@ -297,7 +297,8 @@ tr:last-child td {
 }
 
 .user-department,
-.user-designation {
+.user-designation,
+.user-role {
   text-align: left;
   white-space: nowrap;
 }
@@ -307,8 +308,23 @@ tr:last-child td {
 }
 
 .user-department .badge,
-.user-designation .badge {
+.user-designation .badge,
+.user-role .badge {
   white-space: nowrap;
+}
+
+.user-role {
+  width: 130px;
+}
+
+.user-role .badge {
+  min-width: 82px;
+  justify-content: center;
+  padding: 5px 12px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .04em;
+  text-transform: uppercase;
 }
 
 .badge-role-admin,

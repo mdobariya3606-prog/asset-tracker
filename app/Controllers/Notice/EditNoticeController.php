@@ -46,6 +46,7 @@ class EditNoticeController
 
         view('notices.edit', [
             'notice' => $notice,
+            'personalRecipient' => $this->notice->personalRecipient($id),
             'noticeTitles' => $noticeTitles,
             'errors' => [],
             'old' => [],
@@ -83,6 +84,7 @@ class EditNoticeController
 
             view('notices.edit', [
                 'notice' => $notice,
+                'personalRecipient' => $this->notice->personalRecipient($id),
                 'noticeTitles' => $noticeTitles,
                 'errors' => $validation['errors'],
                 'old' => $validation['old'],

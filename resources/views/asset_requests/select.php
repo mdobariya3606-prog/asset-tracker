@@ -53,6 +53,41 @@
             }
         }
 
+        .asset-requests-loading-overlay {
+            position: absolute;
+            inset: 0;
+            z-index: 5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.72);
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+            transition: opacity 0.18s ease, visibility 0.18s ease;
+        }
+
+        .asset-requests-loading-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .asset-requests-loading-spinner {
+            width: 24px;
+            height: 24px;
+            border: 3px solid #dbeafe;
+            border-top-color: var(--blue);
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+        }
+
+        .asset-requests-loading-text {
+            color: var(--slate-600);
+            font-size: 13px;
+            font-weight: 600;
+        }
+
         .page-header-actions {
             display: flex;
             align-items: center;
@@ -417,7 +452,11 @@
             <?php unset($_SESSION['error']); ?>
         <?php endif; ?>
 
-        <div class="card">
+        <div class="card" id="assetRequestsCard" style="position:relative;">
+            <div class="asset-requests-loading-overlay" id="assetRequestsLoadingOverlay" aria-live="polite" aria-busy="false">
+                <div class="asset-requests-loading-spinner"></div>
+                <span class="asset-requests-loading-text">Applying filters...</span>
+            </div>
             <table>
                 <thead>
                     <tr>
@@ -605,8 +644,7 @@
         }
 
         function fetchData(url, updateHistory = true) {
-            const tableBody = document.querySelector('tbody');
-            if (tableBody) tableBody.style.opacity = '0.5';
+            setAssetRequestsLoading(true);
 
             fetch(url)
                 .then(response => response.text())
@@ -639,8 +677,20 @@
                 })
                 .catch(error => console.error('Error fetching asset requests:', error))
                 .finally(() => {
-                    if (tableBody) tableBody.style.opacity = '1';
+                    setAssetRequestsLoading(false);
                 });
+        }
+
+        function setAssetRequestsLoading(isLoading) {
+            const card = document.getElementById('assetRequestsCard');
+            const overlay = document.getElementById('assetRequestsLoadingOverlay');
+            if (overlay) {
+                overlay.classList.toggle('active', isLoading);
+                overlay.setAttribute('aria-busy', isLoading ? 'true' : 'false');
+            }
+            if (card) {
+                card.setAttribute('aria-busy', isLoading ? 'true' : 'false');
+            }
         }
 
         document.addEventListener('DOMContentLoaded', function() {

@@ -75,6 +75,52 @@
             fill: none;
             stroke-width: 2;
         }
+
+        .recipient-panel {
+            margin: 0 0 24px;
+            padding: 18px;
+            border: 1px solid var(--slate-200);
+            border-radius: var(--radius-md);
+            background: #f8fafc;
+        }
+
+        .recipient-panel h2 {
+            margin: 0 0 14px;
+            color: var(--slate-800);
+            font-size: 15px;
+        }
+
+        .recipient-list {
+            display: grid;
+            gap: 10px;
+        }
+
+        .recipient-card {
+            display: grid;
+            grid-template-columns: minmax(140px, 1fr) minmax(180px, 1fr) minmax(150px, 1fr);
+            gap: 12px;
+            padding: 12px;
+            background: #fff;
+            border: 1px solid var(--slate-200);
+            border-radius: 8px;
+            font-size: 13px;
+        }
+
+        .recipient-card strong {
+            display: block;
+            color: var(--slate-800);
+            margin-bottom: 3px;
+        }
+
+        .recipient-card span {
+            color: var(--slate-500);
+        }
+
+        @media (max-width: 700px) {
+            .recipient-card {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
 </head>
 
@@ -104,6 +150,37 @@
                     </svg>
                     <?php echo htmlspecialchars($errors['general']); ?>
                 </div>
+            <?php endif; ?>
+
+            <?php if (!empty($personalRecipient)): ?>
+                <section class="recipient-panel" aria-labelledby="recipientHeading">
+                    <h2 id="recipientHeading">Personal Notice Recipient</h2>
+                    <div class="recipient-list">
+                        <div class="recipient-card">
+                            <div>
+                                <strong><?= htmlspecialchars($personalRecipient['name'] ?? 'Unknown user') ?></strong>
+                                <span>User ID: #<?= (int)($personalRecipient['id'] ?? 0) ?></span>
+                            </div>
+                            <div>
+                                <strong>Contact</strong>
+                                <span><?= htmlspecialchars($personalRecipient['email'] ?? 'No email') ?></span>
+                                <?php if (!empty($personalRecipient['mobile'])): ?>
+                                    <br><span><?= htmlspecialchars($personalRecipient['mobile']) ?></span>
+                                <?php endif; ?>
+                            </div>
+                            <div>
+                                <strong>Employment</strong>
+                                <span><?= htmlspecialchars($personalRecipient['role'] ?? 'N/A') ?></span>
+                                <?php if (!empty($personalRecipient['department_name'])): ?>
+                                    <br><span><?= htmlspecialchars($personalRecipient['department_name']) ?></span>
+                                <?php endif; ?>
+                                <?php if (!empty($personalRecipient['designation_name'])): ?>
+                                    <br><span><?= htmlspecialchars($personalRecipient['designation_name']) ?></span>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+                    </div>
+                </section>
             <?php endif; ?>
 
             <form action="index.php?route=notices/edit&id=<?= (int)$notice['id'] ?>" method="post" id="editNoticeForm" novalidate>
