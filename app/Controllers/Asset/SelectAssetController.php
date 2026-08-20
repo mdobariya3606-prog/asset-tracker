@@ -83,6 +83,7 @@ class SelectAssetController
 	public function history(int $id): void
 	{
 		middleware('auth');
+		middleware('manager');
 
 		$asset = $this->asset->find($id);
 

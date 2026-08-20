@@ -394,12 +394,12 @@
                 Back
             </a>
 
-            <a class="history-btn" href="index.php?route=assets/history&id=<?= (int)$asset['id'] ?>">
-                <i data-lucide="history" style="width: 15px; height: 15px;"></i>
-                History
-            </a>
 
             <?php if ($canManageAssets): ?>
+                <a class="history-btn" href="index.php?route=assets/history&id=<?= (int)$asset['id'] ?>">
+                    <i data-lucide="history" style="width: 15px; height: 15px;"></i>
+                    History
+                </a>
                 <a class="edit" href="index.php?route=assets/edit&id=<?= (int)$asset['id'] ?>">
                     <i data-lucide="edit-3" style="width: 15px; height: 15px;"></i>
                     Edit Asset

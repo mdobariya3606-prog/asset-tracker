@@ -140,11 +140,30 @@
             letter-spacing: 0.04em;
         }
 
-        .status-available { background: #dcfce7; color: #15803d; }
-        .status-assigned { background: #dbeafe; color: #1d4ed8; }
-        .status-repair { background: #ffedd5; color: #c2410c; }
-        .status-lost { background: #fee2e2; color: #b91c1c; }
-        .status-scrap { background: #f3e8ff; color: #7e22ce; }
+        .status-available {
+            background: #dcfce7;
+            color: #15803d;
+        }
+
+        .status-assigned {
+            background: #dbeafe;
+            color: #1d4ed8;
+        }
+
+        .status-repair {
+            background: #ffedd5;
+            color: #c2410c;
+        }
+
+        .status-lost {
+            background: #fee2e2;
+            color: #b91c1c;
+        }
+
+        .status-scrap {
+            background: #f3e8ff;
+            color: #7e22ce;
+        }
 
         /* Section Title */
         .section-header {
@@ -264,7 +283,7 @@
 
         .timeline-card-header {
             display: flex;
-            align-items: center;
+            align-items: flex-start;
             justify-content: space-between;
             flex-wrap: wrap;
             gap: 12px;
@@ -278,6 +297,8 @@
             display: flex;
             align-items: center;
             gap: 14px;
+            min-width: 0;
+            flex: 1 1 auto;
         }
 
         .assignee-avatar {
@@ -305,6 +326,12 @@
         .assignee-details {
             display: flex;
             flex-direction: column;
+            min-width: 0;
+        }
+
+        .assignee-name,
+        .assignee-sub {
+            overflow-wrap: anywhere;
         }
 
         .assignee-name {
@@ -458,22 +485,77 @@
         }
 
         @media (max-width: 600px) {
+            body {
+                padding: 20px 12px;
+            }
+
             .asset-hero-card {
                 padding: 20px;
+                border-radius: 16px;
             }
 
             .asset-hero-left {
                 flex-direction: column;
                 align-items: flex-start;
                 gap: 12px;
+                width: 100%;
+            }
+
+            .asset-hero-card {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .asset-hero-info h1 {
+                font-size: 20px;
+            }
+
+            .timeline {
+                padding-left: 28px;
+            }
+
+            .timeline-node {
+                left: -28px;
+                width: 26px;
+                height: 26px;
             }
 
             .timeline-card {
                 padding: 16px;
+                border-radius: 12px;
+            }
+
+            .assignee-box {
+                width: 100%;
+            }
+
+            .assignee-avatar {
+                width: 38px;
+                height: 38px;
+                font-size: 14px;
+            }
+
+            .timeline-card-header>div:last-child {
+                align-self: flex-start;
             }
 
             .milestones-grid {
                 grid-template-columns: 1fr;
+                padding: 12px;
+            }
+
+            .note-row {
+                flex-direction: column;
+                gap: 4px;
+            }
+
+            .note-row strong {
+                min-width: 0;
+            }
+
+            .top-nav .btn-back {
+                font-size: 12px;
+                padding: 8px 14px;
             }
         }
     </style>
