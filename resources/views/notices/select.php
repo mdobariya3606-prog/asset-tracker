@@ -288,11 +288,11 @@ $canAdd = $role !== 'EMPLOYEE';
 
                     <div class="dropdown-menu">
 
-                        <a href="index.php?route=notices/create-custom">
+                        <a href="index.php?route=notices/create">
                             General Notice
                         </a>
 
-                        <a href="index.php?route=notices/create">
+                        <a href="index.php?route=notices/create-custom">
                             Custom Notice
                         </a>
 

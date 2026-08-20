@@ -17,6 +17,14 @@ switch ("$method:$route") {
         (new CreateNoticeController($conn))->store($_POST);
         return true;
 
+    case 'GET:notices/create-custom':
+        (new CreateNoticeController($conn))->customCreate();
+        return true;
+
+    case 'POST:notices/create-custom':
+        (new CreateNoticeController($conn))->customStore($_POST);
+        return true;
+
     case 'GET:notices/edit':
         (new \App\Controllers\Notice\EditNoticeController($conn))->edit($_GET);
         return true;

@@ -44,6 +44,79 @@ class CreateNoticeController
         exit;
     }
 
+    public function customCreate(): void
+    {
+        middleware('auth');
+        $this->authorizeCustomNotice();
+
+        view('notices.create-custom', [
+            'employees' => $this->recipientUsers(),
+            'assets' => $this->assets(),
+            'noticeTitles' => $this->notice->getTitles(),
+        ]);
+        exit;
+    }
+
+    public function customStore(array $postData): void
+    {
+        middleware('auth');
+        $this->authorizeCustomNotice();
+
+        if (!Csrf::validate($_POST['csrf_token'] ?? null)) {
+            view(403);
+            exit;
+        }
+
+        $validation = $this->validateCustomNotice($postData);
+        if (!empty($validation['errors'])) {
+            view('notices.create-custom', [
+                'errors' => $validation['errors'],
+                'old' => $validation['old'],
+                'employees' => $this->recipientUsers(),
+                'assets' => $this->assets(),
+                'noticeTitles' => $this->notice->getTitles(),
+            ]);
+            exit;
+        }
+
+        $recipientId = (int) $postData['employee_id'];
+        $assetId = !empty($postData['asset_id']) ? (int) $postData['asset_id'] : null;
+        $message = trim($postData['message']);
+
+        if ($assetId !== null) {
+            $asset = $this->findAsset($assetId);
+            $message .= "\n\nRelated asset: {$asset['name']}" .
+                (!empty($asset['serial_number']) ? " (S/N: {$asset['serial_number']})" : '');
+        }
+
+        $this->conn->beginTransaction();
+        try {
+            $stmt = $this->conn->prepare(
+                'INSERT INTO notices (title_id, message, created_by) VALUES (?, ?, ?)'
+            );
+            $stmt->execute([
+                (int) $postData['title_id'],
+                $message,
+                (int) $_SESSION['user_id'],
+            ]);
+
+            $noticeId = (int) $this->conn->lastInsertId();
+            $recipientStmt = $this->conn->prepare(
+                'INSERT INTO notice_recipients (notice_id, employee_id) VALUES (?, ?)'
+            );
+            $recipientStmt->execute([$noticeId, $recipientId]);
+
+            $this->conn->commit();
+            $_SESSION['success'] = 'Personal notice sent successfully.';
+            route('notices');
+        } catch (Throwable $e) {
+            if ($this->conn->inTransaction()) {
+                $this->conn->rollBack();
+            }
+            throw $e;
+        }
+    }
+
     /* =========================================================
 	 * STORE NOTICE
 	 * ========================================================= */
@@ -51,8 +124,8 @@ class CreateNoticeController
     public function store(array $postData)
     {
         if (!Csrf::validate($_POST['csrf_token'] ?? null)) {
-            http_response_code(403);
-            exit('Invalid CSRF token.');
+            view(403);
+            exit;
         }
 
         $validation = $this->validateNotice($postData);
@@ -163,5 +236,88 @@ class CreateNoticeController
             'errors' => $errors,
             'old' => $old,
         ];
+    }
+
+    private function authorizeCustomNotice(): void
+    {
+        $role = strtoupper((string) ($_SESSION['user_role'] ?? ''));
+        if (!in_array($role, ['ADMIN', 'HR', 'MANAGER'], true)) {
+            view(403);
+            exit;
+        }
+    }
+
+    private function recipientUsers(): array
+    {
+        $sql = 'SELECT id, name, email, department_id
+                FROM users
+                WHERE id != ? AND deleted_at IS NULL
+                ORDER BY name';
+
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute([$_SESSION['user_id']]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    private function assets(): array
+    {
+        return $this->conn
+            ->query('SELECT id, name, serial_number FROM assets ORDER BY name')
+            ->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    private function findAsset(int $id): array
+    {
+        $stmt = $this->conn->prepare('SELECT id, name, serial_number FROM assets WHERE id = ?');
+        $stmt->execute([$id]);
+        $asset = $stmt->fetch(PDO::FETCH_ASSOC);
+        if (!$asset) {
+            throw new \RuntimeException('Selected asset was not found.');
+        }
+        return $asset;
+    }
+
+    private function validateCustomNotice(array $notice): array
+    {
+        $errors = [];
+        $old = [
+            'employee_id' => (int) ($notice['employee_id'] ?? 0),
+            'asset_id' => (int) ($notice['asset_id'] ?? 0),
+            'title_id' => (int) ($notice['title_id'] ?? 0),
+            'message' => trim((string) ($notice['message'] ?? '')),
+        ];
+
+        $allowedEmployeeIds = array_map(
+            'intval',
+            array_column($this->recipientUsers(), 'id')
+        );
+
+        if (!in_array($old['employee_id'], $allowedEmployeeIds, true)) {
+            $errors['employee_id'] = 'Please select a valid employee.';
+        }
+
+        $titleStmt = $this->conn->prepare('SELECT id FROM notice_titles WHERE id = ?');
+        $titleStmt->execute([$old['title_id']]);
+        if (!$titleStmt->fetchColumn()) {
+            $errors['title_id'] = 'Please select a valid notice title.';
+        }
+
+        if ($old['message'] === '') {
+            $errors['message'] = 'Message is required.';
+        } elseif (strlen($old['message']) < 5) {
+            $errors['message'] = 'Message must be at least 5 characters.';
+        }
+
+        if ($old['asset_id'] > 0) {
+            $assetStmt = $this->conn->prepare('SELECT id FROM assets WHERE id = ?');
+            $assetStmt->execute([$old['asset_id']]);
+            if (!$assetStmt->fetchColumn()) {
+                $errors['asset_id'] = 'Please select a valid asset.';
+            }
+        } else {
+            $old['asset_id'] = 0;
+        }
+
+        return ['errors' => $errors, 'old' => $old];
     }
 }

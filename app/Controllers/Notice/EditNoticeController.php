@@ -61,8 +61,8 @@ class EditNoticeController
     public function update(array $getParams, array $postData)
     {
         if (!Csrf::validate($_POST['csrf_token'] ?? null)) {
-            http_response_code(403);
-            exit('Invalid CSRF token.');
+            view(403);
+            exit;
         }
 
         middleware('auth');
@@ -105,8 +105,8 @@ class EditNoticeController
     public function destroy(array $getParams)
     {
         if (!Csrf::validate($_POST['csrf_token'] ?? null)) {
-            http_response_code(403);
-            exit('Invalid CSRF token.');
+            view(403);
+            exit;
         }
 
         middleware('auth');
