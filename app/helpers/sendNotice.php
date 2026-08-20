@@ -50,7 +50,7 @@ function sendNoticeToUser(
     return $noticeId;
 }
 
-function sendStatusNotice($status, array $assetRequest, ?\PDO $conn = null): void
+function sendStatusNotice(string $status, array $assetRequest, ?\PDO $conn = null): void
 {
     $status = strtoupper(trim($status));
 

@@ -37,7 +37,14 @@ class SelectAssetRequestController
 		middleware('auth');
 
 		$status = trim((string) ($_GET['status'] ?? ''));
-		$requests = $this->assetRequest->filtered($status);
+		$dateFrom = trim((string) ($_GET['date_from'] ?? ''));
+		$dateTo = trim((string) ($_GET['date_to'] ?? ''));
+		$dateRangeError = !$this->assetRequest->isValidDateRange($dateFrom, $dateTo)
+			? 'The start date cannot be later than the end date.'
+			: null;
+		$requests = $dateRangeError
+			? []
+			: $this->assetRequest->filtered($status, $dateFrom, $dateTo);
 
 		$statuses = [
 			'PENDING',
@@ -51,6 +58,9 @@ class SelectAssetRequestController
 		view('asset.requests.select', [
 			'requests' => $requests,
 			'selectedStatus' => $status,
+			'selectedDateFrom' => $dateFrom,
+			'selectedDateTo' => $dateTo,
+			'dateRangeError' => $dateRangeError,
 			'statuses' => $statuses,
 		]);
 

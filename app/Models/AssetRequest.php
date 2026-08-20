@@ -140,7 +140,11 @@ class AssetRequest
 	 * Return requests using the same filters as the requests directory.
 	 * HR and employees can only see their own requests.
 	 */
-	public function filtered(?string $status = null): array
+	public function filtered(
+		?string $status = null,
+		?string $dateFrom = null,
+		?string $dateTo = null
+	): array
 	{
 		$sql = 'SELECT ar.*, a.name AS asset_name
 				FROM asset_requests ar
@@ -160,16 +164,44 @@ class AssetRequest
 			$params[] = $status;
 		}
 
+		$dateFrom = $this->validFilterDate($dateFrom);
+		$dateTo = $this->validFilterDate($dateTo);
+		if ($dateFrom !== null) {
+			$sql .= ' AND ar.requested_at >= ?';
+			$params[] = $dateFrom . ' 00:00:00';
+		}
+		if ($dateTo !== null) {
+			$sql .= ' AND ar.requested_at < DATE_ADD(?, INTERVAL 1 DAY)';
+			$params[] = $dateTo . ' 00:00:00';
+		}
+
 		$sql .= ' ORDER BY ar.status, ar.id DESC';
 		$stmt = $this->conn->prepare($sql);
 		$stmt->execute($params);
 		return $stmt->fetchAll(PDO::FETCH_ASSOC);
 	}
 
+	public function isValidDateRange(?string $dateFrom, ?string $dateTo): bool
+	{
+		$from = $this->validFilterDate($dateFrom);
+		$to = $this->validFilterDate($dateTo);
+
+		return $from === null || $to === null || $from <= $to;
+	}
+
 	public function export($option = 'pdf')
 	{
 		middleware('auth');
-		$requests = $this->filtered($_GET['status'] ?? null);
+		if (!$this->isValidDateRange($_GET['date_from'] ?? null, $_GET['date_to'] ?? null)) {
+			http_response_code(422);
+			exit('The start date cannot be later than the end date.');
+		}
+
+		$requests = $this->filtered(
+			$_GET['status'] ?? null,
+			$_GET['date_from'] ?? null,
+			$_GET['date_to'] ?? null
+		);
 
 		if (strtolower(trim($option)) == 'excel') {
 			view('asset.requests.excel', ['requests' => $requests]);
@@ -178,5 +210,21 @@ class AssetRequest
 
 		view('asset.requests.pdf', ['requests' => $requests]);
 		exit;
+	}
+
+	private function validFilterDate(?string $date): ?string
+	{
+		$date = trim((string) $date);
+		if ($date === '') {
+			return null;
+		}
+
+		$parsed = DateTime::createFromFormat('!Y-m-d', $date);
+		$errors = DateTime::getLastErrors();
+		if ($parsed === false || ($errors !== false && ($errors['warning_count'] > 0 || $errors['error_count'] > 0))) {
+			return null;
+		}
+
+		return $parsed->format('Y-m-d');
 	}
 }

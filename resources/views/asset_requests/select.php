@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Assets — AssetTracker</title>
+    <title>Asset Requests — AssetTracker</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="resources/css/style.css">
     <link rel="stylesheet" href="resources/css/user.css">
@@ -230,6 +230,29 @@
             box-shadow: 0 0 0 3px rgba(59, 130, 246, .1);
         }
 
+        .filter-date {
+            padding: 9px 12px;
+            background-color: var(--white);
+            border: 1.5px solid var(--slate-200);
+            border-radius: var(--radius-sm);
+            font-family: inherit;
+            font-size: 13px;
+            color: var(--slate-800);
+            outline: none;
+        }
+
+        .filter-date:focus {
+            border-color: var(--blue);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, .1);
+        }
+
+        .date-filter-label {
+            color: var(--slate-500);
+            font-size: 13px;
+            font-weight: 600;
+            margin-left: 2px;
+        }
+
         .filter-status {
             display: flex;
             align-items: center;
@@ -247,6 +270,16 @@
 
             .filter-select {
                 width: 100%;
+            }
+
+            .filter-date {
+                width: 100%;
+                box-sizing: border-box;
+            }
+
+            .date-filter-label {
+                margin-left: 0;
+                margin-bottom: -8px;
             }
         }
 
@@ -281,7 +314,7 @@
 
         <div class="page-header">
             <div>
-                <h2>Assets</h2>
+                <h2>Asset Requests</h2>
                 <p>Manage asset requests and approvals efficiently from one place.</p>
             </div>
 
@@ -326,15 +359,32 @@
                     <option value="<?= htmlspecialchars($statusOption) ?>" <?= strtoupper((string)($selectedStatus ?? '')) === $statusOption ? 'selected' : '' ?>><?= htmlspecialchars($statusOption) ?></option>
                 <?php endforeach; ?>
             </select>
+            <label class="date-filter-label" for="dateFromFilter">From</label>
+            <input type="date" name="date_from" id="dateFromFilter" class="filter-date"
+                value="<?= htmlspecialchars($selectedDateFrom ?? '') ?>" aria-label="Filter from date">
+            <label class="date-filter-label" for="dateToFilter">To</label>
+            <input type="date" name="date_to" id="dateToFilter" class="filter-date"
+                value="<?= htmlspecialchars($selectedDateTo ?? '') ?>" aria-label="Filter to date">
         </form>
+
+        <div id="dateRangeError" class="alert-error" role="alert"
+            style="<?= empty($dateRangeError) ? 'display:none;' : '' ?>">
+            <div><?= htmlspecialchars($dateRangeError ?? '') ?></div>
+        </div>
 
         <div id="activeFiltersContainer">
             <?php $hasActiveStatus = !empty($selectedStatus); ?>
-            <?php if ($hasActiveStatus): ?>
+            <?php $hasActiveDateRange = !empty($selectedDateFrom) || !empty($selectedDateTo); ?>
+            <?php if ($hasActiveStatus || $hasActiveDateRange): ?>
                 <div class="filter-status">
                     <span style="font-size:13px;color:var(--slate-500);font-weight:600;margin-right:4px;">Active Filters:</span>
                     <?php if ($hasActiveStatus): ?>
                         <span class="badge" style="background:#ecfdf5;color:#10b981;padding:5px 12px;border-radius:20px;font-size:12px;font-weight:600;border:1px solid rgba(16,185,129,.2);display:inline-flex;align-items:center;gap:8px;">Status: <?= htmlspecialchars($selectedStatus) ?><a href="index.php?route=assets/requests" style="color:#10b981;text-decoration:none;font-size:15px;font-weight:bold;line-height:1;">&times;</a></span>
+                    <?php endif; ?>
+                    <?php if ($hasActiveDateRange): ?>
+                        <span class="badge" style="background:#eff6ff;color:#2563eb;padding:5px 12px;border-radius:20px;font-size:12px;font-weight:600;border:1px solid rgba(37,99,235,.2);display:inline-flex;align-items:center;gap:8px;">
+                            Date: <?= htmlspecialchars($selectedDateFrom ?: 'Any') ?> – <?= htmlspecialchars($selectedDateTo ?: 'Any') ?>
+                        </span>
                     <?php endif; ?>
                     <a href="index.php?route=assets/requests" style="font-size:12px;color:var(--slate-400);text-decoration:none;font-weight:600;margin-left:8px;">Clear Filters</a>
                 </div>
@@ -526,17 +576,31 @@
         function getFilterQueryParams() {
             const params = new URLSearchParams();
             const status = document.getElementById('statusFilter')?.value;
+            const dateFrom = document.getElementById('dateFromFilter')?.value;
+            const dateTo = document.getElementById('dateToFilter')?.value;
             if (status) params.set('status', status);
+            if (dateFrom) params.set('date_from', dateFrom);
+            if (dateTo) params.set('date_to', dateTo);
             const value = params.toString();
             return value ? '&' + value : '';
         }
 
-        function applyStatusFilter() {
+        function applyFilters() {
             const params = new URLSearchParams({
                 route: 'assets/requests'
             });
             const status = document.getElementById('statusFilter')?.value;
+            const dateFrom = document.getElementById('dateFromFilter')?.value;
+            const dateTo = document.getElementById('dateToFilter')?.value;
+            if (dateFrom && dateTo && dateFrom > dateTo) {
+                alert('The start date cannot be later than the end date.');
+                document.getElementById('dateToFilter')?.focus();
+                return;
+            }
+            hideDateRangeError();
             if (status) params.set('status', status);
+            if (dateFrom) params.set('date_from', dateFrom);
+            if (dateTo) params.set('date_to', dateTo);
             fetchData('index.php?' + params.toString());
         }
 
@@ -556,9 +620,21 @@
                     const oldFilters = document.querySelector('#activeFiltersContainer');
                     if (newFilters && oldFilters) oldFilters.innerHTML = newFilters.innerHTML;
 
+                    const newDateRangeError = doc.querySelector('#dateRangeError');
+                    const oldDateRangeError = document.querySelector('#dateRangeError');
+                    if (newDateRangeError && oldDateRangeError) {
+                        oldDateRangeError.innerHTML = newDateRangeError.innerHTML;
+                        oldDateRangeError.style.display = newDateRangeError.style.display;
+                    }
+
                     const params = new URL(url, window.location.href).searchParams;
                     const statusFilter = document.getElementById('statusFilter');
                     if (statusFilter) statusFilter.value = params.get('status') || '';
+                    const dateFromFilter = document.getElementById('dateFromFilter');
+                    if (dateFromFilter) dateFromFilter.value = params.get('date_from') || '';
+                    const dateToFilter = document.getElementById('dateToFilter');
+                    if (dateToFilter) dateToFilter.value = params.get('date_to') || '';
+                    syncDateRangeLimits();
                     if (updateHistory) history.replaceState(null, '', url);
                 })
                 .catch(error => console.error('Error fetching asset requests:', error))
@@ -570,11 +646,16 @@
         document.addEventListener('DOMContentLoaded', function() {
             const form = document.getElementById('filterForm');
             const status = document.getElementById('statusFilter');
+            const dateFrom = document.getElementById('dateFromFilter');
+            const dateTo = document.getElementById('dateToFilter');
             form?.addEventListener('submit', event => {
                 event.preventDefault();
-                applyStatusFilter();
+                applyFilters();
             });
-            status?.addEventListener('change', applyStatusFilter);
+            status?.addEventListener('change', applyFilters);
+            dateFrom?.addEventListener('change', applyFilters);
+            dateTo?.addEventListener('change', applyFilters);
+            syncDateRangeLimits();
             document.getElementById('activeFiltersContainer')?.addEventListener('click', event => {
                 const link = event.target.closest('a');
                 if (link?.href) {
@@ -587,6 +668,20 @@
 
         function printTable() {
             window.print();
+        }
+
+        function syncDateRangeLimits() {
+            const dateFrom = document.getElementById('dateFromFilter');
+            const dateTo = document.getElementById('dateToFilter');
+            if (!dateFrom || !dateTo) return;
+
+            dateTo.min = dateFrom.value || '';
+            dateFrom.max = dateTo.value || '';
+        }
+
+        function hideDateRangeError() {
+            const error = document.getElementById('dateRangeError');
+            if (error) error.style.display = 'none';
         }
     </script>
 
