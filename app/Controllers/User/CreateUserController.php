@@ -5,6 +5,7 @@ namespace App\Controllers\User;
 use App\helpers\Csrf;
 use App\Models\AuditLog;
 use App\Models\User;
+use App\Services\WelcomeMailService;
 use Exception;
 use PDO;
 
@@ -16,6 +17,7 @@ class CreateUserController
 
 	private PDO $conn;
 	private User $user;
+	private WelcomeMailService $welcomeMail;
 
 	/* =========================================================
 	 * CONSTRUCTOR
@@ -25,6 +27,7 @@ class CreateUserController
 	{
 		$this->conn = $conn;
 		$this->user = new User($conn);
+		$this->welcomeMail = new WelcomeMailService();
 	}
 
 	/* =========================================================
@@ -120,6 +123,12 @@ class CreateUserController
 				}
 
 				if ($result['success']) {
+					$this->welcomeMail->send([
+						'name' => $postData['name'] ?? '',
+						'email' => $postData['email'] ?? '',
+						'role' => $postData['role'] ?? 'EMPLOYEE',
+					]);
+
 					$_SESSION['success'] =
 						'User registered successfully!';
 
