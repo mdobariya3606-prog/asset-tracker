@@ -3,6 +3,7 @@
 namespace App\Controllers\User;
 
 use App\helpers\Csrf;
+use App\Models\AuditLog;
 use App\Models\User;
 use PDO;
 
@@ -128,6 +129,8 @@ class ResetPasswordController
 			view('users.reset-password', ['errors' => $errors, 'old' => $old]);
 			return;
 		}
+
+		(new AuditLog($this->conn))->log('password_change', null, $id);
 
 		$_SESSION['success'] = 'Password reset successfully for ' . $user['name'] . '.';
 		route('users');

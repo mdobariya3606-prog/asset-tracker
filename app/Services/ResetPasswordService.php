@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Config\Database;
+use App\Models\AuditLog;
 use App\Models\ForgotPassword;
 use App\Models\User;
 use DateTime;
@@ -57,6 +58,8 @@ class ResetPasswordService
         $this->userModel->update($user['id'], [
             'password' => $password,
         ]);
+
+        (new AuditLog((new Database()->getConnection())))->log('PASSWORD_CHANGE', null, $userId);
     }
 
     public function removeToken(int $id) {

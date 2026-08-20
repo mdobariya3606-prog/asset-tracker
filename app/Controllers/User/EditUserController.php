@@ -3,6 +3,7 @@
 namespace App\Controllers\User;
 
 use App\helpers\Csrf;
+use App\Models\AuditLog;
 use App\Models\User;
 use Exception;
 use PDO;
@@ -312,6 +313,10 @@ class EditUserController
 
 		// 4. Perform database update
 		$success = $this->user->update($id, $data);
+
+		if ($data['password']) {
+			(new AuditLog($this->conn))->log('PASSWORD_CHANGE', null, $id);
+		}
 
 		return [
 			'success' => $success,
