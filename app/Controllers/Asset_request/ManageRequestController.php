@@ -225,6 +225,14 @@ class ManageRequestController
 		array $assetRequest,
 		array $asset
 	): void {
+		// Do not create duplicate notices when an administrator saves the same status.
+		if (($assetRequest['status'] ?? null) !== $updatedStatus) {
+			sendStatusNotice($updatedStatus, [
+				'user_id' => $assetRequest['user_id'],
+				'asset_name' => $assetRequest['asset_name'] ?? $asset['name'] ?? 'the requested asset',
+			], $this->conn);
+		}
+
 		switch ($updatedStatus) {
 			case 'APPROVED':
 				(new Asset($this->conn))->updateStatus(
@@ -254,9 +262,6 @@ class ManageRequestController
 				);
 				break;
 
-			case 'REJECTED':
-				sendStatusNotice('rejected', $assetRequest);
-				break;
 		}
 	}
 
