@@ -36,16 +36,21 @@ class Department
 	public function validate(array $department): array
 	{
 		$errors = [];
-		if (empty($department['name'])) {
+
+		if (!isset($department['name']) || empty($department['name'])) {
 			$errors['name'] = 'Name is required';
+		} else {
+			$stmt = $this->conn->prepare('select id from departments where name = :name limit 1');
+			$stmt->execute(
+				[
+					'name' => $department['name']
+				]
+			);
+			if ($stmt->rowCount() > 0) {
+				$errors['name'] = 'Department already exists';
+			}
 		}
 
-		$stmt = $this->conn->prepare('select * from departments where name = :name limit 1');
-		$stmt->execute(['name' => $department['name']]);
-
-		if ($stmt->rowCount() > 0) {
-			$errors['name'] = 'Department already exists';
-		}
 
 		return $errors;
 	}

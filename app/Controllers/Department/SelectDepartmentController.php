@@ -30,20 +30,13 @@ class SelectDepartmentController
 
 	public function index(array $getParams)
 	{
-		if (empty($_SESSION['user_id'])) {
-			$_SESSION['login_error'] =
-				'Please sign in to view departments.';
-
-			route('login');
-			exit;
-		}
+		middleware('auth');
 
 		if (isset($getParams['id'])) {
 			$departments = $this->department->find($getParams['id']);
 
-			if (empty($departments)) {
-				$message = "Department {$getParams['id']} does not exists.";
-			}
+			view(404);
+			exit;
 		} else {
 			$departments = $this->department->all();
 		}

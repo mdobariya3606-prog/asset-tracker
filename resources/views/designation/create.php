@@ -29,11 +29,11 @@
 </head>
 
 <body>
-    <div class="edit-container<?php
+    <div class="edit-container
+    <?php
+    use App\helpers\Csrf;
 
-                                use App\helpers\Csrf;
-
-                                echo (!empty($_SESSION['user_role']) && $_SESSION['user_role'] === 'ADMIN') ? ' admin-edit' : ''; ?>">
+    echo (!empty($_SESSION['user_role']) && $_SESSION['user_role'] === 'ADMIN') ? ' admin-edit' : ''; ?>">
         <div class="card">
             <!-- ========================= -->
             <!-- Card Header -->
